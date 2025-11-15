@@ -1,0 +1,212 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Tests\Integration;
+
+use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
+use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use GuzzleHttp\Client;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Integration tests for Opayo/Elavon Payment Gateway.
+ *
+ * These tests make real API calls to the Opayo sandbox environment.
+ * Credentials should be configured in a .env file.
+ *
+ * @group integration
+ */
+class OpayoIntegrationTest extends TestCase
+{
+    private Client $httpClient;
+    private string $merchantAlias;
+    private string $apiKey;
+    private string $baseUri;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Load environment variables from .env file if it exists
+        $this->loadEnv();
+
+        // Get credentials from environment
+        $this->merchantAlias = getenv('OPAYO_MERCHANT_ALIAS') ?: '';
+        $this->apiKey = getenv('OPAYO_API_KEY') ?: '';
+        $this->baseUri = getenv('OPAYO_BASE_URI') ?: 'https://api.eu.sandbox.convergepay.com';
+
+        // Skip test if credentials are not configured
+        if (empty($this->merchantAlias) || empty($this->apiKey)) {
+            $this->markTestSkipped(
+                'Integration tests require OPAYO_MERCHANT_ALIAS and OPAYO_API_KEY to be set in .env file'
+            );
+        }
+
+        // Create HTTP client with basic auth
+        $this->httpClient = new Client([
+            'base_uri' => $this->baseUri,
+            'auth' => [$this->merchantAlias, $this->apiKey],
+            'timeout' => 30,
+            'http_errors' => false, // Don't throw exceptions on HTTP errors
+        ]);
+    }
+
+    public function test_createTransaction_withValidCard_returnsAuthorized(): void
+    {
+        // Arrange - Create a transaction request with test card
+        $request = new CreateTransactionRequest(
+            transaction: [
+                'total' => [
+                    'amount' => '10.00',
+                    'currencyCode' => 'USD',
+                ],
+                'card' => [
+                    'number' => '4111111111111111', // Test card - successful
+                    'securityCode' => '123',
+                    'expirationMonth' => 12,
+                    'expirationYear' => 2025,
+                    'holderName' => 'Test Cardholder',
+                ],
+                'description' => 'Integration test transaction',
+                'customReference' => 'TEST-' . time(),
+            ],
+            baseUri: $this->baseUri,
+        );
+
+        // Act - Build and send the request
+        $psr7Request = $request->build();
+        $psr7Response = $this->httpClient->send($psr7Request);
+
+        // Parse the response
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
+
+        // Assert - Verify the response
+        $this->assertTrue(
+            $response->isSuccessful(),
+            sprintf(
+                'Expected successful response (2xx), got %d. Response body: %s',
+                $response->getStatusCode(),
+                (string) $psr7Response->getBody()
+            )
+        );
+
+        $transaction = $response->getTransaction();
+
+        // Verify transaction properties
+        $this->assertNotNull($transaction->id, 'Transaction ID should be set');
+        $this->assertNotEmpty($transaction->id, 'Transaction ID should not be empty');
+
+        // Verify transaction state (could be AUTHORIZED or CAPTURED depending on merchant config)
+        $this->assertContains(
+            $transaction->state,
+            [TransactionState::AUTHORIZED, TransactionState::CAPTURED],
+            'Transaction should be either AUTHORIZED or CAPTURED'
+        );
+
+        // Verify amount
+        $this->assertSame('10.00', $transaction->total->amount);
+        $this->assertSame('USD', $transaction->total->currency->value);
+
+        // Verify card response data
+        $this->assertNotNull($transaction->card, 'Card data should be present in response');
+        $this->assertSame('1111', $transaction->card->last4);
+
+        // Verify timestamp
+        $this->assertNotNull($transaction->createdAt, 'CreatedAt timestamp should be set');
+
+        // Output transaction details for debugging
+        echo "\n";
+        echo "Transaction ID: {$transaction->id}\n";
+        echo "State: {$transaction->state->value}\n";
+        echo "Amount: {$transaction->total->amount} {$transaction->total->currency->value}\n";
+        echo "Card Last 4: {$transaction->card->last4}\n";
+        if ($transaction->card->scheme !== null) {
+            echo "Card Scheme: {$transaction->card->scheme->value}\n";
+        }
+        echo "Created At: {$transaction->createdAt}\n";
+    }
+
+    public function test_createTransaction_withDeclinedCard_returnsDeclined(): void
+    {
+        // Arrange - Create a transaction request with test declined card
+        $request = new CreateTransactionRequest(
+            transaction: [
+                'total' => [
+                    'amount' => '10.00',
+                    'currencyCode' => 'USD',
+                ],
+                'card' => [
+                    'number' => '4000000000000002', // Test card - declined
+                    'securityCode' => '123',
+                    'expirationMonth' => 12,
+                    'expirationYear' => 2025,
+                    'holderName' => 'Test Cardholder',
+                ],
+                'description' => 'Integration test - declined transaction',
+                'customReference' => 'TEST-DECLINED-' . time(),
+            ],
+            baseUri: $this->baseUri,
+        );
+
+        // Act - Build and send the request
+        $psr7Request = $request->build();
+        $psr7Response = $this->httpClient->send($psr7Request);
+
+        // Parse the response
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
+
+        // Assert - The HTTP request might still be successful even if the transaction is declined
+        // We care about the transaction state, not necessarily the HTTP status
+        $transaction = $response->getTransaction();
+
+        $this->assertSame(
+            TransactionState::DECLINED,
+            $transaction->state,
+            'Transaction should be DECLINED for test card 4000000000000002'
+        );
+
+        // Output transaction details for debugging
+        echo "\n";
+        echo "Transaction ID: {$transaction->id}\n";
+        echo "State: {$transaction->state->value}\n";
+        echo "Amount: {$transaction->total->amount} {$transaction->total->currency->value}\n";
+    }
+
+    /**
+     * Load environment variables from .env file.
+     */
+    private function loadEnv(): void
+    {
+        $envFile = __DIR__ . '/../../.env';
+
+        if (!file_exists($envFile)) {
+            return;
+        }
+
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines === false) {
+            return;
+        }
+
+        foreach ($lines as $line) {
+            // Skip comments
+            if (str_starts_with(trim($line), '#')) {
+                continue;
+            }
+
+            // Parse KEY=VALUE
+            if (str_contains($line, '=')) {
+                [$key, $value] = explode('=', $line, 2);
+                $key = trim($key);
+                $value = trim($value);
+
+                // Don't override existing environment variables
+                if (!getenv($key)) {
+                    putenv("{$key}={$value}");
+                }
+            }
+        }
+    }
+}

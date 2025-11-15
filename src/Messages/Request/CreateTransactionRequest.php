@@ -1,0 +1,80 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Messages\Request;
+
+use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+
+/**
+ * Create Transaction Request.
+ *
+ * Builds a PSR-7 request for creating a new transaction (POST /transactions).
+ */
+class CreateTransactionRequest
+{
+    /**
+     * @param Transaction|array<string, mixed> $transaction Transaction data
+     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
+     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
+     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.convergepay.com")
+     *
+     * @throws InvalidArgumentException When transaction data is invalid
+     */
+    public function __construct(
+        private readonly Transaction|array $transaction,
+        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly ?StreamFactoryInterface $streamFactory = null,
+        private readonly string $baseUri = 'https://api.eu.convergepay.com',
+    ) {
+    }
+
+    /**
+     * Builds the PSR-7 HTTP request.
+     *
+     * @return RequestInterface The PSR-7 request ready to send
+     *
+     * @throws InvalidArgumentException When request cannot be built
+     */
+    public function build(): RequestInterface
+    {
+        // Use built-in factory if none provided
+        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+
+        // Normalize to Transaction object
+        $transaction = $this->transaction instanceof Transaction
+            ? $this->transaction
+            : Transaction::fromArray($this->transaction);
+
+        // Serialize transaction to JSON
+        $body = json_encode($transaction->toArray(), JSON_THROW_ON_ERROR);
+
+        // Create request stream
+        $stream = $streamFactory->createStream($body);
+
+        // Build PSR-7 request
+        return $requestFactory
+            ->createRequest('POST', $this->baseUri . '/transactions')
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Accept', 'application/json')
+            ->withBody($stream);
+    }
+
+    /**
+     * Gets the transaction data.
+     *
+     * @return Transaction
+     */
+    public function getTransaction(): Transaction
+    {
+        return $this->transaction instanceof Transaction
+            ? $this->transaction
+            : Transaction::fromArray($this->transaction);
+    }
+}

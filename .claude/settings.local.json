@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(mkdir:*)",
+      "Bash(composer test:*)",
+      "Bash(php vendor/bin/phpunit:*)",
+      "Bash(/c/Users/jason/.config/herd/bin/php.bat:*)",
+      "Bash(composer require:*)",
+      "Bash(where:*)",
+      "Bash(nul)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" require --dev guzzlehttp/guzzle:^7.0)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" require --dev \"guzzlehttp/guzzle:^7.5\")",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test:integration)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

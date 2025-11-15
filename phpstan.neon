@@ -1,0 +1,47 @@
+parameters:
+    level: 8
+    paths:
+        - src
+
+    # Treat PHP as 8.1+
+    phpVersion: 80100
+
+    # Check for missing type hints
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+
+    # Additional strictness
+    checkAlwaysTrueCheckTypeFunctionCall: true
+    checkAlwaysTrueInstanceof: true
+    checkAlwaysTrueStrictComparison: true
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkMissingClosureNativeReturnTypehintRule: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+
+    # Don't allow mixed types
+    checkExplicitMixed: true
+
+    # Exception rules
+    exceptions:
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideThrowType: true
+
+        checkedExceptionClasses:
+            - Academe\Elavon\Epg\Psr7\Exceptions\EpgException
+
+    # Paths to exclude (if any)
+    excludePaths:
+        # - tests/bootstrap.php
+
+    # Ignore errors (use sparingly, prefer fixing the code)
+    ignoreErrors:
+        # Example:
+        # - '#Call to an undefined method#'
+
+    # Custom rules
+    reportUnmatchedIgnoredErrors: true
+    treatPhpDocTypesAsCertain: false
