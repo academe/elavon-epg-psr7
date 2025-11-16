@@ -6,16 +6,22 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Response;
 
 use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Transaction Response.
  *
- * Parses a PSR-7 response from the EPG API containing transaction data.
+ * Parses a PSR-7 response from the EPG API containing either transaction data or error details.
+ *
+ * For successful responses (2xx), contains transaction data.
+ * For error responses (4xx, 5xx), contains error details.
  */
 class TransactionResponse
 {
-    private readonly Transaction $transaction;
+    use HandlesErrors;
+
+    private readonly ?Transaction $transaction;
 
     /**
      * @param ResponseInterface $response PSR-7 response from the API
@@ -25,7 +31,14 @@ class TransactionResponse
     public function __construct(
         private readonly ResponseInterface $response,
     ) {
-        $this->transaction = $this->parseResponse();
+        // Parse response based on status code
+        if ($this->isSuccessful()) {
+            $this->transaction = $this->parseSuccessResponse();
+            $this->error = null;
+        } else {
+            $this->transaction = null;
+            $this->error = $this->parseErrorResponse();
+        }
     }
 
     /**
@@ -44,9 +57,11 @@ class TransactionResponse
     /**
      * Gets the parsed Transaction object.
      *
-     * @return Transaction
+     * Only available for successful responses (2xx status codes).
+     *
+     * @return Transaction|null Returns null if response was an error
      */
-    public function getTransaction(): Transaction
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
@@ -62,17 +77,6 @@ class TransactionResponse
     }
 
     /**
-     * Checks if the response was successful (2xx status code).
-     *
-     * @return bool
-     */
-    public function isSuccessful(): bool
-    {
-        $statusCode = $this->getStatusCode();
-        return $statusCode >= 200 && $statusCode < 300;
-    }
-
-    /**
      * Gets the original PSR-7 response.
      *
      * @return ResponseInterface
@@ -83,12 +87,24 @@ class TransactionResponse
     }
 
     /**
-     * Parses the PSR-7 response into a Transaction object.
+     * Parses a successful response into a Transaction object.
      *
      * @return Transaction
      * @throws InvalidArgumentException When response cannot be parsed
      */
-    private function parseResponse(): Transaction
+    private function parseSuccessResponse(): Transaction
+    {
+        $data = $this->parseJsonBody();
+        return Transaction::fromArray($data);
+    }
+
+    /**
+     * Parses the JSON response body.
+     *
+     * @return array<string, mixed>
+     * @throws InvalidArgumentException When JSON is invalid
+     */
+    private function parseJsonBody(): array
     {
         $body = (string) $this->response->getBody();
 
@@ -109,6 +125,13 @@ class TransactionResponse
             throw new InvalidArgumentException('Response body is not a JSON object');
         }
 
-        return Transaction::fromArray($data);
+        // Check if it's an indexed array (JSON array) vs associative array (JSON object)
+        // JSON array [] or [1,2,3] should fail
+        // JSON object {} or {"key":"value"} should pass
+        if ($data === [] || array_keys($data) === range(0, count($data) - 1)) {
+            throw new InvalidArgumentException('Response body is not a JSON object');
+        }
+
+        return $data;
     }
 }

@@ -13,16 +13,12 @@
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
+            <exclude>tests/Integration</exclude>
         </testsuite>
         <testsuite name="Integration">
             <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
-    <groups>
-        <exclude>
-            <group>integration</group>
-        </exclude>
-    </groups>
     <source>
         <include>
             <directory suffix=".php">src</directory>

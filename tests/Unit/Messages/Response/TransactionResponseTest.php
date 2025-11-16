@@ -326,6 +326,116 @@ class TransactionResponseTest extends TestCase
         $this->assertNull($transaction->card);
     }
 
+    // Error Response Tests
+
+    public function test_construct_with401Error_parsesError(): void
+    {
+        // Arrange - Real API error response
+        $responseBody = json_encode([
+            'status' => 401,
+            'failures' => [
+                [
+                    'code' => 'unauthorized',
+                    'description' => 'A valid API key is required',
+                    'field' => null,
+                ],
+            ],
+        ]);
+
+        $psr7Response = $this->createMockResponse($responseBody, 401);
+
+        // Act
+        $response = new TransactionResponse($psr7Response);
+
+        // Assert
+        $this->assertFalse($response->isSuccessful());
+        $this->assertTrue($response->hasError());
+        $this->assertNull($response->getTransaction());
+
+        $error = $response->getError();
+        $this->assertNotNull($error);
+        $this->assertSame(401, $error->status);
+        $this->assertSame('unauthorized', $error->getCode());
+        $this->assertSame('A valid API key is required', $error->getMessage());
+    }
+
+    public function test_construct_with400ValidationError_parsesError(): void
+    {
+        // Arrange
+        $responseBody = json_encode([
+            'status' => 400,
+            'failures' => [
+                [
+                    'code' => 'validation_error',
+                    'description' => 'Card number is invalid',
+                    'field' => 'card.number',
+                ],
+            ],
+        ]);
+
+        $psr7Response = $this->createMockResponse($responseBody, 400);
+
+        // Act
+        $response = new TransactionResponse($psr7Response);
+
+        // Assert
+        $this->assertTrue($response->hasError());
+        $this->assertFalse($response->isSuccessful());
+
+        $error = $response->getError();
+        $this->assertSame('validation_error', $error->getCode());
+        $this->assertSame('Card number is invalid', $error->getMessage());
+        $this->assertSame('card.number', $error->getFailures()[0]->field);
+    }
+
+    public function test_construct_with500Error_parsesError(): void
+    {
+        // Arrange
+        $responseBody = json_encode([
+            'status' => 500,
+            'failures' => [
+                [
+                    'code' => 'internal_error',
+                    'description' => 'An internal server error occurred',
+                    'field' => null,
+                ],
+            ],
+        ]);
+
+        $psr7Response = $this->createMockResponse($responseBody, 500);
+
+        // Act
+        $response = new TransactionResponse($psr7Response);
+
+        // Assert
+        $this->assertTrue($response->hasError());
+        $this->assertSame(500, $response->getStatusCode());
+
+        $error = $response->getError();
+        $this->assertSame('internal_error', $error->getCode());
+    }
+
+    public function test_construct_withSuccessResponse_hasNoError(): void
+    {
+        // Arrange
+        $responseBody = json_encode([
+            'id' => 'txn_123',
+            'state' => 'authorized',
+            'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+            'createdAt' => '2025-11-13T10:00:00Z',
+        ]);
+
+        $psr7Response = $this->createMockResponse($responseBody, 200);
+
+        // Act
+        $response = new TransactionResponse($psr7Response);
+
+        // Assert
+        $this->assertFalse($response->hasError());
+        $this->assertNull($response->getError());
+        $this->assertNotNull($response->getTransaction());
+    }
+
     /**
      * Creates a mock PSR-7 response for testing.
      */

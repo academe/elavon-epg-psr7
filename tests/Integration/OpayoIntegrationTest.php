@@ -11,9 +11,9 @@ use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Integration tests for Opayo/Elavon Payment Gateway.
+ * Integration tests for Elavon Payment Gateway.
  *
- * These tests make real API calls to the Opayo sandbox environment.
+ * These tests make real API calls to the Elavon UAT/sandbox environment.
  * Credentials should be configured in a .env file.
  *
  * @group integration
@@ -33,14 +33,14 @@ class OpayoIntegrationTest extends TestCase
         $this->loadEnv();
 
         // Get credentials from environment
-        $this->merchantAlias = getenv('OPAYO_MERCHANT_ALIAS') ?: '';
-        $this->apiKey = getenv('OPAYO_API_KEY') ?: '';
-        $this->baseUri = getenv('OPAYO_BASE_URI') ?: 'https://api.eu.sandbox.convergepay.com';
+        $this->merchantAlias = getenv('ELAVON_MERCHANT_ALIAS') ?: '';
+        $this->apiKey = getenv('ELAVON_API_KEY') ?: '';
+        $this->baseUri = getenv('ELAVON_BASE_URI') ?: 'https://uat.api.converge.eu.elavonaws.com';
 
         // Skip test if credentials are not configured
         if (empty($this->merchantAlias) || empty($this->apiKey)) {
             $this->markTestSkipped(
-                'Integration tests require OPAYO_MERCHANT_ALIAS and OPAYO_API_KEY to be set in .env file'
+                'Integration tests require ELAVON_MERCHANT_ALIAS and ELAVON_API_KEY to be set in .env file'
             );
         }
 
@@ -82,17 +82,32 @@ class OpayoIntegrationTest extends TestCase
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);
 
-        // Assert - Verify the response
+        // Assert - Check for errors first
+        if ($response->hasError()) {
+            $error = $response->getError();
+
+            $this->fail(
+                sprintf(
+                    "API returned error (HTTP %d): %s\nError code: %s\nFull response: %s",
+                    $response->getStatusCode(),
+                    $error->getMessage(),
+                    $error->getCode(),
+                    (string) $psr7Response->getBody()
+                )
+            );
+        }
+
+        // Verify the response
         $this->assertTrue(
             $response->isSuccessful(),
             sprintf(
-                'Expected successful response (2xx), got %d. Response body: %s',
-                $response->getStatusCode(),
-                (string) $psr7Response->getBody()
+                'Expected successful response (2xx), got %d',
+                $response->getStatusCode()
             )
         );
 
         $transaction = $response->getTransaction();
+        $this->assertNotNull($transaction, 'Transaction should not be null for successful response');
 
         // Verify transaction properties
         $this->assertNotNull($transaction->id, 'Transaction ID should be set');
@@ -157,9 +172,24 @@ class OpayoIntegrationTest extends TestCase
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);
 
-        // Assert - The HTTP request might still be successful even if the transaction is declined
+        // Assert - Check for errors first (authentication, etc.)
+        if ($response->hasError()) {
+            $error = $response->getError();
+            $this->fail(
+                sprintf(
+                    "API returned error (HTTP %d): %s\nError code: %s\nFull response: %s",
+                    $response->getStatusCode(),
+                    $error->getMessage(),
+                    $error->getCode(),
+                    (string) $psr7Response->getBody()
+                )
+            );
+        }
+
+        // The HTTP request might still be successful even if the transaction is declined
         // We care about the transaction state, not necessarily the HTTP status
         $transaction = $response->getTransaction();
+        $this->assertNotNull($transaction, 'Transaction should not be null even for declined card');
 
         $this->assertSame(
             TransactionState::DECLINED,

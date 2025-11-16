@@ -78,7 +78,7 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertSame('POST', $psr7Request->getMethod());
-        $this->assertSame('https://api.eu.convergepay.com/transactions', (string) $psr7Request->getUri());
+        $this->assertSame('https://api.eu.elavonpayments.com/transactions', (string) $psr7Request->getUri());
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
@@ -89,15 +89,16 @@ class CreateTransactionRequestTest extends TestCase
         $request = new CreateTransactionRequest(
             transaction: [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
             ],
-            baseUri: 'https://api.us.convergepay.com',
+            baseUri: 'https://uat.api.converge.eu.elavonaws.com',
         );
 
         // Act
         $psr7Request = $request->build();
 
         // Assert
-        $this->assertSame('https://api.us.convergepay.com/transactions', (string) $psr7Request->getUri());
+        $this->assertSame('https://uat.api.converge.eu.elavonaws.com/transactions', (string) $psr7Request->getUri());
     }
 
     public function test_build_bodyContainsSerializedTransaction(): void
@@ -143,7 +144,10 @@ class CreateTransactionRequestTest extends TestCase
         $streamFactory = new Psr17Factory();
 
         $request = new CreateTransactionRequest(
-            transaction: ['total' => ['amount' => '99.99', 'currencyCode' => 'USD']],
+            transaction: [
+                'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
+            ],
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,
         );
@@ -186,6 +190,7 @@ class CreateTransactionRequestTest extends TestCase
         // Arrange
         $originalTransaction = new Transaction(
             total: new Money('99.99', Currency::USD),
+            card: ['number' => '4111111111111111'],
         );
 
         $request = new CreateTransactionRequest(transaction: $originalTransaction);
@@ -203,6 +208,7 @@ class CreateTransactionRequestTest extends TestCase
         $request = new CreateTransactionRequest(
             transaction: [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
             ],
         );
 
@@ -218,7 +224,10 @@ class CreateTransactionRequestTest extends TestCase
     {
         // Arrange
         $request = new CreateTransactionRequest(
-            transaction: ['total' => ['amount' => '99.99', 'currencyCode' => 'USD']],
+            transaction: [
+                'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
+            ],
         );
 
         // Act
@@ -236,6 +245,7 @@ class CreateTransactionRequestTest extends TestCase
         $request = new CreateTransactionRequest(
             transaction: [
                 'total' => ['amount' => '1.00', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
             ],
         );
 
@@ -256,6 +266,7 @@ class CreateTransactionRequestTest extends TestCase
         $request = new CreateTransactionRequest(
             transaction: [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
                 'description' => 'Test',
             ],
         );
@@ -267,8 +278,8 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertArrayHasKey('total', $decoded);
+        $this->assertArrayHasKey('card', $decoded);
         $this->assertArrayHasKey('description', $decoded);
-        $this->assertArrayNotHasKey('card', $decoded);
         $this->assertArrayNotHasKey('id', $decoded);
         $this->assertArrayNotHasKey('state', $decoded);
     }
@@ -312,7 +323,10 @@ class CreateTransactionRequestTest extends TestCase
     {
         // Arrange
         $request = new CreateTransactionRequest(
-            transaction: ['total' => ['amount' => '99.99', 'currencyCode' => 'USD']],
+            transaction: [
+                'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+                'card' => ['number' => '4111111111111111'],
+            ],
         );
 
         // Act

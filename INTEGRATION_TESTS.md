@@ -1,6 +1,6 @@
 # Integration Tests Setup
 
-Integration tests have been added to test the credit card payment vertical stack against a real Opayo/Elavon sandbox environment.
+Integration tests have been added to test the credit card payment vertical stack against a real Elavon Payment Gateway UAT environment.
 
 ## What Was Added
 
@@ -20,9 +20,9 @@ Integration tests have been added to test the credit card payment vertical stack
 ### 2. Configuration Files
 
 - **[.env.example](.env.example)** - Template for environment variables
-  - `OPAYO_MERCHANT_ALIAS` - Your test merchant alias
-  - `OPAYO_API_KEY` - Your test API key
-  - `OPAYO_BASE_URI` - Sandbox API URL (EU or US)
+  - `ELAVON_MERCHANT_ALIAS` - Your UAT merchant alias
+  - `ELAVON_API_KEY` - Your UAT API key
+  - `ELAVON_BASE_URI` - UAT API URL (`https://uat.api.converge.eu.elavonaws.com`)
 
 - **.env** - (Not committed) Your actual credentials
   - Copy from `.env.example` and fill in your values
@@ -60,10 +60,10 @@ Updated [composer.json](composer.json) scripts:
 # Copy example file
 cp .env.example .env
 
-# Edit .env with your Opayo sandbox credentials
-# OPAYO_MERCHANT_ALIAS=your_merchant_alias
-# OPAYO_API_KEY=your_api_key
-# OPAYO_BASE_URI=https://api.eu.sandbox.convergepay.com
+# Edit .env with your Elavon UAT credentials
+# ELAVON_MERCHANT_ALIAS=your_merchant_alias
+# ELAVON_API_KEY=your_api_key
+# ELAVON_BASE_URI=https://uat.api.converge.eu.elavonaws.com
 ```
 
 ### 2. Run Tests
@@ -168,5 +168,12 @@ See [tests/Integration/README.md](tests/Integration/README.md) for detailed trou
 Common issues:
 - **Tests skipped**: Missing `.env` file or credentials
 - **401 Unauthorized**: Invalid credentials
-- **Connection timeout**: Check `OPAYO_BASE_URI` and internet connection
+- **Connection timeout**: Check `ELAVON_BASE_URI` and internet connection (should be `https://uat.api.converge.eu.elavonaws.com`)
+- **Host not found**: Using incorrect API endpoint (make sure to use the correct Elavon API URL)
 - **Unexpected state**: Merchant config (auto-capture vs auth-only)
+
+## Additional Resources
+
+- **Elavon Developer Portal**: https://developer.elavon.com/
+- **API Documentation**: https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/overview
+- **Support**: Contact Elavon support for UAT credentials and assistance

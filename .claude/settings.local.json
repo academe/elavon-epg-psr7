@@ -13,7 +13,14 @@
       "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" require --dev guzzlehttp/guzzle:^7.0)",
       "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" require --dev \"guzzlehttp/guzzle:^7.5\")",
       "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test)",
-      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test:integration)"
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test:integration)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" update guzzlehttp/guzzle)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test -- tests/Unit/DataObjects/ErrorResponseTest.php)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test -- tests/Unit/Messages/Response/Concerns)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test:unit)",
+      "Bash(\"C:\\Users\\jason\\.config\\herd\\bin\\composer.bat\" test:all)",
+      "Bash(test:*)",
+      "Bash(herd php:*)"
     ],
     "deny": [],
     "ask": []

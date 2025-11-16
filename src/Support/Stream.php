@@ -16,9 +16,9 @@ class Stream implements StreamInterface
     /** @var resource|null */
     private $resource;
 
-    private bool $seekable = true;
-    private bool $readable = true;
-    private bool $writable = true;
+    private bool $seekable;
+    private bool $readable;
+    private bool $writable;
 
     /**
      * @param resource|string $stream Stream resource or string content
@@ -36,11 +36,53 @@ class Stream implements StreamInterface
         } else {
             throw new \InvalidArgumentException('Stream must be a resource or string');
         }
+
+        // Determine capabilities from stream metadata
+        $this->initializeStreamCapabilities();
+    }
+
+    /**
+     * Initialize stream capabilities based on metadata.
+     */
+    private function initializeStreamCapabilities(): void
+    {
+        if ($this->resource === null) {
+            $this->seekable = false;
+            $this->readable = false;
+            $this->writable = false;
+            return;
+        }
+
+        $meta = stream_get_meta_data($this->resource);
+        $mode = $meta['mode'] ?? '';
+
+        // Check if stream is seekable
+        $this->seekable = $meta['seekable'] ?? false;
+
+        // Determine readable/writable from mode
+        // Modes: r, r+, w, w+, a, a+, x, x+, c, c+
+        $this->readable = str_contains($mode, 'r') || str_contains($mode, '+');
+        $this->writable = str_contains($mode, 'w') || str_contains($mode, 'a') ||
+                         str_contains($mode, 'x') || str_contains($mode, 'c') ||
+                         str_contains($mode, '+');
     }
 
     public function __toString(): string
     {
         try {
+            // If stream is not readable, try to read from the underlying file
+            if (!$this->isReadable()) {
+                $meta = stream_get_meta_data($this->resource);
+                $uri = $meta['uri'] ?? null;
+
+                // If we have a file path, read from it directly
+                if ($uri !== null && file_exists($uri)) {
+                    return (string) file_get_contents($uri);
+                }
+
+                return '';
+            }
+
             $this->rewind();
             return $this->getContents();
         } catch (\Throwable) {

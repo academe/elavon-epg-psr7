@@ -19,18 +19,31 @@ use Psr\Http\Message\StreamFactoryInterface;
 class CreateTransactionRequest
 {
     /**
+     * Default required fields for creating a transaction.
+     * Override via constructor if different fields are required for your use case.
+     *
+     * @var array<string>
+     */
+    private const DEFAULT_REQUIRED_FIELDS = [
+        'total',
+        'card',  // Required for card transactions
+    ];
+
+    /**
      * @param Transaction|array<string, mixed> $transaction Transaction data
+     * @param array<string>|null $requiredFields List of required field names (uses DEFAULT_REQUIRED_FIELDS if null)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.convergepay.com")
+     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When transaction data is invalid
      */
     public function __construct(
         private readonly Transaction|array $transaction,
+        private readonly ?array $requiredFields = null,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.convergepay.com',
+        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
     }
 
@@ -52,6 +65,9 @@ class CreateTransactionRequest
             ? $this->transaction
             : Transaction::fromArray($this->transaction);
 
+        // Validate required fields for request
+        $this->validateTransactionRequest($transaction);
+
         // Serialize transaction to JSON
         $body = json_encode($transaction->toArray(), JSON_THROW_ON_ERROR);
 
@@ -64,6 +80,27 @@ class CreateTransactionRequest
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($stream);
+    }
+
+    /**
+     * Validates that required fields are present for a transaction request.
+     *
+     * @param Transaction $transaction
+     * @throws InvalidArgumentException When required fields are missing
+     */
+    private function validateTransactionRequest(Transaction $transaction): void
+    {
+        $fieldsToCheck = $this->requiredFields ?? self::DEFAULT_REQUIRED_FIELDS;
+
+        foreach ($fieldsToCheck as $field) {
+            if (!property_exists($transaction, $field)) {
+                throw new InvalidArgumentException("Unknown required field: {$field}");
+            }
+
+            if ($transaction->$field === null) {
+                throw new InvalidArgumentException("Transaction {$field} is required for creating a transaction");
+            }
+        }
     }
 
     /**

@@ -185,19 +185,20 @@ class TransactionTest extends TestCase
         $this->assertSame('2025-11-13T10:00:00Z', $transaction->createdAt);
     }
 
-    public function test_fromArray_withMissingTotal_throwsException(): void
+    public function test_fromArray_withMissingTotal_createsTransactionWithNullTotal(): void
     {
         // Arrange
         $data = [
             'card' => ['number' => '4111111111111111'],
         ];
 
-        // Assert
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required field: total');
-
         // Act
-        Transaction::fromArray($data);
+        $transaction = Transaction::fromArray($data);
+
+        // Assert
+        $this->assertNull($transaction->total);
+        $this->assertNotNull($transaction->card);
+        $this->assertSame('4111111111111111', $transaction->card->number);
     }
 
     public function test_fromArray_withInvalidState_throwsException(): void
@@ -271,10 +272,10 @@ class TransactionTest extends TestCase
                 'holderName' => 'John Doe',
             ],
             'id' => 'txn_123',
-            'state' => 'authorized',
             'description' => 'Order #12345',
             'customReference' => 'REF-12345',
             'createdAt' => '2025-11-13T10:00:00Z',
+            'state' => 'authorized',
         ], $array);
     }
 

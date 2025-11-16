@@ -6,7 +6,7 @@ This directory contains integration tests that make real API calls to the Opayo/
 
 ### 1. Create .env file
 
-Copy the `.env.example` file to `.env` and fill in your Opayo sandbox credentials:
+Copy the `.env.example` file to `.env` and fill in your Elavon UAT credentials:
 
 ```bash
 cp .env.example .env
@@ -15,20 +15,21 @@ cp .env.example .env
 Edit the `.env` file with your test credentials:
 
 ```env
-OPAYO_MERCHANT_ALIAS=your_test_merchant_alias
-OPAYO_API_KEY=your_test_api_key
-OPAYO_BASE_URI=https://api.eu.sandbox.convergepay.com
+ELAVON_MERCHANT_ALIAS=your_test_merchant_alias
+ELAVON_API_KEY=your_test_api_key
+ELAVON_BASE_URI=https://uat.api.converge.eu.elavonaws.com
 ```
 
 ### 2. Obtain Test Credentials
 
-To get sandbox credentials:
+To get UAT/sandbox credentials:
 
-1. Contact Elavon/Opayo support to request a sandbox merchant account
+1. Contact Elavon support to request a UAT merchant account
 2. You will receive a merchant alias and API key for testing
 3. Use the appropriate base URI for your region:
-   - EU Sandbox: `https://api.eu.sandbox.convergepay.com`
-   - US Sandbox: `https://api.us.sandbox.convergepay.com`
+   - EU UAT/Test: `https://uat.api.converge.eu.elavonaws.com`
+   - EU Production: `https://api.eu.elavonpayments.com` (do not use for testing!)
+4. See the official documentation: https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/overview
 
 ## Running Integration Tests
 
@@ -106,18 +107,19 @@ Tests a declined transaction:
 **Problem**: Tests fail with HTTP 401 Unauthorized.
 
 **Solution**:
-- Verify your `OPAYO_MERCHANT_ALIAS` and `OPAYO_API_KEY` are correct
-- Ensure you're using sandbox credentials, not production
-- Check that your sandbox account is active
+- Verify your `ELAVON_MERCHANT_ALIAS` and `ELAVON_API_KEY` are correct
+- Ensure you're using UAT credentials, not production
+- Check that your UAT account is active
 
 ### Connection errors
 
 **Problem**: Tests fail with connection timeout or network errors.
 
 **Solution**:
-- Verify the `OPAYO_BASE_URI` is correct for your region
+- Verify the `ELAVON_BASE_URI` is correct (`https://uat.api.converge.eu.elavonaws.com`)
 - Check your internet connection
-- Verify the sandbox environment is operational
+- Verify the UAT environment is operational
+- Check Elavon's status page for any outages
 
 ### Unexpected transaction state
 

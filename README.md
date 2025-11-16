@@ -18,8 +18,8 @@ This package handles message construction and serialization. A separate HTTP cli
 ## Requirements
 
 - PHP 8.1 or higher
-- PSR-7 HTTP Message implementation
-- PSR-17 HTTP Factory implementation
+- PSR-7 HTTP Message implementation (or use built-in message)
+- PSR-17 HTTP Factory implementation (or user built-in factory)
 
 ## Installation
 
