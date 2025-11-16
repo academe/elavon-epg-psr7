@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\DataObjects;
 
+use Academe\Elavon\Epg\Psr7\DataObjects\Contact;
+use Academe\Elavon\Epg\Psr7\DataObjects\Failure;
+use Academe\Elavon\Epg\Psr7\DataObjects\ShopperStatement;
+use Academe\Elavon\Epg\Psr7\DataObjects\Surcharge;
 use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
 use Academe\Elavon\Epg\Psr7\Enums\MarketSegment;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
@@ -37,6 +41,12 @@ class Transaction
     public readonly ?Money $tip;
     public readonly ?Money $salesTax;
     public readonly ?Card $card;
+    public readonly ?ShopperStatement $shopperStatement;
+    public readonly ?Contact $shipTo;
+    public readonly ?Contact $billTo;
+    public readonly ?Surcharge $surcharge;
+    /** @var array<Failure>|null */
+    public readonly ?array $failures;
 
     /**
      * @param Money|array{amount: string, currencyCode: string}|null $total Transaction total
@@ -45,6 +55,11 @@ class Transaction
      * @param Money|array{amount: string, currencyCode: string}|null $tip [Response] Tip amount
      * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales tax amount
      * @param Card|array<string, mixed>|null $card Card details
+     * @param ShopperStatement|array<string, mixed>|null $shopperStatement [Request] Dynamic statement overrides
+     * @param Contact|array<string, mixed>|null $shipTo [Request] Shipping address
+     * @param Contact|array<string, mixed>|null $billTo [Request] Billing address
+     * @param Surcharge|array<string, mixed>|null $surcharge [Response] Surcharge information
+     * @param array<array<string, mixed>>|null $failures [Response] Transaction failures
      * @param string|null $id [Response] Transaction ID
      * @param TransactionState|null $state [Response] Transaction state
      * @param TransactionType|null $type [Response] Transaction type (sale/refund/void)
@@ -112,6 +127,11 @@ class Transaction
         Money|array|null $tip = null,
         Money|array|null $salesTax = null,
         Card|array|null $card = null,
+        ShopperStatement|array|null $shopperStatement = null,
+        Contact|array|null $shipTo = null,
+        Contact|array|null $billTo = null,
+        Surcharge|array|null $surcharge = null,
+        ?array $failures = null,
 
         // Identity and state
         public readonly ?string $id = null,
@@ -231,6 +251,45 @@ class Transaction
             default => null,
         };
 
+        // Normalize ShopperStatement
+        $this->shopperStatement = match (true) {
+            $shopperStatement instanceof ShopperStatement => $shopperStatement,
+            is_array($shopperStatement) => ShopperStatement::fromArray($shopperStatement),
+            default => null,
+        };
+
+        // Normalize Contact objects
+        $this->shipTo = match (true) {
+            $shipTo instanceof Contact => $shipTo,
+            is_array($shipTo) => Contact::fromArray($shipTo),
+            default => null,
+        };
+
+        $this->billTo = match (true) {
+            $billTo instanceof Contact => $billTo,
+            is_array($billTo) => Contact::fromArray($billTo),
+            default => null,
+        };
+
+        // Normalize Surcharge
+        $this->surcharge = match (true) {
+            $surcharge instanceof Surcharge => $surcharge,
+            is_array($surcharge) => Surcharge::fromArray($surcharge),
+            default => null,
+        };
+
+        // Normalize failures array - convert array of arrays to array of Failure objects
+        if ($failures !== null) {
+            $this->failures = array_map(
+                fn($failureData) => $failureData instanceof Failure
+                    ? $failureData
+                    : Failure::fromArray($failureData),
+                $failures
+            );
+        } else {
+            $this->failures = null;
+        }
+
         $this->validate();
     }
 
@@ -340,6 +399,11 @@ class Transaction
             tip: $data['tip'] ?? null,
             salesTax: $data['salesTax'] ?? null,
             card: $data['card'] ?? null,
+            shopperStatement: $data['shopperStatement'] ?? null,
+            shipTo: $data['shipTo'] ?? null,
+            billTo: $data['billTo'] ?? null,
+            surcharge: $data['surcharge'] ?? null,
+            failures: $data['failures'] ?? null,
             id: isset($data['id']) ? (string) $data['id'] : null,
             state: $state,
             type: $type,
@@ -434,6 +498,33 @@ class Transaction
         // Add Card if not null
         if ($this->card !== null) {
             $data['card'] = $this->card->toArray();
+        }
+
+        // Add ShopperStatement if not null
+        if ($this->shopperStatement !== null) {
+            $data['shopperStatement'] = $this->shopperStatement->toArray();
+        }
+
+        // Add Contact objects if not null
+        if ($this->shipTo !== null) {
+            $data['shipTo'] = $this->shipTo->toArray();
+        }
+
+        if ($this->billTo !== null) {
+            $data['billTo'] = $this->billTo->toArray();
+        }
+
+        // Add Surcharge if not null
+        if ($this->surcharge !== null) {
+            $data['surcharge'] = $this->surcharge->toArray();
+        }
+
+        // Add failures array if not null
+        if ($this->failures !== null) {
+            $data['failures'] = array_map(
+                fn(Failure $failure) => $failure->toArray(),
+                $this->failures
+            );
         }
 
         // Simple string properties - add if not null
