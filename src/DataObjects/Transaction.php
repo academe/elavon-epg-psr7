@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\DataObjects;
 
+use Academe\Elavon\Epg\Psr7\Enums\ProcessorDirective;
+use Academe\Elavon\Epg\Psr7\Enums\Source;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
+use Academe\Elavon\Epg\Psr7\Enums\TransactionType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 
@@ -30,6 +33,7 @@ class Transaction
      * @param Card|array<string, mixed>|null $card Card details
      * @param string|null $id [Response] Transaction ID
      * @param TransactionState|null $state [Response] Transaction state
+     * @param TransactionType|null $type [Response] Transaction type (sale/refund/void)
      * @param string|null $description Transaction description
      * @param string|null $customReference [Request] Optional merchant reference
      * @param string|null $createdAt [Response] Creation timestamp
@@ -38,7 +42,12 @@ class Transaction
      * @param string|null $refundableUntil [Response] Refundable until timestamp
      * @param string|null $href [Response] Resource URL (self link)
      * @param string|null $merchant [Response] Merchant resource URL
+     * @param string|null $processorAccount [Response] ProcessorAccount resource URL
+     * @param string|null $account [Response] Account resource URL
      * @param string|null $terminal [Request/Response] Terminal resource URL
+     * @param string|null $forexAdvice [Response] ForexAdvice resource URL
+     * @param string|null $shopper [Response] Shopper resource URL
+     * @param string|null $order [Response] Order resource URL
      * @param string|null $invoiceNumber [Request] Optional invoice number
      * @param string|null $orderReference [Response] Order reference
      * @param string|null $shopperReference [Response] Shopper reference (e.g., PO number)
@@ -60,6 +69,15 @@ class Transaction
      * @param string|null $batch [Response] Batch resource URL
      * @param string|null $manualBatch [Response] ManualBatch resource URL
      * @param string|null $processorBatchReference [Response] Processor batch reference
+     * @param ProcessorDirective|null $processorDirective [Response] Processor directive
+     * @param Source|null $source [Response] Transaction source
+     * @param bool|null $isAuthorized [Response] Whether transaction was authorized
+     * @param bool|null $isVoided [Response] Whether transaction was voided
+     * @param bool|null $isRefunded [Response] Whether transaction was refunded
+     * @param bool|null $isReversed [Response] Whether transaction was reversed
+     * @param bool|null $isCaptured [Response] Whether transaction was captured
+     * @param bool|null $isSettled [Response] Whether transaction was settled
+     * @param bool|null $isPartiallyRefunded [Response] Whether transaction was partially refunded
      *
      * @throws InvalidArgumentException When validation fails
      */
@@ -71,6 +89,7 @@ class Transaction
         // Identity and state
         public readonly ?string $id = null,
         public readonly ?TransactionState $state = null,
+        public readonly ?TransactionType $type = null,
 
         // Descriptive fields
         public readonly ?string $description = null,
@@ -85,7 +104,12 @@ class Transaction
         // Resource URLs
         public readonly ?string $href = null,
         public readonly ?string $merchant = null,
+        public readonly ?string $processorAccount = null,
+        public readonly ?string $account = null,
         public readonly ?string $terminal = null,
+        public readonly ?string $forexAdvice = null,
+        public readonly ?string $shopper = null,
+        public readonly ?string $order = null,
 
         // Order and invoice details
         public readonly ?string $invoiceNumber = null,
@@ -119,6 +143,17 @@ class Transaction
         public readonly ?string $batch = null,
         public readonly ?string $manualBatch = null,
         public readonly ?string $processorBatchReference = null,
+
+        // Processing details
+        public readonly ?ProcessorDirective $processorDirective = null,
+        public readonly ?Source $source = null,
+        public readonly ?bool $isAuthorized = null,
+        public readonly ?bool $isVoided = null,
+        public readonly ?bool $isRefunded = null,
+        public readonly ?bool $isReversed = null,
+        public readonly ?bool $isCaptured = null,
+        public readonly ?bool $isSettled = null,
+        public readonly ?bool $isPartiallyRefunded = null,
     ) {
         // Normalize Money (accept both Money object or array)
         $this->total = match (true) {
@@ -155,11 +190,39 @@ class Transaction
             }
         }
 
+        // Parse type if present
+        $type = null;
+        if (isset($data['type'])) {
+            $type = TransactionType::tryFrom($data['type']);
+            if ($type === null) {
+                throw new InvalidArgumentException("Invalid transaction type: {$data['type']}");
+            }
+        }
+
+        // Parse processorDirective if present
+        $processorDirective = null;
+        if (isset($data['processorDirective'])) {
+            $processorDirective = ProcessorDirective::tryFrom($data['processorDirective']);
+            if ($processorDirective === null) {
+                throw new InvalidArgumentException("Invalid processor directive: {$data['processorDirective']}");
+            }
+        }
+
+        // Parse source if present
+        $source = null;
+        if (isset($data['source'])) {
+            $source = Source::tryFrom($data['source']);
+            if ($source === null) {
+                throw new InvalidArgumentException("Invalid source: {$data['source']}");
+            }
+        }
+
         return new self(
             total: $data['total'] ?? null,
             card: $data['card'] ?? null,
             id: isset($data['id']) ? (string) $data['id'] : null,
             state: $state,
+            type: $type,
             description: isset($data['description']) ? (string) $data['description'] : null,
             customReference: isset($data['customReference']) ? (string) $data['customReference'] : null,
             createdAt: isset($data['createdAt']) ? (string) $data['createdAt'] : null,
@@ -168,7 +231,12 @@ class Transaction
             refundableUntil: isset($data['refundableUntil']) ? (string) $data['refundableUntil'] : null,
             href: isset($data['href']) ? (string) $data['href'] : null,
             merchant: isset($data['merchant']) ? (string) $data['merchant'] : null,
+            processorAccount: isset($data['processorAccount']) ? (string) $data['processorAccount'] : null,
+            account: isset($data['account']) ? (string) $data['account'] : null,
             terminal: isset($data['terminal']) ? (string) $data['terminal'] : null,
+            forexAdvice: isset($data['forexAdvice']) ? (string) $data['forexAdvice'] : null,
+            shopper: isset($data['shopper']) ? (string) $data['shopper'] : null,
+            order: isset($data['order']) ? (string) $data['order'] : null,
             invoiceNumber: isset($data['invoiceNumber']) ? (string) $data['invoiceNumber'] : null,
             orderReference: isset($data['orderReference']) ? (string) $data['orderReference'] : null,
             shopperReference: isset($data['shopperReference']) ? (string) $data['shopperReference'] : null,
@@ -190,6 +258,15 @@ class Transaction
             batch: isset($data['batch']) ? (string) $data['batch'] : null,
             manualBatch: isset($data['manualBatch']) ? (string) $data['manualBatch'] : null,
             processorBatchReference: isset($data['processorBatchReference']) ? (string) $data['processorBatchReference'] : null,
+            processorDirective: $processorDirective,
+            source: $source,
+            isAuthorized: isset($data['isAuthorized']) ? (bool) $data['isAuthorized'] : null,
+            isVoided: isset($data['isVoided']) ? (bool) $data['isVoided'] : null,
+            isRefunded: isset($data['isRefunded']) ? (bool) $data['isRefunded'] : null,
+            isReversed: isset($data['isReversed']) ? (bool) $data['isReversed'] : null,
+            isCaptured: isset($data['isCaptured']) ? (bool) $data['isCaptured'] : null,
+            isSettled: isset($data['isSettled']) ? (bool) $data['isSettled'] : null,
+            isPartiallyRefunded: isset($data['isPartiallyRefunded']) ? (bool) $data['isPartiallyRefunded'] : null,
         );
     }
 
@@ -217,7 +294,7 @@ class Transaction
         $stringProperties = [
             'id', 'description', 'customReference',
             'createdAt', 'modifiedAt', 'authorizationExpiresAt', 'refundableUntil',
-            'href', 'merchant', 'terminal',
+            'href', 'merchant', 'processorAccount', 'account', 'terminal', 'forexAdvice', 'shopper', 'order',
             'invoiceNumber', 'orderReference', 'shopperReference', 'purchaserReference',
             'processorReference', 'issuerReference',
             'shopperEmailAddress', 'shopperIpAddress', 'shopperLanguageTag', 'shopperTimeZone',
@@ -233,9 +310,33 @@ class Transaction
             }
         }
 
-        // State enum - convert to string value
+        // Enum properties - convert to string values
         if ($this->state !== null) {
             $data['state'] = $this->state->value;
+        }
+
+        if ($this->type !== null) {
+            $data['type'] = $this->type->value;
+        }
+
+        if ($this->processorDirective !== null) {
+            $data['processorDirective'] = $this->processorDirective->value;
+        }
+
+        if ($this->source !== null) {
+            $data['source'] = $this->source->value;
+        }
+
+        // Boolean properties
+        $booleanProperties = [
+            'isAuthorized', 'isVoided', 'isRefunded', 'isReversed',
+            'isCaptured', 'isSettled', 'isPartiallyRefunded',
+        ];
+
+        foreach ($booleanProperties as $prop) {
+            if ($this->$prop !== null) {
+                $data[$prop] = $this->$prop;
+            }
         }
 
         return $data;
