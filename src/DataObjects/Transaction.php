@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\DataObjects;
 
+use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
 use Academe\Elavon\Epg\Psr7\Enums\ProcessorDirective;
 use Academe\Elavon\Epg\Psr7\Enums\Source;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
@@ -26,10 +27,18 @@ class Transaction
 {
     // Normalized properties (objects)
     public readonly ?Money $total;
+    public readonly ?Money $totalRefunded;
+    public readonly ?Money $issuerTotal;
+    public readonly ?Money $tip;
+    public readonly ?Money $salesTax;
     public readonly ?Card $card;
 
     /**
      * @param Money|array{amount: string, currencyCode: string}|null $total Transaction total
+     * @param Money|array{amount: string, currencyCode: string}|null $totalRefunded [Response] Sum of all refunds
+     * @param Money|array{amount: string, currencyCode: string}|null $issuerTotal [Response] Total in target currency
+     * @param Money|array{amount: string, currencyCode: string}|null $tip [Response] Tip amount
+     * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales tax amount
      * @param Card|array<string, mixed>|null $card Card details
      * @param string|null $id [Response] Transaction ID
      * @param TransactionState|null $state [Response] Transaction state
@@ -69,6 +78,10 @@ class Transaction
      * @param string|null $batch [Response] Batch resource URL
      * @param string|null $manualBatch [Response] ManualBatch resource URL
      * @param string|null $processorBatchReference [Response] Processor batch reference
+     * @param string|null $conversionRate [Response] Currency exchange rate
+     * @param string|null $markupRate [Response] Markup percent (e.g., "0.0399" = 3.99%)
+     * @param MarkupRateAnnotation|null $markupRateAnnotation [Response] Markup rate annotation
+     * @param string|null $rateProviderName [Response] Rate provider name
      * @param ProcessorDirective|null $processorDirective [Response] Processor directive
      * @param Source|null $source [Response] Transaction source
      * @param bool|null $isAuthorized [Response] Whether transaction was authorized
@@ -84,6 +97,10 @@ class Transaction
     public function __construct(
         // Primary transaction data
         Money|array|null $total = null,
+        Money|array|null $totalRefunded = null,
+        Money|array|null $issuerTotal = null,
+        Money|array|null $tip = null,
+        Money|array|null $salesTax = null,
         Card|array|null $card = null,
 
         // Identity and state
@@ -144,6 +161,12 @@ class Transaction
         public readonly ?string $manualBatch = null,
         public readonly ?string $processorBatchReference = null,
 
+        // Financial rates
+        public readonly ?string $conversionRate = null,
+        public readonly ?string $markupRate = null,
+        public readonly ?MarkupRateAnnotation $markupRateAnnotation = null,
+        public readonly ?string $rateProviderName = null,
+
         // Processing details
         public readonly ?ProcessorDirective $processorDirective = null,
         public readonly ?Source $source = null,
@@ -155,10 +178,34 @@ class Transaction
         public readonly ?bool $isSettled = null,
         public readonly ?bool $isPartiallyRefunded = null,
     ) {
-        // Normalize Money (accept both Money object or array)
+        // Normalize Money objects (accept both Money object or array)
         $this->total = match (true) {
             $total instanceof Money => $total,
             is_array($total) => Money::fromArray($total),
+            default => null,
+        };
+
+        $this->totalRefunded = match (true) {
+            $totalRefunded instanceof Money => $totalRefunded,
+            is_array($totalRefunded) => Money::fromArray($totalRefunded),
+            default => null,
+        };
+
+        $this->issuerTotal = match (true) {
+            $issuerTotal instanceof Money => $issuerTotal,
+            is_array($issuerTotal) => Money::fromArray($issuerTotal),
+            default => null,
+        };
+
+        $this->tip = match (true) {
+            $tip instanceof Money => $tip,
+            is_array($tip) => Money::fromArray($tip),
+            default => null,
+        };
+
+        $this->salesTax = match (true) {
+            $salesTax instanceof Money => $salesTax,
+            is_array($salesTax) => Money::fromArray($salesTax),
             default => null,
         };
 
@@ -217,8 +264,21 @@ class Transaction
             }
         }
 
+        // Parse markupRateAnnotation if present
+        $markupRateAnnotation = null;
+        if (isset($data['markupRateAnnotation'])) {
+            $markupRateAnnotation = MarkupRateAnnotation::tryFrom($data['markupRateAnnotation']);
+            if ($markupRateAnnotation === null) {
+                throw new InvalidArgumentException("Invalid markup rate annotation: {$data['markupRateAnnotation']}");
+            }
+        }
+
         return new self(
             total: $data['total'] ?? null,
+            totalRefunded: $data['totalRefunded'] ?? null,
+            issuerTotal: $data['issuerTotal'] ?? null,
+            tip: $data['tip'] ?? null,
+            salesTax: $data['salesTax'] ?? null,
             card: $data['card'] ?? null,
             id: isset($data['id']) ? (string) $data['id'] : null,
             state: $state,
@@ -258,6 +318,10 @@ class Transaction
             batch: isset($data['batch']) ? (string) $data['batch'] : null,
             manualBatch: isset($data['manualBatch']) ? (string) $data['manualBatch'] : null,
             processorBatchReference: isset($data['processorBatchReference']) ? (string) $data['processorBatchReference'] : null,
+            conversionRate: isset($data['conversionRate']) ? (string) $data['conversionRate'] : null,
+            markupRate: isset($data['markupRate']) ? (string) $data['markupRate'] : null,
+            markupRateAnnotation: $markupRateAnnotation,
+            rateProviderName: isset($data['rateProviderName']) ? (string) $data['rateProviderName'] : null,
             processorDirective: $processorDirective,
             source: $source,
             isAuthorized: isset($data['isAuthorized']) ? (bool) $data['isAuthorized'] : null,
@@ -281,11 +345,28 @@ class Transaction
     {
         $data = [];
 
-        // Add all non-null properties
+        // Add all non-null Money properties
         if ($this->total !== null) {
             $data['total'] = $this->total->toArray();
         }
 
+        if ($this->totalRefunded !== null) {
+            $data['totalRefunded'] = $this->totalRefunded->toArray();
+        }
+
+        if ($this->issuerTotal !== null) {
+            $data['issuerTotal'] = $this->issuerTotal->toArray();
+        }
+
+        if ($this->tip !== null) {
+            $data['tip'] = $this->tip->toArray();
+        }
+
+        if ($this->salesTax !== null) {
+            $data['salesTax'] = $this->salesTax->toArray();
+        }
+
+        // Add Card if not null
         if ($this->card !== null) {
             $data['card'] = $this->card->toArray();
         }
@@ -302,6 +383,7 @@ class Transaction
             'parentTransaction', 'hostedCard', 'hsmCard', 'storedCard',
             'paymentLink', 'paymentSession',
             'batch', 'manualBatch', 'processorBatchReference',
+            'conversionRate', 'markupRate', 'rateProviderName',
         ];
 
         foreach ($stringProperties as $prop) {
@@ -325,6 +407,10 @@ class Transaction
 
         if ($this->source !== null) {
             $data['source'] = $this->source->value;
+        }
+
+        if ($this->markupRateAnnotation !== null) {
+            $data['markupRateAnnotation'] = $this->markupRateAnnotation->value;
         }
 
         // Boolean properties
