@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\DataObjects;
 
 use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
+use Academe\Elavon\Epg\Psr7\Enums\MarketSegment;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodQualifier;
 use Academe\Elavon\Epg\Psr7\Enums\ProcessorDirective;
+use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Enums\Source;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionType;
@@ -84,6 +89,11 @@ class Transaction
      * @param string|null $rateProviderName [Response] Rate provider name
      * @param ProcessorDirective|null $processorDirective [Response] Processor directive
      * @param Source|null $source [Response] Transaction source
+     * @param PaymentMethod|null $paymentMethod [Response] Payment method type
+     * @param PaymentMethodOrigin|null $paymentMethodOrigin [Response] Payment method origin
+     * @param PaymentMethodQualifier|null $paymentMethodQualifier [Response] Payment method qualifier
+     * @param MarketSegment|null $marketSegment Market segment
+     * @param ShopperInteraction|null $shopperInteraction [Response] Shopper interaction type
      * @param bool|null $isAuthorized [Response] Whether transaction was authorized
      * @param bool|null $isVoided [Response] Whether transaction was voided
      * @param bool|null $isRefunded [Response] Whether transaction was refunded
@@ -170,6 +180,11 @@ class Transaction
         // Processing details
         public readonly ?ProcessorDirective $processorDirective = null,
         public readonly ?Source $source = null,
+        public readonly ?PaymentMethod $paymentMethod = null,
+        public readonly ?PaymentMethodOrigin $paymentMethodOrigin = null,
+        public readonly ?PaymentMethodQualifier $paymentMethodQualifier = null,
+        public readonly ?MarketSegment $marketSegment = null,
+        public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?bool $isAuthorized = null,
         public readonly ?bool $isVoided = null,
         public readonly ?bool $isRefunded = null,
@@ -273,6 +288,51 @@ class Transaction
             }
         }
 
+        // Parse paymentMethod if present
+        $paymentMethod = null;
+        if (isset($data['paymentMethod'])) {
+            $paymentMethod = PaymentMethod::tryFrom($data['paymentMethod']);
+            if ($paymentMethod === null) {
+                throw new InvalidArgumentException("Invalid payment method: {$data['paymentMethod']}");
+            }
+        }
+
+        // Parse paymentMethodOrigin if present
+        $paymentMethodOrigin = null;
+        if (isset($data['paymentMethodOrigin'])) {
+            $paymentMethodOrigin = PaymentMethodOrigin::tryFrom($data['paymentMethodOrigin']);
+            if ($paymentMethodOrigin === null) {
+                throw new InvalidArgumentException("Invalid payment method origin: {$data['paymentMethodOrigin']}");
+            }
+        }
+
+        // Parse paymentMethodQualifier if present
+        $paymentMethodQualifier = null;
+        if (isset($data['paymentMethodQualifier'])) {
+            $paymentMethodQualifier = PaymentMethodQualifier::tryFrom($data['paymentMethodQualifier']);
+            if ($paymentMethodQualifier === null) {
+                throw new InvalidArgumentException("Invalid payment method qualifier: {$data['paymentMethodQualifier']}");
+            }
+        }
+
+        // Parse marketSegment if present
+        $marketSegment = null;
+        if (isset($data['marketSegment'])) {
+            $marketSegment = MarketSegment::tryFrom($data['marketSegment']);
+            if ($marketSegment === null) {
+                throw new InvalidArgumentException("Invalid market segment: {$data['marketSegment']}");
+            }
+        }
+
+        // Parse shopperInteraction if present
+        $shopperInteraction = null;
+        if (isset($data['shopperInteraction'])) {
+            $shopperInteraction = ShopperInteraction::tryFrom($data['shopperInteraction']);
+            if ($shopperInteraction === null) {
+                throw new InvalidArgumentException("Invalid shopper interaction: {$data['shopperInteraction']}");
+            }
+        }
+
         return new self(
             total: $data['total'] ?? null,
             totalRefunded: $data['totalRefunded'] ?? null,
@@ -324,6 +384,11 @@ class Transaction
             rateProviderName: isset($data['rateProviderName']) ? (string) $data['rateProviderName'] : null,
             processorDirective: $processorDirective,
             source: $source,
+            paymentMethod: $paymentMethod,
+            paymentMethodOrigin: $paymentMethodOrigin,
+            paymentMethodQualifier: $paymentMethodQualifier,
+            marketSegment: $marketSegment,
+            shopperInteraction: $shopperInteraction,
             isAuthorized: isset($data['isAuthorized']) ? (bool) $data['isAuthorized'] : null,
             isVoided: isset($data['isVoided']) ? (bool) $data['isVoided'] : null,
             isRefunded: isset($data['isRefunded']) ? (bool) $data['isRefunded'] : null,
@@ -411,6 +476,26 @@ class Transaction
 
         if ($this->markupRateAnnotation !== null) {
             $data['markupRateAnnotation'] = $this->markupRateAnnotation->value;
+        }
+
+        if ($this->paymentMethod !== null) {
+            $data['paymentMethod'] = $this->paymentMethod->value;
+        }
+
+        if ($this->paymentMethodOrigin !== null) {
+            $data['paymentMethodOrigin'] = $this->paymentMethodOrigin->value;
+        }
+
+        if ($this->paymentMethodQualifier !== null) {
+            $data['paymentMethodQualifier'] = $this->paymentMethodQualifier->value;
+        }
+
+        if ($this->marketSegment !== null) {
+            $data['marketSegment'] = $this->marketSegment->value;
+        }
+
+        if ($this->shopperInteraction !== null) {
+            $data['shopperInteraction'] = $this->shopperInteraction->value;
         }
 
         // Boolean properties
