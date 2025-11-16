@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
@@ -11,9 +12,29 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  *
  * Contains authentication data from 3-D Secure processing.
  * All properties are read-only.
+ *
+ * Note: Uses custom implementation instead of SerializesData trait due to
+ * required field validation in fromArray() method.
  */
-class ThreeDSecure
+class ThreeDSecure implements DataTransferObject
 {
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'string' => [
+                'directoryServerTransactionId',
+                'transactionStatus',
+                'protocolVersion',
+                'electronicCommerceIndicator',
+                'authenticationValue',
+            ],
+        ];
+    }
     /**
      * @param string $directoryServerTransactionId UUID assigned by directory server (IETF RFC 4122 format)
      * @param string $transactionStatus Transaction status (Y/N/U/A)
@@ -38,7 +59,7 @@ class ThreeDSecure
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data): static
     {
         if (!isset($data['directoryServerTransactionId'])) {
             throw new InvalidArgumentException('directoryServerTransactionId is required');
@@ -89,6 +110,16 @@ class ThreeDSecure
         }
 
         return $data;
+    }
+
+    /**
+     * Returns a shallow array of all non-null properties.
+     *
+     * @return array<string, mixed>
+     */
+    public function toObjectArray(): array
+    {
+        return $this->toArray(); // For simple string properties, both methods return the same result
     }
 
     /**

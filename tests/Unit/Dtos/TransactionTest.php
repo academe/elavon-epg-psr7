@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Tests\Unit\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Card;
-use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
@@ -211,7 +211,7 @@ class TransactionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid transaction state: invalid_state');
+        $this->expectExceptionMessage('Invalid state: invalid_state');
 
         // Act
         Transaction::fromArray($data);
@@ -271,11 +271,11 @@ class TransactionTest extends TestCase
                 'expirationYear' => 2025,
                 'holderName' => 'John Doe',
             ],
+            'state' => 'authorized',
             'id' => 'txn_123',
             'description' => 'Order #12345',
             'customReference' => 'REF-12345',
             'createdAt' => '2025-11-13T10:00:00Z',
-            'state' => 'authorized',
         ], $array);
     }
 

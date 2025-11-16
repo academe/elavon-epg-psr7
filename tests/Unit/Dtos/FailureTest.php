@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Tests\Unit\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Failure;
+use Academe\Elavon\Epg\Psr7\Dtos\Failure;
 use PHPUnit\Framework\TestCase;
 
 /**

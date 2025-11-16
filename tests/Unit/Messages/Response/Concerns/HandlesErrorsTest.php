@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response\Concerns;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\ErrorResponse;
+use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
 use PHPUnit\Framework\TestCase;
 

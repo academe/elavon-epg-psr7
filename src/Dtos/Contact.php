@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
@@ -12,8 +14,24 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  * Represents contact details including name, company, address, and communication info.
  * Used for shipping (shipTo) and billing (billTo) contact information.
  */
-class Contact
+class Contact implements DataTransferObject
 {
+    use SerializesData;
+
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'string' => [
+                'fullName', 'company', 'street1', 'street2', 'city', 'region',
+                'postalCode', 'countryCode', 'primaryPhone', 'alternatePhone', 'fax', 'email',
+            ],
+        ];
+    }
     /**
      * @param string|null $fullName Full name (max 255 chars)
      * @param string|null $company Company name (max 255 chars)
@@ -43,56 +61,6 @@ class Contact
         public readonly ?string $email = null,
     ) {
         $this->validate();
-    }
-
-    /**
-     * Creates a Contact instance from an array representation.
-     *
-     * @param array<string, mixed> $data Array with contact data
-     *
-     * @throws InvalidArgumentException When data is invalid
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            fullName: isset($data['fullName']) ? (string) $data['fullName'] : null,
-            company: isset($data['company']) ? (string) $data['company'] : null,
-            street1: isset($data['street1']) ? (string) $data['street1'] : null,
-            street2: isset($data['street2']) ? (string) $data['street2'] : null,
-            city: isset($data['city']) ? (string) $data['city'] : null,
-            region: isset($data['region']) ? (string) $data['region'] : null,
-            postalCode: isset($data['postalCode']) ? (string) $data['postalCode'] : null,
-            countryCode: isset($data['countryCode']) ? (string) $data['countryCode'] : null,
-            primaryPhone: isset($data['primaryPhone']) ? (string) $data['primaryPhone'] : null,
-            alternatePhone: isset($data['alternatePhone']) ? (string) $data['alternatePhone'] : null,
-            fax: isset($data['fax']) ? (string) $data['fax'] : null,
-            email: isset($data['email']) ? (string) $data['email'] : null,
-        );
-    }
-
-    /**
-     * Converts the Contact to an array representation.
-     *
-     * Only includes non-null values for cleaner JSON serialization.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(): array
-    {
-        $data = [];
-
-        $properties = [
-            'fullName', 'company', 'street1', 'street2', 'city', 'region',
-            'postalCode', 'countryCode', 'primaryPhone', 'alternatePhone', 'fax', 'email',
-        ];
-
-        foreach ($properties as $prop) {
-            if ($this->$prop !== null) {
-                $data[$prop] = $this->$prop;
-            }
-        }
-
-        return $data;
     }
 
     /**

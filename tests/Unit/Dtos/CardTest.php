@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Tests\Unit\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Card;
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

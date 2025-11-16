@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Tests\Unit\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Surcharge;
+use Academe\Elavon\Epg\Psr7\Dtos\Surcharge;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 use PHPUnit\Framework\TestCase;

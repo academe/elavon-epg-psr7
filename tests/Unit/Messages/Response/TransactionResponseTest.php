@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;

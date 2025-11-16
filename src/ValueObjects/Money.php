@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\ValueObjects;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ValueObject;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
@@ -19,8 +20,12 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  * - Decimal separator is a period (.)
  * - No thousands separators
  * - Examples: "1.23", "99.99", "1000.00", "12345.6789"
+ *
+ * Note: Money implements ValueObject (not DataTransferObject) because it doesn't
+ * need the property type system - it has a simple 2-property structure with custom
+ * serialization logic and domain behavior methods.
  */
-final class Money
+final class Money implements ValueObject
 {
     /**
      * @param string $amount The monetary amount as a string (e.g., "99.99")
@@ -42,7 +47,7 @@ final class Money
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data): static
     {
         if (!isset($data['amount'])) {
             throw new InvalidArgumentException('Missing required field: amount');

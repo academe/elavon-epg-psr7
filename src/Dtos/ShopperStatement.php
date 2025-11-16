@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
@@ -12,8 +14,22 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  * Dynamic overrides of what might appear on a shopper's statement.
  * All properties are read-only.
  */
-class ShopperStatement
+class ShopperStatement implements DataTransferObject
 {
+    use SerializesData;
+
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'string' => ['name', 'phone', 'url'],
+        ];
+    }
+
     /**
      * @param string|null $name Statement descriptor name (max 25 chars)
      * @param string|null $phone Statement phone number (max 20 chars)
@@ -25,48 +41,6 @@ class ShopperStatement
         public readonly ?string $url = null,
     ) {
         $this->validate();
-    }
-
-    /**
-     * Creates a ShopperStatement instance from an array representation.
-     *
-     * @param array<string, mixed> $data Array with shopper statement data
-     *
-     * @throws InvalidArgumentException When data is invalid
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            name: isset($data['name']) ? (string) $data['name'] : null,
-            phone: isset($data['phone']) ? (string) $data['phone'] : null,
-            url: isset($data['url']) ? (string) $data['url'] : null,
-        );
-    }
-
-    /**
-     * Converts the ShopperStatement to an array representation.
-     *
-     * Only includes non-null values for cleaner JSON serialization.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(): array
-    {
-        $data = [];
-
-        if ($this->name !== null) {
-            $data['name'] = $this->name;
-        }
-
-        if ($this->phone !== null) {
-            $data['phone'] = $this->phone;
-        }
-
-        if ($this->url !== null) {
-            $data['url'] = $this->url;
-        }
-
-        return $data;
     }
 
     /**

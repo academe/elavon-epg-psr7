@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 
@@ -13,12 +15,27 @@ use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
  * Surcharge information if surchargeAdvice or refundSurchargeAdvice was created for the transaction.
  * All properties are read-only.
  */
-class Surcharge
+class Surcharge implements DataTransferObject
 {
+    use SerializesData;
+
     // Normalized Money properties
     public readonly ?Money $unadjustedTotal;
     public readonly ?Money $unadjustedRefundableTotal;
     public readonly ?Money $surchargeTotal;
+
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'money' => ['unadjustedTotal', 'unadjustedRefundableTotal', 'surchargeTotal'],
+            'string' => ['rate'],
+        ];
+    }
 
     /**
      * @param Money|array{amount: string, currencyCode: string}|null $unadjustedTotal Transaction total before adding surcharge
@@ -52,50 +69,4 @@ class Surcharge
         };
     }
 
-    /**
-     * Creates a Surcharge instance from an array representation.
-     *
-     * @param array<string, mixed> $data Array with surcharge data
-     *
-     * @throws InvalidArgumentException When data is invalid
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            unadjustedTotal: $data['unadjustedTotal'] ?? null,
-            unadjustedRefundableTotal: $data['unadjustedRefundableTotal'] ?? null,
-            surchargeTotal: $data['surchargeTotal'] ?? null,
-            rate: isset($data['rate']) ? (string) $data['rate'] : null,
-        );
-    }
-
-    /**
-     * Converts the Surcharge to an array representation.
-     *
-     * Only includes non-null values for cleaner JSON serialization.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(): array
-    {
-        $data = [];
-
-        if ($this->unadjustedTotal !== null) {
-            $data['unadjustedTotal'] = $this->unadjustedTotal->toArray();
-        }
-
-        if ($this->unadjustedRefundableTotal !== null) {
-            $data['unadjustedRefundableTotal'] = $this->unadjustedRefundableTotal->toArray();
-        }
-
-        if ($this->surchargeTotal !== null) {
-            $data['surchargeTotal'] = $this->surchargeTotal->toArray();
-        }
-
-        if ($this->rate !== null) {
-            $data['rate'] = $this->rate;
-        }
-
-        return $data;
-    }
 }
