@@ -45,7 +45,7 @@ class OpayoIntegrationTest extends TestCase
             );
         }
 
-        // Create HTTP client without auth (we'll use AuthenticatedRequest decorator)
+        // Create HTTP client without auth (we'll use ElavonApiRequest decorator)
         $this->httpClient = new Client([
             'base_uri' => $this->baseUri,
             'timeout' => 30,
