@@ -60,7 +60,7 @@ trait HandlesErrors
     private function parseErrorResponse(): ErrorResponse
     {
         $data = $this->parseJsonBody();
-        return ErrorResponse::fromArray($data);
+        return ErrorResponse::fromData($data);
     }
 
     /**

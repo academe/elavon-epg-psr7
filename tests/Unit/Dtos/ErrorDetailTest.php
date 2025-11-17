@@ -51,7 +51,7 @@ class ErrorDetailTest extends TestCase
         ];
 
         // Act
-        $errorDetail = ErrorDetail::fromArray($data);
+        $errorDetail = ErrorDetail::fromData($data);
 
         // Assert
         $this->assertSame('validation_error', $errorDetail->code);
@@ -69,7 +69,7 @@ class ErrorDetailTest extends TestCase
         ];
 
         // Act
-        $errorDetail = ErrorDetail::fromArray($data);
+        $errorDetail = ErrorDetail::fromData($data);
 
         // Assert
         $this->assertSame('unauthorized', $errorDetail->code);
@@ -86,7 +86,7 @@ class ErrorDetailTest extends TestCase
         ];
 
         // Act
-        $errorDetail = ErrorDetail::fromArray($data);
+        $errorDetail = ErrorDetail::fromData($data);
 
         // Assert
         $this->assertNull($errorDetail->field);
@@ -102,7 +102,7 @@ class ErrorDetailTest extends TestCase
         );
 
         // Act
-        $array = $errorDetail->toArray();
+        $array = $errorDetail->toData();
 
         // Assert
         $this->assertSame([
@@ -121,7 +121,7 @@ class ErrorDetailTest extends TestCase
         );
 
         // Act
-        $array = $errorDetail->toArray();
+        $array = $errorDetail->toData();
 
         // Assert
         $this->assertSame([

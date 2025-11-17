@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Integration;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -44,10 +45,9 @@ class OpayoIntegrationTest extends TestCase
             );
         }
 
-        // Create HTTP client with basic auth
+        // Create HTTP client without auth (we'll use AuthenticatedRequest decorator)
         $this->httpClient = new Client([
             'base_uri' => $this->baseUri,
-            'auth' => [$this->merchantAlias, $this->apiKey],
             'timeout' => 30,
             'http_errors' => false, // Don't throw exceptions on HTTP errors
         ]);
@@ -75,9 +75,18 @@ class OpayoIntegrationTest extends TestCase
             baseUri: $this->baseUri,
         );
 
-        // Act - Build and send the request
+        // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
-        $psr7Response = $this->httpClient->send($psr7Request);
+        $elavonRequest = ElavonApiRequest::create($psr7Request)
+            ->withBaseUri($this->baseUri)
+            ->withAuthentication($this->merchantAlias, $this->apiKey);
+
+        // Dump the headers for debugging.
+        foreach ($elavonRequest->getHeaders() as $name => $values) {
+            echo $name . ': ' . implode(', ', $values) . "\n";
+        }
+
+        $psr7Response = $this->httpClient->send($elavonRequest);
 
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);
@@ -165,9 +174,12 @@ class OpayoIntegrationTest extends TestCase
             baseUri: $this->baseUri,
         );
 
-        // Act - Build and send the request
+        // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
-        $psr7Response = $this->httpClient->send($psr7Request);
+        $elavonRequest = ElavonApiRequest::create($psr7Request)
+            ->withBaseUri($this->baseUri)
+            ->withAuthentication($this->merchantAlias, $this->apiKey);
+        $psr7Response = $this->httpClient->send($elavonRequest);
 
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);

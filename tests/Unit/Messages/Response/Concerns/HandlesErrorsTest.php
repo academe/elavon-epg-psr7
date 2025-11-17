@@ -21,7 +21,7 @@ class HandlesErrorsTest extends TestCase
 
             public function __construct()
             {
-                $this->error = ErrorResponse::fromArray([
+                $this->error = ErrorResponse::fromData([
                     'status' => 401,
                     'failures' => [
                         ['code' => 'unauthorized', 'description' => 'Invalid API key'],

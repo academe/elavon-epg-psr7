@@ -41,14 +41,18 @@ final class Money implements ValueObject
     }
 
     /**
-     * Creates a Money instance from an array representation.
+     * Creates a Money instance from JSON-compatible data.
      *
-     * @param array{amount: string, currencyCode: string} $data Array with 'amount' and 'currencyCode' keys
+     * @param mixed $data Array with 'amount' and 'currencyCode' keys
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): static
+    public static function fromData(mixed $data): static
     {
+        if (!is_array($data)) {
+            throw new InvalidArgumentException('Money data must be an array with amount and currencyCode');
+        }
+
         if (!isset($data['amount'])) {
             throw new InvalidArgumentException('Missing required field: amount');
         }
@@ -69,11 +73,11 @@ final class Money implements ValueObject
     }
 
     /**
-     * Converts the Money instance to an array representation.
+     * Converts the Money instance to JSON-compatible data.
      *
      * @return array{amount: string, currencyCode: string}
      */
-    public function toArray(): array
+    public function toData(): mixed
     {
         return [
             'amount' => $this->amount,

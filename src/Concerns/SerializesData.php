@@ -9,18 +9,18 @@ use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 /**
  * Trait for data-driven serialization and deserialization of DTOs.
  *
- * Provides reusable implementations of fromArray(), toArray(), and toObjectArray()
+ * Provides reusable implementations of fromData(), toData(), and toObjectArray()
  * based on property type definitions from getPropertyTypes().
  */
 trait SerializesData
 {
     /**
-     * Creates an instance from an array representation.
+     * Creates an instance from JSON-compatible data.
      *
-     * @param array<string, mixed> $data Array with DTO data
+     * @param mixed $data Typically an array with DTO data
      * @return static
      */
-    public static function fromArray(array $data): static
+    public static function fromData(mixed $data): static
     {
         /** @var DataTransferObject $class */
         $class = static::class;
@@ -29,9 +29,8 @@ trait SerializesData
         // Build constructor arguments dynamically using property type definitions
         $args = [];
 
-        // Money, Object, and Array properties - pass raw data, constructor handles conversion
+        // Object and Array properties - pass raw data, constructor handles conversion
         $objectProperties = array_merge(
-            $propertyTypes['money'] ?? [],
             $propertyTypes['object'] ?? [],
             $propertyTypes['array'] ?? []
         );
@@ -82,7 +81,6 @@ trait SerializesData
 
         // Build complete property list from type definitions
         $allProperties = array_merge(
-            $propertyTypes['money'] ?? [],
             $propertyTypes['object'] ?? [],
             $propertyTypes['array'] ?? [],
             $propertyTypes['enum'] ?? [],
@@ -102,14 +100,14 @@ trait SerializesData
     }
 
     /**
-     * Converts the DTO to an array representation.
+     * Converts the DTO to JSON-compatible data.
      *
-     * Recursively converts all nested objects to arrays for JSON serialization.
+     * Recursively converts all nested objects to their data representations.
      * Only includes non-null values for cleaner JSON output.
      *
-     * @return array<string, mixed>
+     * @return mixed Typically an array for DTOs
      */
-    public function toArray(): array
+    public function toData(): mixed
     {
         /** @var DataTransferObject $class */
         $class = static::class;
@@ -117,24 +115,19 @@ trait SerializesData
 
         $data = [];
 
-        // Convert all DTO objects (Money, Card, Contact, etc.) to arrays
-        $objectProperties = array_merge(
-            $propertyTypes['money'] ?? [],
-            $propertyTypes['object'] ?? []
-        );
-
-        foreach ($objectProperties as $prop) {
+        // Convert all objects (DTOs, value objects, etc.) to data
+        foreach ($propertyTypes['object'] ?? [] as $prop) {
             if ($this->$prop !== null) {
-                $data[$prop] = $this->$prop->toArray();
+                $data[$prop] = $this->$prop->toData();
             }
         }
 
-        // Handle array properties - can contain objects with toArray() or primitives
+        // Handle array properties - can contain objects with toData() or primitives
         foreach ($propertyTypes['array'] ?? [] as $prop) {
             if ($this->$prop !== null) {
                 $data[$prop] = array_map(
-                    fn($item) => is_object($item) && method_exists($item, 'toArray')
-                        ? $item->toArray()
+                    fn($item) => is_object($item) && method_exists($item, 'toData')
+                        ? $item->toData()
                         : $item,
                     $this->$prop
                 );

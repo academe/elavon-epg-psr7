@@ -41,7 +41,7 @@ class ErrorResponse implements DataTransferObject
     ) {
         // Normalize failures to ErrorDetail objects
         $this->failures = $failures === null ? [] : array_map(
-            fn($failure) => $failure instanceof ErrorDetail ? $failure : ErrorDetail::fromArray($failure),
+            fn($failure) => $failure instanceof ErrorDetail ? $failure : ErrorDetail::fromData($failure),
             $failures
         );
     }

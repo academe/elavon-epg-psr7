@@ -15,8 +15,8 @@ Defines the base contract for value objects and DTOs that can be serialized to/f
 ```php
 interface ValueObject
 {
-    public static function fromArray(array $data): static;
-    public function toArray(): array;
+    public static function fromData(mixed $data): static;
+    public function toData(): mixed;
 }
 ```
 
@@ -37,7 +37,7 @@ interface DataTransferObject extends ValueObject
 ```
 
 All DTOs implement this interface, which includes:
-- `fromArray()` and `toArray()` from `ValueObject`
+- `fromData()` and `toData()` from `ValueObject`
 - `getPropertyTypes()` for property type metadata
 - `toObjectArray()` for shallow object representation
 
@@ -49,7 +49,7 @@ All DTOs implement this interface, which includes:
 
 **Location**: `src/Concerns/SerializesData.php`
 
-Provides reusable implementations of `fromArray()`, `toArray()`, and `toObjectArray()` based on property type definitions from `getPropertyTypes()`.
+Provides reusable implementations of `fromData()`, `toData()`, and `toObjectArray()` based on property type definitions from `getPropertyTypes()`.
 
 **Key Features:**
 - Data-driven serialization/deserialization
@@ -80,9 +80,9 @@ public static function getPropertyTypes(): array
 
 | Type | Description | Example | Serialization Behavior |
 |------|-------------|---------|------------------------|
-| `money` | Money value objects | `total`, `tip` | Calls `toArray()` on Money object |
-| `object` | Other DTOs | `card`, `shipTo` | Calls `toArray()` on nested DTO |
-| `array` | Arrays of objects or primitives | `failures`, `tags` | Calls `toArray()` on objects, passes through primitives |
+| `money` | Money value objects | `total`, `tip` | Calls `toData()` on Money object |
+| `object` | Other DTOs | `card`, `shipTo` | Calls `toData()` on nested DTO |
+| `array` | Arrays of objects or primitives | `failures`, `tags` | Calls `toData()` on objects, passes through primitives |
 | `enum` | PHP 8.1 backed enums | `state`, `type` | Converts to `value` property (string) |
 | `string` | String primitives | `id`, `description` | Cast to string if present |
 | `boolean` | Boolean primitives | `isAuthorized` | Cast to bool if present |
@@ -128,13 +128,13 @@ public function __construct(
     // Normalize Money objects
     $this->amount = match (true) {
         $amount instanceof Money => $amount,
-        is_array($amount) => Money::fromArray($amount),
+        is_array($amount) => Money::fromData($amount),
         default => null,
     };
 }
 ```
 
-That's it! The `fromArray()`, `toArray()`, and `toObjectArray()` methods are automatically provided by the trait.
+That's it! The `fromData()`, `toData()`, and `toObjectArray()` methods are automatically provided by the trait.
 
 ## Example: Transaction DTO
 
@@ -189,9 +189,9 @@ class MyDTO implements DataTransferObject
     use SerializesData;
 
     // Override if needed for special cases
-    public function toArray(): array
+    public function toData(): mixed
     {
-        $data = parent::toArray();
+        $data = parent::toData();
 
         // Custom handling for inconsistent API field
         if ($this->specialField !== null) {
@@ -210,5 +210,5 @@ To migrate an existing DTO to use this architecture:
 1. Implement `DataTransferObject` interface
 2. Add `use SerializesData;` trait
 3. Implement `getPropertyTypes()` method
-4. Remove `fromArray()`, `toArray()`, and `toObjectArray()` methods (now provided by trait)
+4. Remove `fromData()`, `toData()`, and `toObjectArray()` methods (now provided by trait)
 5. Run tests to verify behavior is unchanged

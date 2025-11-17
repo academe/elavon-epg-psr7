@@ -95,7 +95,7 @@ class TransactionResponse
     private function parseSuccessResponse(): Transaction
     {
         $data = $this->parseJsonBody();
-        return Transaction::fromArray($data);
+        return Transaction::fromData($data);
     }
 
     /**

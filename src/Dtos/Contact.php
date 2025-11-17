@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 
 /**
  * Contact data transfer object.
@@ -26,13 +27,20 @@ class Contact implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
+            'object' => [
+                'email',
+            ],
             'string' => [
                 'fullName', 'company', 'street1', 'street2', 'city', 'region',
-                'postalCode', 'countryCode', 'primaryPhone', 'alternatePhone', 'fax', 'email',
+                'postalCode', 'countryCode', 'primaryPhone', 'alternatePhone', 'fax',
             ],
         ];
     }
+    // Normalized properties (objects)
+    public readonly ?EmailAddress $email;
+
     /**
+     * @param EmailAddress|string|null $email Email address
      * @param string|null $fullName Full name (max 255 chars)
      * @param string|null $company Company name (max 255 chars)
      * @param string|null $street1 Street line 1 (max 255 chars)
@@ -44,9 +52,9 @@ class Contact implements DataTransferObject
      * @param string|null $primaryPhone Primary phone (max 255 chars)
      * @param string|null $alternatePhone Alternate phone (max 255 chars)
      * @param string|null $fax Fax number (max 255 chars)
-     * @param string|null $email Email address (max 254 chars)
      */
     public function __construct(
+        EmailAddress|string|null $email = null,
         public readonly ?string $fullName = null,
         public readonly ?string $company = null,
         public readonly ?string $street1 = null,
@@ -58,8 +66,14 @@ class Contact implements DataTransferObject
         public readonly ?string $primaryPhone = null,
         public readonly ?string $alternatePhone = null,
         public readonly ?string $fax = null,
-        public readonly ?string $email = null,
     ) {
+        // Normalize EmailAddress
+        $this->email = match (true) {
+            $email instanceof EmailAddress => $email,
+            is_string($email) => EmailAddress::fromData($email),
+            default => null,
+        };
+
         $this->validate();
     }
 
@@ -77,12 +91,7 @@ class Contact implements DataTransferObject
             );
         }
 
-        // Validate email length (if present)
-        if ($this->email !== null && strlen($this->email) > 254) {
-            throw new InvalidArgumentException(
-                'Email address must not exceed 254 characters'
-            );
-        }
+        // Email validation is handled by EmailAddress value object
 
         // Validate other field lengths
         $maxLengthFields = [

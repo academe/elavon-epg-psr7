@@ -48,7 +48,7 @@ class FailureTest extends TestCase
         ];
 
         // Act
-        $failure = Failure::fromArray($data);
+        $failure = Failure::fromData($data);
 
         // Assert
         $this->assertSame('invalid_card_number', $failure->code);
@@ -64,7 +64,7 @@ class FailureTest extends TestCase
         ];
 
         // Act
-        $failure = Failure::fromArray($data);
+        $failure = Failure::fromData($data);
 
         // Assert
         $this->assertSame('general_error', $failure->code);
@@ -78,7 +78,7 @@ class FailureTest extends TestCase
         $data = [];
 
         // Act
-        $failure = Failure::fromArray($data);
+        $failure = Failure::fromData($data);
 
         // Assert
         $this->assertNull($failure->code);
@@ -96,7 +96,7 @@ class FailureTest extends TestCase
         );
 
         // Act
-        $result = $failure->toArray();
+        $result = $failure->toData();
 
         // Assert
         $this->assertSame([
@@ -116,7 +116,7 @@ class FailureTest extends TestCase
         );
 
         // Act
-        $result = $failure->toArray();
+        $result = $failure->toData();
 
         // Assert
         $this->assertSame(['code' => 'error'], $result);
@@ -132,10 +132,10 @@ class FailureTest extends TestCase
             'description' => 'Validation failed',
             'field' => 'email',
         ];
-        $failure = Failure::fromArray($originalData);
+        $failure = Failure::fromData($originalData);
 
         // Act
-        $result = $failure->toArray();
+        $result = $failure->toData();
 
         // Assert
         $this->assertSame($originalData, $result);

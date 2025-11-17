@@ -83,7 +83,7 @@ class SurchargeTest extends TestCase
         ];
 
         // Act
-        $surcharge = Surcharge::fromArray($data);
+        $surcharge = Surcharge::fromData($data);
 
         // Assert
         $this->assertInstanceOf(Money::class, $surcharge->unadjustedTotal);
@@ -107,7 +107,7 @@ class SurchargeTest extends TestCase
         ];
 
         // Act
-        $surcharge = Surcharge::fromArray($data);
+        $surcharge = Surcharge::fromData($data);
 
         // Assert
         $this->assertNull($surcharge->unadjustedTotal);
@@ -127,7 +127,7 @@ class SurchargeTest extends TestCase
         );
 
         // Act
-        $result = $surcharge->toArray();
+        $result = $surcharge->toData();
 
         // Assert
         $this->assertSame([
@@ -147,7 +147,7 @@ class SurchargeTest extends TestCase
         );
 
         // Act
-        $result = $surcharge->toArray();
+        $result = $surcharge->toData();
 
         // Assert
         $this->assertArrayHasKey('unadjustedTotal', $result);
@@ -165,10 +165,10 @@ class SurchargeTest extends TestCase
             'surchargeTotal' => ['amount' => '2.63', 'currencyCode' => 'EUR'],
             'rate' => '0.035',
         ];
-        $surcharge = Surcharge::fromArray($originalData);
+        $surcharge = Surcharge::fromData($originalData);
 
         // Act
-        $result = $surcharge->toArray();
+        $result = $surcharge->toData();
 
         // Assert
         $this->assertSame($originalData, $result);

@@ -61,13 +61,13 @@ class Card implements DataTransferObject
     }
 
     /**
-     * Creates a Card instance from an array representation.
+     * Creates a Card instance from JSON-compatible data.
      *
-     * @param array<string, mixed> $data Array with card data
+     * @param mixed $data Array with card data
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): static
+    public static function fromData(mixed $data): static
     {
         // Parse scheme if present
         $scheme = null;
@@ -92,13 +92,13 @@ class Card implements DataTransferObject
     }
 
     /**
-     * Converts the Card to an array representation.
+     * Converts the Card to JSON-compatible data.
      *
      * Only includes non-null values for cleaner JSON serialization.
      *
-     * @return array<string, mixed>
+     * @return mixed
      */
-    public function toArray(): array
+    public function toData(): mixed
     {
         $data = [];
 

@@ -248,7 +248,7 @@ class CardTest extends TestCase
         ];
 
         // Act
-        $card = Card::fromArray($data);
+        $card = Card::fromData($data);
 
         // Assert
         $this->assertSame('4111111111111111', $card->number);
@@ -269,7 +269,7 @@ class CardTest extends TestCase
         ];
 
         // Act
-        $card = Card::fromArray($data);
+        $card = Card::fromData($data);
 
         // Assert
         $this->assertSame('1111', $card->last4);
@@ -294,7 +294,7 @@ class CardTest extends TestCase
         $this->expectExceptionMessage('Invalid card scheme: InvalidScheme');
 
         // Act
-        Card::fromArray($data);
+        Card::fromData($data);
     }
 
     public function test_fromArray_withEmptyArray_createsEmptyCard(): void
@@ -303,7 +303,7 @@ class CardTest extends TestCase
         $data = [];
 
         // Act
-        $card = Card::fromArray($data);
+        $card = Card::fromData($data);
 
         // Assert
         $this->assertNull($card->number);
@@ -329,7 +329,7 @@ class CardTest extends TestCase
         );
 
         // Act
-        $array = $card->toArray();
+        $array = $card->toData();
 
         // Assert
         $this->assertSame([
@@ -352,7 +352,7 @@ class CardTest extends TestCase
         );
 
         // Act
-        $array = $card->toArray();
+        $array = $card->toData();
 
         // Assert
         $this->assertSame([
@@ -373,7 +373,7 @@ class CardTest extends TestCase
         );
 
         // Act
-        $array = $card->toArray();
+        $array = $card->toData();
 
         // Assert
         $this->assertSame([
@@ -392,7 +392,7 @@ class CardTest extends TestCase
         $card = new Card();
 
         // Act
-        $array = $card->toArray();
+        $array = $card->toData();
 
         // Assert
         $this->assertSame([], $array);
@@ -410,8 +410,8 @@ class CardTest extends TestCase
         ];
 
         // Act
-        $card = Card::fromArray($originalData);
-        $resultData = $card->toArray();
+        $card = Card::fromData($originalData);
+        $resultData = $card->toData();
 
         // Assert
         $this->assertSame($originalData, $resultData);

@@ -88,7 +88,7 @@ class ShopperStatementTest extends TestCase
         ];
 
         // Act
-        $statement = ShopperStatement::fromArray($data);
+        $statement = ShopperStatement::fromData($data);
 
         // Assert
         $this->assertSame('ACME CORP*PRODUCT', $statement->name);
@@ -104,7 +104,7 @@ class ShopperStatementTest extends TestCase
         ];
 
         // Act
-        $statement = ShopperStatement::fromArray($data);
+        $statement = ShopperStatement::fromData($data);
 
         // Assert
         $this->assertSame('STORE', $statement->name);
@@ -122,7 +122,7 @@ class ShopperStatementTest extends TestCase
         );
 
         // Act
-        $result = $statement->toArray();
+        $result = $statement->toData();
 
         // Assert
         $this->assertSame([
@@ -138,7 +138,7 @@ class ShopperStatementTest extends TestCase
         $statement = new ShopperStatement(name: 'ONLY NAME');
 
         // Act
-        $result = $statement->toArray();
+        $result = $statement->toData();
 
         // Assert
         $this->assertSame(['name' => 'ONLY NAME'], $result);
@@ -154,10 +154,10 @@ class ShopperStatementTest extends TestCase
             'phone' => '1234567890',
             'url' => 'ROUNDTRIP',
         ];
-        $statement = ShopperStatement::fromArray($originalData);
+        $statement = ShopperStatement::fromData($originalData);
 
         // Act
-        $result = $statement->toArray();
+        $result = $statement->toData();
 
         // Assert
         $this->assertSame($originalData, $result);

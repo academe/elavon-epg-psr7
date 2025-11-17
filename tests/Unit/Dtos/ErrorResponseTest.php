@@ -57,7 +57,7 @@ class ErrorResponseTest extends TestCase
         ];
 
         // Act
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Assert
         $this->assertSame(401, $errorResponse->status);
@@ -87,7 +87,7 @@ class ErrorResponseTest extends TestCase
         ];
 
         // Act
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Assert
         $this->assertSame(400, $errorResponse->status);
@@ -100,7 +100,7 @@ class ErrorResponseTest extends TestCase
         $data = ['status' => 500];
 
         // Act
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Assert
         $this->assertSame(500, $errorResponse->status);
@@ -119,10 +119,10 @@ class ErrorResponseTest extends TestCase
                 ],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act
-        $array = $errorResponse->toArray();
+        $array = $errorResponse->toData();
 
         // Assert
         $this->assertSame(401, $array['status']);
@@ -141,7 +141,7 @@ class ErrorResponseTest extends TestCase
                 ['code' => 'other', 'description' => 'Other error'],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act
         $message = $errorResponse->getMessage();
@@ -171,7 +171,7 @@ class ErrorResponseTest extends TestCase
                 ['code' => 'unauthorized', 'description' => 'Invalid API key'],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act
         $code = $errorResponse->getCode();
@@ -202,7 +202,7 @@ class ErrorResponseTest extends TestCase
                 ['code' => 'validation_error', 'description' => 'Field error'],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act & Assert
         $this->assertTrue($errorResponse->hasErrorCode('unauthorized'));
@@ -218,7 +218,7 @@ class ErrorResponseTest extends TestCase
                 ['code' => 'unauthorized', 'description' => 'Invalid API key'],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act & Assert
         $this->assertFalse($errorResponse->hasErrorCode('validation_error'));
@@ -234,7 +234,7 @@ class ErrorResponseTest extends TestCase
                 ['code' => 'validation_error', 'description' => 'CVV is required', 'field' => 'card.securityCode'],
             ],
         ];
-        $errorResponse = ErrorResponse::fromArray($data);
+        $errorResponse = ErrorResponse::fromData($data);
 
         // Act
         $failures = $errorResponse->getFailures();

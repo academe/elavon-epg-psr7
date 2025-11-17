@@ -1,0 +1,454 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Support;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+
+/**
+ * Elavon API Request Decorator.
+ *
+ * Decorates a PSR-7 RequestInterface with Elavon-specific HTTP headers and authentication.
+ * This follows the decorator pattern to add API-specific headers without modifying the original request.
+ *
+ * Adds the following headers automatically:
+ * - Accept: application/json;charset=UTF-8 (if not already present)
+ * - Content-Type: application/json (if not present and body exists)
+ * - Accept-Version: 1 (default, can be customized)
+ * - Authorization: Basic {credentials} (if withAuthentication() is called)
+ *
+ * Usage with fluent interface:
+ * ```php
+ * $request = (new CreateTransactionRequest($transaction))->build();
+ * $elavonRequest = ElavonApiRequest::create($request)
+ *     ->withSandbox()
+ *     ->withAuthentication($merchantAlias, $apiKey);
+ * $client->sendRequest($elavonRequest);
+ * ```
+ *
+ * Complete example with all options:
+ * ```php
+ * $elavonRequest = ElavonApiRequest::create($request)
+ *     ->withApiVersion('2')
+ *     ->withProduction()
+ *     ->withAuthentication($merchantAlias, $apiKey);
+ * ```
+ *
+ * Reusing configuration for multiple requests:
+ * ```php
+ * // Method 1: Configure with first request, then reuse
+ * $elavonRequest = ElavonApiRequest::create($firstRequest)
+ *     ->withSandbox()
+ *     ->withAuthentication($merchantAlias, $apiKey);
+ *
+ * $response1 = $client->sendRequest($elavonRequest);
+ *
+ * // Reuse same configuration with different request
+ * $elavonRequest2 = $elavonRequest->withMessage($secondRequest);
+ * $response2 = $client->sendRequest($elavonRequest2);
+ *
+ * // Method 2: Configure first, apply to requests later
+ * $decorator = ElavonApiRequest::configure()
+ *     ->withSandbox()
+ *     ->withAuthentication($merchantAlias, $apiKey);
+ *
+ * $request1 = $decorator->withMessage($firstRequest);
+ * $request2 = $decorator->withMessage($secondRequest);
+ * $request3 = $decorator->withMessage($thirdRequest);
+ * ```
+ *
+ * Environment shortcuts:
+ * ```php
+ * // Sandbox/UAT environment
+ * $request = ElavonApiRequest::create($baseRequest)
+ *     ->withSandbox()
+ *     ->withAuthentication($merchant, $apiKey);
+ *
+ * // Production environment
+ * $request = ElavonApiRequest::create($baseRequest)
+ *     ->withProduction()
+ *     ->withAuthentication($merchant, $apiKey);
+ *
+ * // Custom base URI
+ * $request = ElavonApiRequest::create($baseRequest)
+ *     ->withBaseUri('https://custom.api.example.com')
+ *     ->withAuthentication($merchant, $apiKey);
+ * ```
+ */
+class ElavonApiRequest implements RequestInterface
+{
+    /**
+     * Elavon API environments with their base URLs.
+     */
+    public const ENVIRONMENT_PRODUCTION = 'https://api.convergepay.com';
+    public const ENVIRONMENT_UAT = 'https://uat.api.converge.eu.elavonaws.com';
+    public const ENVIRONMENT_SANDBOX = self::ENVIRONMENT_UAT; // Alias for UAT
+
+    /**
+     * Default API version.
+     */
+    private const DEFAULT_API_VERSION = '1';
+
+    /**
+     * Default Accept header value.
+     */
+    private const DEFAULT_ACCEPT = 'application/json;charset=UTF-8';
+
+    /**
+     * Default Content-Type header value.
+     */
+    private const DEFAULT_CONTENT_TYPE = 'application/json';
+
+    private RequestInterface $request;
+    private string $apiVersion;
+    private ?string $username = null;
+    private ?string $password = null;
+
+    /**
+     * Private constructor - use static factory methods instead.
+     *
+     * @param RequestInterface $request The request to decorate with Elavon API headers
+     * @param string $apiVersion API version (defaults to '1')
+     * @param string|null $username Username for Basic Auth (merchant alias)
+     * @param string|null $password Password for Basic Auth (API key)
+     */
+    private function __construct(
+        RequestInterface $request,
+        string $apiVersion = self::DEFAULT_API_VERSION,
+        ?string $username = null,
+        ?string $password = null,
+    ) {
+        $this->apiVersion = $apiVersion;
+        $this->username = $username;
+        $this->password = $password;
+        $decorated = $request;
+
+        // Add Accept header if not present
+        if (!$decorated->hasHeader('Accept')) {
+            $decorated = $decorated->withHeader('Accept', self::DEFAULT_ACCEPT);
+        }
+
+        // Add Content-Type header if not present and request has a body
+        if (!$decorated->hasHeader('Content-Type') && $decorated->getBody()->getSize() > 0) {
+            $decorated = $decorated->withHeader('Content-Type', self::DEFAULT_CONTENT_TYPE);
+        }
+
+        // Add Accept-Version header
+        $decorated = $decorated->withHeader('Accept-Version', $this->apiVersion);
+
+        // Add Authorization header if credentials provided
+        if ($this->username !== null && $this->password !== null) {
+            $decorated = $decorated->withHeader(
+                'Authorization',
+                'Basic ' . base64_encode("{$this->username}:{$this->password}")
+            );
+        }
+
+        $this->request = $decorated;
+    }
+
+    /**
+     * Creates an Elavon API request decorator (fluent interface entry point).
+     *
+     * @param RequestInterface $request The request to decorate
+     * @param string|null $apiVersion API version (defaults to '1')
+     * @return static
+     */
+    public static function create(RequestInterface $request, ?string $apiVersion = null): static
+    {
+        return new static($request, $apiVersion ?? self::DEFAULT_API_VERSION);
+    }
+
+    /**
+     * Creates a configuration builder without an initial request.
+     *
+     * This allows you to configure authentication, environment, and API version
+     * first, then apply it to messages later using withMessage().
+     *
+     * Example:
+     * ```php
+     * // Configure once
+     * $decorator = ElavonApiRequest::configure()
+     *     ->withSandbox()
+     *     ->withAuthentication($merchant, $apiKey);
+     *
+     * // Apply to multiple requests
+     * $request1 = $decorator->withMessage($firstRequest);
+     * $request2 = $decorator->withMessage($secondRequest);
+     * $request3 = $decorator->withMessage($thirdRequest);
+     * ```
+     *
+     * @param string|null $apiVersion API version (defaults to '1')
+     * @return static
+     */
+    public static function configure(?string $apiVersion = null): static
+    {
+        // Create a minimal placeholder request - will be replaced by withMessage()
+        $placeholderRequest = new Request('GET', 'https://placeholder.local/');
+        return new static($placeholderRequest, $apiVersion ?? self::DEFAULT_API_VERSION);
+    }
+
+    /**
+     * Replaces the underlying request message while preserving all configuration.
+     *
+     * This is useful when you need to send multiple requests with the same
+     * configuration (environment, API version, authentication).
+     *
+     * Example:
+     * ```php
+     * // Configure once
+     * $elavonRequest = ElavonApiRequest::create($firstRequest)
+     *     ->withSandbox()
+     *     ->withAuthentication($merchant, $apiKey);
+     *
+     * // Send first request
+     * $response1 = $httpClient->send($elavonRequest);
+     *
+     * // Reuse configuration for second request
+     * $elavonRequest2 = $elavonRequest->withMessage($secondRequest);
+     * $response2 = $httpClient->send($elavonRequest2);
+     * ```
+     *
+     * @param RequestInterface $request The new request to decorate
+     * @return static New instance with the new request and same configuration
+     */
+    public function withMessage(RequestInterface $request): static
+    {
+        // Extract the base URI from the current request
+        $currentUri = $this->request->getUri();
+        $baseUri = $currentUri->getScheme() . '://' . $currentUri->getHost();
+        if ($currentUri->getPort() !== null) {
+            $baseUri .= ':' . $currentUri->getPort();
+        }
+
+        // Create a new instance with the same configuration
+        $new = new static(
+            $request,
+            $this->apiVersion,
+            $this->username,
+            $this->password
+        );
+
+        // Apply the base URI from the current request to the new request
+        $newRequestUri = $request->getUri();
+        $replacedUri = $this->replaceBaseUri($newRequestUri, $baseUri);
+        $new->request = $new->request->withUri($replacedUri);
+
+        return $new;
+    }
+
+    /**
+     * Sets a custom API version.
+     *
+     * @param string $version API version
+     * @return static New instance with updated version
+     */
+    public function withApiVersion(string $version): static
+    {
+        if ($version === $this->apiVersion) {
+            return $this;
+        }
+
+        $new = clone $this;
+        $new->apiVersion = $version;
+        $new->request = $this->request->withHeader('Accept-Version', $version);
+        return $new;
+    }
+
+    /**
+     * Adds HTTP Basic Authentication credentials.
+     *
+     * @param string $username Username (merchant alias)
+     * @param string $password Password (API key)
+     * @return static New instance with authentication
+     */
+    public function withAuthentication(string $username, string $password): static
+    {
+        $new = clone $this;
+        $new->username = $username;
+        $new->password = $password;
+        $new->request = $this->request->withHeader(
+            'Authorization',
+            'Basic ' . base64_encode("{$username}:{$password}")
+        );
+        return $new;
+    }
+
+    /**
+     * Gets the username (merchant alias) used for authentication.
+     *
+     * @return string|null
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Sets the base URI to the Sandbox/UAT environment.
+     *
+     * @return static New instance with UAT base URI
+     */
+    public function withSandbox(): static
+    {
+        return $this->withBaseUri(self::ENVIRONMENT_SANDBOX);
+    }
+
+    /**
+     * Sets the base URI to the Production/Live environment.
+     *
+     * @return static New instance with production base URI
+     */
+    public function withProduction(): static
+    {
+        return $this->withBaseUri(self::ENVIRONMENT_PRODUCTION);
+    }
+
+    /**
+     * Sets a custom base URI.
+     *
+     * @param string $baseUri Custom base URI
+     * @return static New instance with custom base URI
+     */
+    public function withBaseUri(string $baseUri): static
+    {
+        $new = clone $this;
+        $currentUri = $this->request->getUri();
+        $newUri = $this->replaceBaseUri($currentUri, $baseUri);
+        $new->request = $this->request->withUri($newUri);
+        return $new;
+    }
+
+    /**
+     * Gets the API version used for this request.
+     *
+     * @return string
+     */
+    public function getApiVersion(): string
+    {
+        return $this->apiVersion;
+    }
+
+    /**
+     * Replaces the base URI of a URI while preserving the path and query.
+     *
+     * @param UriInterface $currentUri
+     * @param string $newBaseUri
+     * @return UriInterface
+     */
+    private function replaceBaseUri(UriInterface $currentUri, string $newBaseUri): UriInterface
+    {
+        $newUri = new Uri($newBaseUri);
+
+        // Preserve the path and query from the original URI
+        return $newUri
+            ->withPath($currentUri->getPath())
+            ->withQuery($currentUri->getQuery());
+    }
+
+    // Delegate all RequestInterface methods to the decorated request
+
+    public function getProtocolVersion(): string
+    {
+        return $this->request->getProtocolVersion();
+    }
+
+    public function withProtocolVersion(string $version): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withProtocolVersion($version);
+        return $new;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->request->getHeaders();
+    }
+
+    public function hasHeader(string $name): bool
+    {
+        return $this->request->hasHeader($name);
+    }
+
+    public function getHeader(string $name): array
+    {
+        return $this->request->getHeader($name);
+    }
+
+    public function getHeaderLine(string $name): string
+    {
+        return $this->request->getHeaderLine($name);
+    }
+
+    public function withHeader(string $name, $value): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withHeader($name, $value);
+        return $new;
+    }
+
+    public function withAddedHeader(string $name, $value): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withAddedHeader($name, $value);
+        return $new;
+    }
+
+    public function withoutHeader(string $name): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withoutHeader($name);
+        return $new;
+    }
+
+    public function getBody(): StreamInterface
+    {
+        return $this->request->getBody();
+    }
+
+    public function withBody(StreamInterface $body): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withBody($body);
+        return $new;
+    }
+
+    public function getRequestTarget(): string
+    {
+        return $this->request->getRequestTarget();
+    }
+
+    public function withRequestTarget(string $requestTarget): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withRequestTarget($requestTarget);
+        return $new;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->request->getMethod();
+    }
+
+    public function withMethod(string $method): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withMethod($method);
+        return $new;
+    }
+
+    public function getUri(): UriInterface
+    {
+        return $this->request->getUri();
+    }
+
+    public function withUri(UriInterface $uri, bool $preserveHost = false): static
+    {
+        $new = clone $this;
+        $new->request = $this->request->withUri($uri, $preserveHost);
+        return $new;
+    }
+}

@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Contact;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -43,7 +44,8 @@ class ContactTest extends TestCase
         $this->assertSame('+44 020 7946 0123', $contact->primaryPhone);
         $this->assertSame('+44 020 7946 0124', $contact->alternatePhone);
         $this->assertSame('+44 020 7946 0125', $contact->fax);
-        $this->assertSame('john@email.com', $contact->email);
+        $this->assertInstanceOf(EmailAddress::class, $contact->email);
+        $this->assertSame('john@email.com', $contact->email->address);
     }
 
     public function test_construct_withNoProperties_createsInstance(): void
@@ -83,7 +85,7 @@ class ContactTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Email address must not exceed 254 characters');
+        $this->expectExceptionMessage('Email address cannot exceed 254 characters');
 
         // Act
         new Contact(email: $longEmail);
@@ -121,7 +123,7 @@ class ContactTest extends TestCase
         ];
 
         // Act
-        $contact = Contact::fromArray($data);
+        $contact = Contact::fromData($data);
 
         // Assert
         $this->assertSame('Jane Smith', $contact->fullName);
@@ -135,7 +137,8 @@ class ContactTest extends TestCase
         $this->assertSame('+1 212 555 0100', $contact->primaryPhone);
         $this->assertSame('+1 212 555 0101', $contact->alternatePhone);
         $this->assertSame('+1 212 555 0102', $contact->fax);
-        $this->assertSame('jane@example.com', $contact->email);
+        $this->assertInstanceOf(EmailAddress::class, $contact->email);
+        $this->assertSame('jane@example.com', $contact->email->address);
     }
 
     public function test_fromArray_withMissingProperties_createsInstanceWithNulls(): void
@@ -147,11 +150,12 @@ class ContactTest extends TestCase
         ];
 
         // Act
-        $contact = Contact::fromArray($data);
+        $contact = Contact::fromData($data);
 
         // Assert
         $this->assertSame('Bob Jones', $contact->fullName);
-        $this->assertSame('bob@example.com', $contact->email);
+        $this->assertInstanceOf(EmailAddress::class, $contact->email);
+        $this->assertSame('bob@example.com', $contact->email->address);
         $this->assertNull($contact->company);
         $this->assertNull($contact->street1);
         $this->assertNull($contact->city);
@@ -170,16 +174,16 @@ class ContactTest extends TestCase
         );
 
         // Act
-        $result = $contact->toArray();
+        $result = $contact->toData();
 
         // Assert
         $this->assertSame([
+            'email' => 'test@test.com',
             'fullName' => 'Test User',
             'company' => 'Test Co',
             'street1' => '1 Test St',
             'city' => 'Test City',
             'countryCode' => 'TST',
-            'email' => 'test@test.com',
         ], $result);
     }
 
@@ -192,12 +196,12 @@ class ContactTest extends TestCase
         );
 
         // Act
-        $result = $contact->toArray();
+        $result = $contact->toData();
 
         // Assert
         $this->assertSame([
-            'fullName' => 'User',
             'email' => 'user@example.com',
+            'fullName' => 'User',
         ], $result);
         $this->assertArrayNotHasKey('company', $result);
         $this->assertArrayNotHasKey('street1', $result);
@@ -207,16 +211,16 @@ class ContactTest extends TestCase
     {
         // Arrange
         $originalData = [
+            'email' => 'roundtrip@test.com',
             'fullName' => 'Round Trip',
             'street1' => '100 Test Ave',
             'city' => 'TestVille',
             'countryCode' => 'GBR',
-            'email' => 'roundtrip@test.com',
         ];
-        $contact = Contact::fromArray($originalData);
+        $contact = Contact::fromData($originalData);
 
         // Act
-        $result = $contact->toArray();
+        $result = $contact->toData();
 
         // Assert
         $this->assertSame($originalData, $result);

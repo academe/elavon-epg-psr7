@@ -21,7 +21,11 @@ use Academe\Elavon\Epg\Psr7\Enums\Source;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
+use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
+use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
 use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
 
 /**
  * Transaction data transfer object.
@@ -46,11 +50,10 @@ class Transaction implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'money' => [
-                'total', 'totalRefunded', 'issuerTotal', 'tip', 'salesTax',
-            ],
             'object' => [
+                'total', 'totalRefunded', 'issuerTotal', 'tip', 'salesTax',
                 'card', 'shopperStatement', 'shipTo', 'billTo', 'surcharge',
+                'shopperEmailAddress', 'shopperIpAddress', 'shopperLanguageTag', 'shopperTimeZone',
             ],
             'array' => [
                 'failures',
@@ -66,7 +69,6 @@ class Transaction implements DataTransferObject
                 'href', 'merchant', 'processorAccount', 'account', 'terminal', 'forexAdvice', 'shopper', 'order',
                 'invoiceNumber', 'orderReference', 'shopperReference', 'purchaserReference',
                 'processorReference', 'issuerReference',
-                'shopperEmailAddress', 'shopperIpAddress', 'shopperLanguageTag', 'shopperTimeZone',
                 'shippingDate', 'credentialOnFileData',
                 'parentTransaction', 'hostedCard', 'hsmCard', 'storedCard',
                 'paymentLink', 'paymentSession',
@@ -91,6 +93,10 @@ class Transaction implements DataTransferObject
     public readonly ?Contact $shipTo;
     public readonly ?Contact $billTo;
     public readonly ?Surcharge $surcharge;
+    public readonly ?EmailAddress $shopperEmailAddress;
+    public readonly ?IpAddress $shopperIpAddress;
+    public readonly ?LanguageTag $shopperLanguageTag;
+    public readonly ?TimeZone $shopperTimeZone;
     /** @var array<Failure>|null */
     public readonly ?array $failures;
 
@@ -141,10 +147,10 @@ class Transaction implements DataTransferObject
      * @param string|null $purchaserReference [Response] Purchaser identifier
      * @param string|null $processorReference [Response] Processor-assigned reference
      * @param string|null $issuerReference [Response] Card issuer-assigned reference
-     * @param string|null $shopperEmailAddress [Response] Shopper's email
-     * @param string|null $shopperIpAddress [Response] Shopper's IP address
-     * @param string|null $shopperLanguageTag [Response] Shopper's IETF language tag
-     * @param string|null $shopperTimeZone [Response] Shopper's time zone
+     * @param EmailAddress|string|null $shopperEmailAddress [Response] Shopper's email
+     * @param IpAddress|string|null $shopperIpAddress [Response] Shopper's IP address
+     * @param LanguageTag|string|null $shopperLanguageTag [Response] Shopper's IETF language tag
+     * @param TimeZone|string|null $shopperTimeZone [Response] Shopper's time zone
      * @param string|null $shippingDate [Request] Optional shipping date
      * @param string|null $credentialOnFileData [Request/Response] Credential on file data
      * @param string|null $parentTransaction [Response] Parent transaction URL
@@ -227,10 +233,10 @@ class Transaction implements DataTransferObject
         public readonly ?string $issuerReference = null,
 
         // Shopper information
-        public readonly ?string $shopperEmailAddress = null,
-        public readonly ?string $shopperIpAddress = null,
-        public readonly ?string $shopperLanguageTag = null,
-        public readonly ?string $shopperTimeZone = null,
+        EmailAddress|string|null $shopperEmailAddress = null,
+        IpAddress|string|null $shopperIpAddress = null,
+        LanguageTag|string|null $shopperLanguageTag = null,
+        TimeZone|string|null $shopperTimeZone = null,
 
         // Additional fields
         public readonly ?string $shippingDate = null,
@@ -274,65 +280,93 @@ class Transaction implements DataTransferObject
         // Normalize Money objects (accept both Money object or array)
         $this->total = match (true) {
             $total instanceof Money => $total,
-            is_array($total) => Money::fromArray($total),
+            is_array($total) => Money::fromData($total),
             default => null,
         };
 
         $this->totalRefunded = match (true) {
             $totalRefunded instanceof Money => $totalRefunded,
-            is_array($totalRefunded) => Money::fromArray($totalRefunded),
+            is_array($totalRefunded) => Money::fromData($totalRefunded),
             default => null,
         };
 
         $this->issuerTotal = match (true) {
             $issuerTotal instanceof Money => $issuerTotal,
-            is_array($issuerTotal) => Money::fromArray($issuerTotal),
+            is_array($issuerTotal) => Money::fromData($issuerTotal),
             default => null,
         };
 
         $this->tip = match (true) {
             $tip instanceof Money => $tip,
-            is_array($tip) => Money::fromArray($tip),
+            is_array($tip) => Money::fromData($tip),
             default => null,
         };
 
         $this->salesTax = match (true) {
             $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromArray($salesTax),
+            is_array($salesTax) => Money::fromData($salesTax),
             default => null,
         };
 
         // Normalize Card (accept Card object, array, or null)
         $this->card = match (true) {
             $card instanceof Card => $card,
-            is_array($card) => Card::fromArray($card),
+            is_array($card) => Card::fromData($card),
             default => null,
         };
 
         // Normalize ShopperStatement
         $this->shopperStatement = match (true) {
             $shopperStatement instanceof ShopperStatement => $shopperStatement,
-            is_array($shopperStatement) => ShopperStatement::fromArray($shopperStatement),
+            is_array($shopperStatement) => ShopperStatement::fromData($shopperStatement),
             default => null,
         };
 
         // Normalize Contact objects
         $this->shipTo = match (true) {
             $shipTo instanceof Contact => $shipTo,
-            is_array($shipTo) => Contact::fromArray($shipTo),
+            is_array($shipTo) => Contact::fromData($shipTo),
             default => null,
         };
 
         $this->billTo = match (true) {
             $billTo instanceof Contact => $billTo,
-            is_array($billTo) => Contact::fromArray($billTo),
+            is_array($billTo) => Contact::fromData($billTo),
             default => null,
         };
 
         // Normalize Surcharge
         $this->surcharge = match (true) {
             $surcharge instanceof Surcharge => $surcharge,
-            is_array($surcharge) => Surcharge::fromArray($surcharge),
+            is_array($surcharge) => Surcharge::fromData($surcharge),
+            default => null,
+        };
+
+        // Normalize EmailAddress
+        $this->shopperEmailAddress = match (true) {
+            $shopperEmailAddress instanceof EmailAddress => $shopperEmailAddress,
+            is_string($shopperEmailAddress) => EmailAddress::fromData($shopperEmailAddress),
+            default => null,
+        };
+
+        // Normalize IpAddress
+        $this->shopperIpAddress = match (true) {
+            $shopperIpAddress instanceof IpAddress => $shopperIpAddress,
+            is_string($shopperIpAddress) => IpAddress::fromData($shopperIpAddress),
+            default => null,
+        };
+
+        // Normalize LanguageTag
+        $this->shopperLanguageTag = match (true) {
+            $shopperLanguageTag instanceof LanguageTag => $shopperLanguageTag,
+            is_string($shopperLanguageTag) => LanguageTag::fromData($shopperLanguageTag),
+            default => null,
+        };
+
+        // Normalize TimeZone
+        $this->shopperTimeZone = match (true) {
+            $shopperTimeZone instanceof TimeZone => $shopperTimeZone,
+            is_string($shopperTimeZone) => TimeZone::fromData($shopperTimeZone),
             default => null,
         };
 
@@ -341,7 +375,7 @@ class Transaction implements DataTransferObject
             $this->failures = array_map(
                 fn($failureData) => $failureData instanceof Failure
                     ? $failureData
-                    : Failure::fromArray($failureData),
+                    : Failure::fromData($failureData),
                 $failures
             );
         } else {

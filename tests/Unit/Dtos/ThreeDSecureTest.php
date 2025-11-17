@@ -193,7 +193,7 @@ class ThreeDSecureTest extends TestCase
         ];
 
         // Act
-        $threeDSecure = ThreeDSecure::fromArray($data);
+        $threeDSecure = ThreeDSecure::fromData($data);
 
         // Assert
         $this->assertSame('88093c16-4659-4b23-bc84-b5a790779107', $threeDSecure->directoryServerTransactionId);
@@ -213,7 +213,7 @@ class ThreeDSecureTest extends TestCase
         ];
 
         // Act
-        $threeDSecure = ThreeDSecure::fromArray($data);
+        $threeDSecure = ThreeDSecure::fromData($data);
 
         // Assert
         $this->assertSame('88093c16-4659-4b23-bc84-b5a790779107', $threeDSecure->directoryServerTransactionId);
@@ -237,7 +237,7 @@ class ThreeDSecureTest extends TestCase
         $this->expectExceptionMessage('protocolVersion is required');
 
         // Act
-        ThreeDSecure::fromArray($data);
+        ThreeDSecure::fromData($data);
     }
 
     public function test_toArray_withAllProperties_returnsCompleteArray(): void
@@ -252,7 +252,7 @@ class ThreeDSecureTest extends TestCase
         );
 
         // Act
-        $result = $threeDSecure->toArray();
+        $result = $threeDSecure->toData();
 
         // Assert
         $this->assertSame([
@@ -274,7 +274,7 @@ class ThreeDSecureTest extends TestCase
         );
 
         // Act
-        $result = $threeDSecure->toArray();
+        $result = $threeDSecure->toData();
 
         // Assert
         $this->assertSame([
@@ -296,10 +296,10 @@ class ThreeDSecureTest extends TestCase
             'electronicCommerceIndicator' => '05',
             'authenticationValue' => 'DO+j0b3yB6NR9vJ+BO6O099GvzY=',
         ];
-        $threeDSecure = ThreeDSecure::fromArray($originalData);
+        $threeDSecure = ThreeDSecure::fromData($originalData);
 
         // Act
-        $result = $threeDSecure->toArray();
+        $result = $threeDSecure->toData();
 
         // Assert
         $this->assertSame($originalData, $result);

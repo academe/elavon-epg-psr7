@@ -53,13 +53,13 @@ class ThreeDSecure implements DataTransferObject
     }
 
     /**
-     * Creates a ThreeDSecure instance from an array representation.
+     * Creates a ThreeDSecure instance from JSON-compatible data.
      *
-     * @param array<string, mixed> $data Array with 3DS data
+     * @param mixed $data Array with 3DS data
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): static
+    public static function fromData(mixed $data): static
     {
         if (!isset($data['directoryServerTransactionId'])) {
             throw new InvalidArgumentException('directoryServerTransactionId is required');
@@ -87,13 +87,13 @@ class ThreeDSecure implements DataTransferObject
     }
 
     /**
-     * Converts the ThreeDSecure to an array representation.
+     * Converts the ThreeDSecure to JSON-compatible data.
      *
      * Only includes non-null values for cleaner JSON serialization.
      *
-     * @return array<string, mixed>
+     * @return mixed
      */
-    public function toArray(): array
+    public function toData(): mixed
     {
         $data = [
             'directoryServerTransactionId' => $this->directoryServerTransactionId,
@@ -119,7 +119,7 @@ class ThreeDSecure implements DataTransferObject
      */
     public function toObjectArray(): array
     {
-        return $this->toArray(); // For simple string properties, both methods return the same result
+        return $this->toData(); // For simple string properties, both methods return the same result
     }
 
     /**
