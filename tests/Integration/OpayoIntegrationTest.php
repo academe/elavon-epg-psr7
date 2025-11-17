@@ -82,9 +82,9 @@ class OpayoIntegrationTest extends TestCase
             ->withAuthentication($this->merchantAlias, $this->apiKey);
 
         // Dump the headers for debugging.
-        foreach ($elavonRequest->getHeaders() as $name => $values) {
-            echo $name . ': ' . implode(', ', $values) . "\n";
-        }
+        // foreach ($elavonRequest->getHeaders() as $name => $values) {
+        //     echo $name . ': ' . implode(', ', $values) . "\n";
+        // }
 
         $psr7Response = $this->httpClient->send($elavonRequest);
 
