@@ -1,0 +1,142 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Messages\Response;
+
+use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
+use Psr\Http\Message\ResponseInterface;
+
+/**
+ * Stored Card Response.
+ *
+ * Parses PSR-7 responses for stored card operations (create, retrieve, update).
+ *
+ * Example usage:
+ * ```php
+ * use Academe\Elavon\Epg\Psr7\Messages\Response\StoredCardResponse;
+ *
+ * // Parse response from API
+ * $response = StoredCardResponse::fromPsr7Response($psrResponse);
+ *
+ * if ($response->isSuccessful()) {
+ *     $storedCard = $response->getStoredCard();
+ *     echo "Stored card ID: " . $storedCard->id;
+ *     echo "Shopper: " . $storedCard->shopper;
+ * } else {
+ *     $error = $response->getError();
+ *     echo "Error: " . $error->message;
+ * }
+ * ```
+ */
+class StoredCardResponse
+{
+    use HandlesErrors;
+
+    private readonly ?StoredCard $storedCard;
+
+    /**
+     * @param ResponseInterface $response PSR-7 HTTP response
+     */
+    public function __construct(private readonly ResponseInterface $response)
+    {
+        // Parse response based on status code
+        if ($this->isSuccessful()) {
+            $this->storedCard = $this->parseSuccessResponse();
+            $this->error = null;
+        } else {
+            $this->storedCard = null;
+            $this->error = $this->parseErrorResponse();
+        }
+    }
+
+    /**
+     * Creates a StoredCardResponse from a PSR-7 response.
+     *
+     * @param ResponseInterface $response PSR-7 HTTP response
+     * @return static
+     */
+    public static function fromPsr7Response(ResponseInterface $response): static
+    {
+        return new static($response);
+    }
+
+    /**
+     * Gets the stored card from a successful response.
+     *
+     * @return StoredCard|null Stored card on success, null on error
+     */
+    public function getStoredCard(): ?StoredCard
+    {
+        return $this->storedCard;
+    }
+
+    /**
+     * Gets the PSR-7 response.
+     *
+     * @return ResponseInterface
+     */
+    public function getPsr7Response(): ResponseInterface
+    {
+        return $this->response;
+    }
+
+    /**
+     * Gets the HTTP status code.
+     *
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return $this->response->getStatusCode();
+    }
+
+    /**
+     * Parses a successful response into a StoredCard object.
+     *
+     * @return StoredCard
+     * @throws InvalidArgumentException When response cannot be parsed
+     */
+    private function parseSuccessResponse(): StoredCard
+    {
+        $data = $this->parseJsonBody();
+        return StoredCard::fromData($data);
+    }
+
+    /**
+     * Parses the JSON response body.
+     *
+     * @return array<string, mixed>
+     * @throws InvalidArgumentException When JSON is invalid
+     */
+    private function parseJsonBody(): array
+    {
+        $body = (string) $this->response->getBody();
+
+        if ($body === '') {
+            throw new InvalidArgumentException('Response body is empty');
+        }
+
+        try {
+            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new InvalidArgumentException(
+                'Failed to decode JSON response: ' . $e->getMessage(),
+                previous: $e
+            );
+        }
+
+        if (!is_array($data)) {
+            throw new InvalidArgumentException('Response body is not a JSON object');
+        }
+
+        // Check if it's an indexed array (JSON array) vs associative array (JSON object)
+        if ($data === [] || array_keys($data) === range(0, count($data) - 1)) {
+            throw new InvalidArgumentException('Response body is not a JSON object');
+        }
+
+        return $data;
+    }
+}

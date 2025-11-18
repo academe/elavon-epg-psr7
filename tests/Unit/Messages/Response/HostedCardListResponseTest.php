@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
-use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionListResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Response\HostedCardListResponse;
 use Academe\Elavon\Epg\Psr7\Support\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Tests for TransactionListResponse message.
+ * Tests for HostedCardListResponse message.
  */
-class TransactionListResponseTest extends TestCase
+class HostedCardListResponseTest extends TestCase
 {
     private function createMockResponse(string $body, int $statusCode): ResponseInterface
     {
@@ -28,29 +28,29 @@ class TransactionListResponseTest extends TestCase
         return $response;
     }
 
-    public function test_construct_withSuccessResponse_parsesTransactions(): void
+    public function test_construct_withSuccessResponse_parsesHostedCards(): void
     {
         // Arrange
         $responseBody = json_encode([
             'items' => [
-                ['id' => 'txn1', 'description' => 'Transaction 1'],
-                ['id' => 'txn2', 'description' => 'Transaction 2'],
+                ['id' => 'hc1', 'createdAt' => '2025-01-01T00:00:00Z'],
+                ['id' => 'hc2', 'createdAt' => '2025-01-02T00:00:00Z'],
             ],
-            'next' => 'https://api.example.com/transactions?page=2',
-            'first' => 'https://api.example.com/transactions?page=1',
+            'next' => 'https://api.example.com/hosted-cards?page=2',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->hasError());
-        $this->assertCount(2, $response->getTransactions());
-        $this->assertInstanceOf(Transaction::class, $response->getTransactions()[0]);
-        $this->assertSame('txn1', $response->getTransactions()[0]->id);
-        $this->assertSame('txn2', $response->getTransactions()[1]->id);
+        $this->assertCount(2, $response->getHostedCards());
+        $this->assertInstanceOf(HostedCard::class, $response->getHostedCards()[0]);
+        $this->assertSame('hc1', $response->getHostedCards()[0]->id);
+        $this->assertSame('hc2', $response->getHostedCards()[1]->id);
     }
 
     public function test_construct_withEmptyList_returnsEmptyArray(): void
@@ -59,16 +59,16 @@ class TransactionListResponseTest extends TestCase
         $responseBody = json_encode([
             'items' => [],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
-        $this->assertIsArray($response->getTransactions());
-        $this->assertCount(0, $response->getTransactions());
+        $this->assertIsArray($response->getHostedCards());
+        $this->assertCount(0, $response->getHostedCards());
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -76,17 +76,17 @@ class TransactionListResponseTest extends TestCase
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
-            'next' => 'https://api.example.com/transactions?page=2',
-            'first' => 'https://api.example.com/transactions?page=1',
+            'items' => [['id' => 'hc1']],
+            'next' => 'https://api.example.com/hosted-cards?page=2',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/transactions?page=2', $response->getNextPage());
+        $this->assertSame('https://api.example.com/hosted-cards?page=2', $response->getNextPage());
         $this->assertTrue($response->hasMorePages());
     }
 
@@ -94,14 +94,14 @@ class TransactionListResponseTest extends TestCase
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertNull($response->getNextPage());
@@ -112,17 +112,17 @@ class TransactionListResponseTest extends TestCase
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/transactions?page=1', $response->getFirstPage());
+        $this->assertSame('https://api.example.com/hosted-cards?page=1', $response->getFirstPage());
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -137,12 +137,12 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 401);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getTransactions());
+        $this->assertNull($response->getHostedCards());
         $this->assertInstanceOf(ErrorResponse::class, $response->getError());
     }
 
@@ -151,7 +151,7 @@ class TransactionListResponseTest extends TestCase
         // Arrange
         $responseBody = json_encode([
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
             // Missing 'items' array
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
@@ -161,7 +161,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        new HostedCardListResponse($psrResponse);
     }
 
     public function test_construct_withNonArrayItems_throwsException(): void
@@ -170,7 +170,7 @@ class TransactionListResponseTest extends TestCase
         $responseBody = json_encode([
             'items' => 'not an array',
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
@@ -179,7 +179,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        new HostedCardListResponse($psrResponse);
     }
 
     public function test_construct_withInvalidItemFormat_throwsException(): void
@@ -187,11 +187,11 @@ class TransactionListResponseTest extends TestCase
         // Arrange
         $responseBody = json_encode([
             'items' => [
-                ['id' => 'txn1'],
+                ['id' => 'hc1'],
                 'invalid item', // Not an array
             ],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
@@ -200,7 +200,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Item at index 1 is not an array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        new HostedCardListResponse($psrResponse);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -213,7 +213,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response body is empty');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        new HostedCardListResponse($psrResponse);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -226,39 +226,39 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Failed to decode JSON response');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        new HostedCardListResponse($psrResponse);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = TransactionListResponse::fromPsr7Response($psrResponse);
+        $response = HostedCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertInstanceOf(TransactionListResponse::class, $response);
-        $this->assertCount(1, $response->getTransactions());
+        $this->assertInstanceOf(HostedCardListResponse::class, $response);
+        $this->assertCount(1, $response->getHostedCards());
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertSame(200, $response->getStatusCode());
@@ -268,14 +268,14 @@ class TransactionListResponseTest extends TestCase
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
+            'first' => 'https://api.example.com/hosted-cards?page=1',
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertSame($psrResponse, $response->getPsr7Response());
@@ -285,13 +285,13 @@ class TransactionListResponseTest extends TestCase
     {
         // Arrange
         $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
+            'items' => [['id' => 'hc1']],
             // No 'next' or 'first' in response
         ]);
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = new HostedCardListResponse($psrResponse);
 
         // Assert
         $this->assertNull($response->getNextPage());
