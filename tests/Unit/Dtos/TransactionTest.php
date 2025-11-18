@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Tests\Unit\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Card;
-use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
+use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
 use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -143,7 +146,7 @@ class TransactionTest extends TestCase
         ];
 
         // Act
-        $transaction = Transaction::fromArray($data);
+        $transaction = Transaction::fromData($data);
 
         // Assert
         $this->assertSame('99.99', $transaction->total->amount);
@@ -173,7 +176,7 @@ class TransactionTest extends TestCase
         ];
 
         // Act
-        $transaction = Transaction::fromArray($data);
+        $transaction = Transaction::fromData($data);
 
         // Assert
         $this->assertSame('99.99', $transaction->total->amount);
@@ -193,7 +196,7 @@ class TransactionTest extends TestCase
         ];
 
         // Act
-        $transaction = Transaction::fromArray($data);
+        $transaction = Transaction::fromData($data);
 
         // Assert
         $this->assertNull($transaction->total);
@@ -211,10 +214,10 @@ class TransactionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid transaction state: invalid_state');
+        $this->expectExceptionMessage('Invalid state: invalid_state');
 
         // Act
-        Transaction::fromArray($data);
+        Transaction::fromData($data);
     }
 
     public function test_toArray_withMinimalData_returnsArray(): void
@@ -225,7 +228,7 @@ class TransactionTest extends TestCase
         );
 
         // Act
-        $array = $transaction->toArray();
+        $array = $transaction->toData();
 
         // Assert
         $this->assertSame([
@@ -256,7 +259,7 @@ class TransactionTest extends TestCase
         );
 
         // Act
-        $array = $transaction->toArray();
+        $array = $transaction->toData();
 
         // Assert
         $this->assertSame([
@@ -271,11 +274,11 @@ class TransactionTest extends TestCase
                 'expirationYear' => 2025,
                 'holderName' => 'John Doe',
             ],
+            'state' => 'authorized',
             'id' => 'txn_123',
             'description' => 'Order #12345',
             'customReference' => 'REF-12345',
             'createdAt' => '2025-11-13T10:00:00Z',
-            'state' => 'authorized',
         ], $array);
     }
 
@@ -288,7 +291,7 @@ class TransactionTest extends TestCase
         );
 
         // Act
-        $array = $transaction->toArray();
+        $array = $transaction->toData();
 
         // Assert
         $this->assertArrayHasKey('total', $array);
@@ -315,8 +318,8 @@ class TransactionTest extends TestCase
         ];
 
         // Act
-        $transaction = Transaction::fromArray($originalData);
-        $resultData = $transaction->toArray();
+        $transaction = Transaction::fromData($originalData);
+        $resultData = $transaction->toData();
 
         // Assert
         $this->assertSame($originalData, $resultData);
@@ -398,5 +401,111 @@ class TransactionTest extends TestCase
         $this->assertSame('1111', $transaction->card->last4);
         $this->assertSame('411111', $transaction->card->bin);
         $this->assertSame(CardScheme::VISA, $transaction->card->scheme);
+    }
+
+    public function test_construct_withShopperValueObjectsAsStrings_createsInstances(): void
+    {
+        // Arrange & Act
+        $transaction = new Transaction(
+            total: ['amount' => '50.00', 'currencyCode' => 'USD'],
+            shopperIpAddress: '192.168.1.100',
+            shopperLanguageTag: 'en-US',
+            shopperTimeZone: 'America/New_York',
+        );
+
+        // Assert
+        $this->assertInstanceOf(IpAddress::class, $transaction->shopperIpAddress);
+        $this->assertSame('192.168.1.100', $transaction->shopperIpAddress->address);
+
+        $this->assertInstanceOf(LanguageTag::class, $transaction->shopperLanguageTag);
+        $this->assertSame('en-US', $transaction->shopperLanguageTag->tag);
+
+        $this->assertInstanceOf(TimeZone::class, $transaction->shopperTimeZone);
+        $this->assertSame('America/New_York', $transaction->shopperTimeZone->timezone);
+    }
+
+    public function test_construct_withShopperValueObjects_storesInstances(): void
+    {
+        // Arrange
+        $ipAddress = new IpAddress('10.9.234.22');
+        $languageTag = new LanguageTag('fr-FR');
+        $timeZone = new TimeZone('Europe/Paris');
+
+        // Act
+        $transaction = new Transaction(
+            total: ['amount' => '100.00', 'currencyCode' => 'EUR'],
+            shopperIpAddress: $ipAddress,
+            shopperLanguageTag: $languageTag,
+            shopperTimeZone: $timeZone,
+        );
+
+        // Assert
+        $this->assertSame($ipAddress, $transaction->shopperIpAddress);
+        $this->assertSame($languageTag, $transaction->shopperLanguageTag);
+        $this->assertSame($timeZone, $transaction->shopperTimeZone);
+    }
+
+    public function test_toData_withShopperValueObjects_serializesToStrings(): void
+    {
+        // Arrange
+        $transaction = new Transaction(
+            total: ['amount' => '75.00', 'currencyCode' => 'GBP'],
+            shopperIpAddress: '2001:db8::1',
+            shopperLanguageTag: 'en-GB',
+            shopperTimeZone: 'Europe/London',
+        );
+
+        // Act
+        $data = $transaction->toData();
+
+        // Assert
+        $this->assertIsArray($data);
+        $this->assertSame('2001:db8::1', $data['shopperIpAddress']);
+        $this->assertSame('en-GB', $data['shopperLanguageTag']);
+        $this->assertSame('Europe/London', $data['shopperTimeZone']);
+    }
+
+    public function test_fromData_withShopperFields_createsValueObjects(): void
+    {
+        // Arrange
+        $data = [
+            'total' => ['amount' => '250.00', 'currencyCode' => 'JPY'],
+            'shopperIpAddress' => '203.0.113.42',
+            'shopperLanguageTag' => 'ja-JP',
+            'shopperTimeZone' => 'Asia/Tokyo',
+        ];
+
+        // Act
+        $transaction = Transaction::fromData($data);
+
+        // Assert
+        $this->assertInstanceOf(IpAddress::class, $transaction->shopperIpAddress);
+        $this->assertSame('203.0.113.42', $transaction->shopperIpAddress->address);
+
+        $this->assertInstanceOf(LanguageTag::class, $transaction->shopperLanguageTag);
+        $this->assertSame('ja-JP', $transaction->shopperLanguageTag->tag);
+
+        $this->assertInstanceOf(TimeZone::class, $transaction->shopperTimeZone);
+        $this->assertSame('Asia/Tokyo', $transaction->shopperTimeZone->timezone);
+    }
+
+    public function test_roundTrip_withShopperValueObjects_preservesData(): void
+    {
+        // Arrange
+        $originalData = [
+            'total' => ['amount' => '150.00', 'currencyCode' => 'AUD'],
+            'shopperIpAddress' => '::1',
+            'shopperLanguageTag' => 'en-AU',
+            'shopperTimeZone' => 'Australia/Sydney',
+        ];
+
+        // Act
+        $transaction = Transaction::fromData($originalData);
+        $restoredData = $transaction->toData();
+
+        // Assert
+        $this->assertSame($originalData['shopperIpAddress'], $restoredData['shopperIpAddress']);
+        $this->assertSame($originalData['shopperLanguageTag'], $restoredData['shopperLanguageTag']);
+        $this->assertSame($originalData['shopperTimeZone'], $restoredData['shopperTimeZone']);
     }
 }

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
@@ -12,55 +14,40 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  * Represents an error response from the API.
  * Example: {"status":401,"failures":[{"code":"unauthorized","description":"...","field":null}]}
  */
-class ErrorResponse
+class ErrorResponse implements DataTransferObject
 {
+    use SerializesData;
+
     /**
-     * @param int $status HTTP status code from the error
-     * @param ErrorDetail[] $failures Array of error details
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
      */
-    public function __construct(
-        public readonly int $status,
-        public readonly array $failures = [],
-    ) {
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'int' => ['status'],
+            'array' => ['failures'],
+        ];
     }
 
     /**
-     * Creates an ErrorResponse from an array.
-     *
-     * @param array<string, mixed> $data
-     * @return self
-     * @throws InvalidArgumentException
+     * @param int|null $status HTTP status code from the error
+     * @param ErrorDetail[]|array<array<string, mixed>>|null $failures Array of error details
      */
-    public static function fromArray(array $data): self
-    {
-        $failures = [];
-
-        if (isset($data['failures']) && is_array($data['failures'])) {
-            foreach ($data['failures'] as $failure) {
-                if (is_array($failure)) {
-                    $failures[] = ErrorDetail::fromArray($failure);
-                }
-            }
-        }
-
-        return new self(
-            status: (int) ($data['status'] ?? 0),
-            failures: $failures,
+    public function __construct(
+        public readonly ?int $status = null,
+        array|null $failures = null,
+    ) {
+        // Normalize failures to ErrorDetail objects
+        $this->failures = $failures === null ? [] : array_map(
+            fn($failure) => $failure instanceof ErrorDetail ? $failure : ErrorDetail::fromData($failure),
+            $failures
         );
     }
 
-    /**
-     * Converts the ErrorResponse to an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(): array
-    {
-        return [
-            'status' => $this->status,
-            'failures' => array_map(fn(ErrorDetail $detail) => $detail->toArray(), $this->failures),
-        ];
-    }
+    /** @var ErrorDetail[] */
+    public readonly array $failures;
 
     /**
      * Gets the primary error message (from first failure).

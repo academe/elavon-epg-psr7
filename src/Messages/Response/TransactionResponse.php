@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
 use Psr\Http\Message\ResponseInterface;
@@ -95,7 +95,7 @@ class TransactionResponse
     private function parseSuccessResponse(): Transaction
     {
         $data = $this->parseJsonBody();
-        return Transaction::fromArray($data);
+        return Transaction::fromData($data);
     }
 
     /**

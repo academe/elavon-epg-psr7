@@ -109,7 +109,7 @@ final class MoneyTest extends TestCase
         ];
 
         // Act
-        $money = Money::fromArray($data);
+        $money = Money::fromData($data);
 
         // Assert
         $this->assertSame('50.00', $money->amount);
@@ -126,7 +126,7 @@ final class MoneyTest extends TestCase
         $this->expectExceptionMessage('Missing required field: amount');
 
         // Act
-        Money::fromArray($data);
+        Money::fromData($data);
     }
 
     public function test_fromArray_withMissingCurrency_throwsException(): void
@@ -139,7 +139,7 @@ final class MoneyTest extends TestCase
         $this->expectExceptionMessage('Missing required field: currencyCode');
 
         // Act
-        Money::fromArray($data);
+        Money::fromData($data);
     }
 
     public function test_fromArray_withInvalidCurrency_throwsException(): void
@@ -155,7 +155,7 @@ final class MoneyTest extends TestCase
         $this->expectExceptionMessage('Invalid currency code: INVALID');
 
         // Act
-        Money::fromArray($data);
+        Money::fromData($data);
     }
 
     public function test_toArray_returnsCorrectFormat(): void
@@ -164,7 +164,7 @@ final class MoneyTest extends TestCase
         $money = new Money('99.99', Currency::USD);
 
         // Act
-        $result = $money->toArray();
+        $result = $money->toData();
 
         // Assert
         $this->assertSame([

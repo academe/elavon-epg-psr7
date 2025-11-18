@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Concerns;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\ErrorResponse;
+use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -60,7 +60,7 @@ trait HandlesErrors
     private function parseErrorResponse(): ErrorResponse
     {
         $data = $this->parseJsonBody();
-        return ErrorResponse::fromArray($data);
+        return ErrorResponse::fromData($data);
     }
 
     /**

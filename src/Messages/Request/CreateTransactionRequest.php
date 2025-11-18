@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -15,6 +15,29 @@ use Psr\Http\Message\StreamFactoryInterface;
  * Create Transaction Request.
  *
  * Builds a PSR-7 request for creating a new transaction (POST /transactions).
+ *
+ * Example usage with ElavonApiRequest decorator:
+ * ```php
+ * use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
+ * use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
+ *
+ * // Build the base request
+ * $request = (new CreateTransactionRequest($transaction))->build();
+ *
+ * // Add Elavon API headers, environment, and authentication
+ * $elavonRequest = ElavonApiRequest::create($request)
+ *     ->withSandbox()
+ *     ->withAuthentication($merchantAlias, $apiKey);
+ *
+ * // Send the request
+ * $response = $httpClient->sendRequest($elavonRequest);
+ * ```
+ *
+ * Note: This class builds the base request but does NOT add:
+ * - Elavon API headers (Accept, Content-Type, Accept-Version)
+ * - Environment configuration (sandbox, production, custom base URI)
+ * - Authentication headers (Authorization)
+ * Use the ElavonApiRequest decorator to add these via fluent interface.
  */
 class CreateTransactionRequest
 {
@@ -63,13 +86,13 @@ class CreateTransactionRequest
         // Normalize to Transaction object
         $transaction = $this->transaction instanceof Transaction
             ? $this->transaction
-            : Transaction::fromArray($this->transaction);
+            : Transaction::fromData($this->transaction);
 
         // Validate required fields for request
         $this->validateTransactionRequest($transaction);
 
         // Serialize transaction to JSON
-        $body = json_encode($transaction->toArray(), JSON_THROW_ON_ERROR);
+        $body = json_encode($transaction->toData(), JSON_THROW_ON_ERROR);
 
         // Create request stream
         $stream = $streamFactory->createStream($body);
@@ -112,6 +135,6 @@ class CreateTransactionRequest
     {
         return $this->transaction instanceof Transaction
             ? $this->transaction
-            : Transaction::fromArray($this->transaction);
+            : Transaction::fromData($this->transaction);
     }
 }

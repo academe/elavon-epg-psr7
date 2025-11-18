@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\DataObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
@@ -13,9 +14,25 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  * Represents payment card details for transaction requests and responses.
  * For requests: includes sensitive data (number, securityCode)
  * For responses: includes masked/token data (last4, bin, scheme, etc.)
+ *
+ * Note: Uses custom implementation instead of SerializesData trait due to
+ * special validation requirements in fromArray() method (e.g., enum validation with error messages).
  */
-class Card
+class Card implements DataTransferObject
 {
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'string' => ['number', 'securityCode', 'holderName', 'last4', 'bin', 'fingerprint'],
+            'int' => ['expirationMonth', 'expirationYear'],
+            'enum' => ['scheme'],
+        ];
+    }
     /**
      * @param string|null $number Card number (PAN) - writeOnly, used in requests
      * @param string|null $securityCode Security code (CVV/CVC) - writeOnly, used in requests
@@ -44,13 +61,13 @@ class Card
     }
 
     /**
-     * Creates a Card instance from an array representation.
+     * Creates a Card instance from JSON-compatible data.
      *
-     * @param array<string, mixed> $data Array with card data
+     * @param mixed $data Array with card data
      *
      * @throws InvalidArgumentException When data is invalid
      */
-    public static function fromArray(array $data): self
+    public static function fromData(mixed $data): static
     {
         // Parse scheme if present
         $scheme = null;
@@ -75,13 +92,13 @@ class Card
     }
 
     /**
-     * Converts the Card to an array representation.
+     * Converts the Card to JSON-compatible data.
      *
      * Only includes non-null values for cleaner JSON serialization.
      *
-     * @return array<string, mixed>
+     * @return mixed
      */
-    public function toArray(): array
+    public function toData(): mixed
     {
         $data = [];
 
@@ -119,6 +136,27 @@ class Card
 
         if ($this->fingerprint !== null) {
             $data['fingerprint'] = $this->fingerprint;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Returns a shallow array of all non-null properties.
+     *
+     * @return array<string, mixed>
+     */
+    public function toObjectArray(): array
+    {
+        $data = [];
+
+        $properties = ['number', 'securityCode', 'expirationMonth', 'expirationYear',
+                       'holderName', 'last4', 'bin', 'scheme', 'fingerprint'];
+
+        foreach ($properties as $prop) {
+            if ($this->$prop !== null) {
+                $data[$prop] = $this->$prop;
+            }
         }
 
         return $data;

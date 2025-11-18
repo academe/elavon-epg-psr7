@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response\Concerns;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\ErrorResponse;
+use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +21,7 @@ class HandlesErrorsTest extends TestCase
 
             public function __construct()
             {
-                $this->error = ErrorResponse::fromArray([
+                $this->error = ErrorResponse::fromData([
                     'status' => 401,
                     'failures' => [
                         ['code' => 'unauthorized', 'description' => 'Invalid API key'],
