@@ -53,7 +53,7 @@ class UpdateShopperRequest
     private readonly Shopper $updates;
 
     /**
-     * @param string $storedCardId shopper ID to update
+     * @param string $shopperId shopper ID to update
      * @param Shopper|array<string, mixed> $updates Update data (partial stored card)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
@@ -62,13 +62,13 @@ class UpdateShopperRequest
      * @throws InvalidArgumentException When stored card ID is empty or updates are invalid
      */
     public function __construct(
-        private readonly string $storedCardId,
+        private readonly string $shopperId,
         Shopper|array $updates,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
         private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
-        if (empty($this->storedCardId)) {
+        if (empty($this->shopperId)) {
             throw new InvalidArgumentException('shopper ID cannot be empty');
         }
 
@@ -96,20 +96,20 @@ class UpdateShopperRequest
 
         // Build PSR-7 PATCH request
         return $requestFactory
-            ->createRequest('PATCH', $this->baseUri . '/shoppers/' . $this->storedCardId)
+            ->createRequest('PATCH', $this->baseUri . '/shoppers/' . $this->shopperId)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 
     /**
-     * Gets the stored card ID being updated.
+     * Gets the shopper ID being updated.
      *
      * @return string
      */
     public function getShopperId(): string
     {
-        return $this->storedCardId;
+        return $this->shopperId;
     }
 
     /**

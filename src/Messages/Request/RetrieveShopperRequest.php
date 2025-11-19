@@ -52,7 +52,7 @@ class RetrieveShopperRequest
         private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->storedCardId)) {
-            throw new InvalidArgumentException('shopper ID cannot be empty');
+            throw new InvalidArgumentException('Shopper ID cannot be empty');
         }
     }
 

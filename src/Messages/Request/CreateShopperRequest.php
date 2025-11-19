@@ -52,10 +52,10 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateShopperRequest
 {
-    private readonly Shopper $storedCard;
+    private readonly Shopper $shopper;
 
     /**
-     * @param Shopper|array<string, mixed> $storedCard shopper data or array
+     * @param Shopper|array<string, mixed> $shopper shopper data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
      * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
@@ -63,18 +63,16 @@ class CreateShopperRequest
      * @throws InvalidArgumentException When stored card data is invalid
      */
     public function __construct(
-        Shopper|array $storedCard,
+        Shopper|array $shopper,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
         private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         // Normalize to Shopper object
-        $this->storedCard = match (true) {
-            $storedCard instanceof Shopper => $storedCard,
-            is_array($storedCard) => Shopper::fromData($storedCard),
+        $this->shopper = match (true) {
+            $shopper instanceof Shopper => $shopper,
+            is_array($shopper) => Shopper::fromData($shopper),
         };
-
-        $this->validate();
     }
 
     /**
@@ -89,7 +87,7 @@ class CreateShopperRequest
         $streamFactory = $this->streamFactory ?? new Psr17Factory();
 
         // Serialize stored card to JSON
-        $data = $this->storedCard->toData();
+        $data = $this->shopper->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request
@@ -101,30 +99,12 @@ class CreateShopperRequest
     }
 
     /**
-     * Gets the stored card being created.
+     * Gets the shopper being created.
      *
      * @return Shopper
      */
     public function getShopper(): Shopper
     {
-        return $this->storedCard;
-    }
-
-    /**
-     * Validates the stored card data for creation.
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
-    private function validate(): void
-    {
-        // Shopper is required for creation
-        if ($this->storedCard->shopper === null) {
-            throw new InvalidArgumentException('Shopper URL is required to create a stored card');
-        }
-
-        // Must have either hostedCard or card data
-        if ($this->storedCard->hostedCard === null && $this->storedCard->card === null) {
-            throw new InvalidArgumentException('Either hostedCard URL or card data is required to create a stored card');
-        }
+        return $this->shopper;
     }
 }

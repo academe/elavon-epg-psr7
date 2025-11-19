@@ -17,7 +17,7 @@ class RetrieveApplePayPaymentRequest
         private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->applePayPaymentId)) {
-            throw new InvalidArgumentException('ApplePay payment ID cannot be empty');
+            throw new InvalidArgumentException('Apple Pay payment ID cannot be empty');
         }
     }
 

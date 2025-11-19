@@ -17,7 +17,7 @@ class RetrieveGooglePayPaymentRequest
         private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->googlePayPaymentId)) {
-            throw new InvalidArgumentException('GooglePay payment ID cannot be empty');
+            throw new InvalidArgumentException('Google Pay payment ID cannot be empty');
         }
     }
 

@@ -27,7 +27,7 @@ use Psr\Http\Message\ResponseInterface;
  *     }
  *
  *     if ($response->hasMorePages()) {
- *         $nextPageUrl = $response->getNextPage();
+ *         $nextPageUrl = $response->getNext();
  *         // Fetch next page...
  *     }
  * } else {
@@ -40,7 +40,7 @@ class ShopperListResponse
 {
     use HandlesErrors;
 
-    private readonly ?array $storedCards;
+    private readonly ?array $shoppers;
     private readonly ?string $nextPage;
     private readonly ?string $firstPage;
 
@@ -77,9 +77,9 @@ class ShopperListResponse
     }
 
     /**
-     * Gets the stored cards from a successful response.
+     * Gets the shoppers from a successful response.
      *
-     * @return array<Shopper>|null Array of stored cards on success, null on error
+     * @return array<Shopper>|null Array of shoppers on success, null on error
      */
     public function getShoppers(): ?array
     {
@@ -91,7 +91,7 @@ class ShopperListResponse
      *
      * @return string|null URL if more pages exist, null otherwise
      */
-    public function getNextPage(): ?string
+    public function getNext(): ?string
     {
         return $this->nextPage;
     }
@@ -101,7 +101,7 @@ class ShopperListResponse
      *
      * @return string|null URL if available, null otherwise
      */
-    public function getFirstPage(): ?string
+    public function getFirst(): ?string
     {
         return $this->firstPage;
     }
@@ -137,7 +137,7 @@ class ShopperListResponse
     }
 
     /**
-     * Parses a successful response into a paginated list of stored cards.
+     * Parses a successful response into a paginated list of shoppers.
      *
      * @return array{items: array<Shopper>, next: string|null, first: string|null}
      * @throws InvalidArgumentException When response cannot be parsed
@@ -152,17 +152,17 @@ class ShopperListResponse
         }
 
         // Parse each stored card
-        $storedCards = [];
+        $shoppers = [];
         foreach ($data['items'] as $index => $itemData) {
             if (!is_array($itemData)) {
                 throw new InvalidArgumentException("Item at index {$index} is not an array");
             }
 
-            $storedCards[] = Shopper::fromData($itemData);
+            $shoppers[] = Shopper::fromData($itemData);
         }
 
         return [
-            'items' => $storedCards,
+            'items' => $shoppers,
             'next' => isset($data['next']) ? (string) $data['next'] : null,
             'first' => isset($data['first']) ? (string) $data['first'] : null,
         ];
