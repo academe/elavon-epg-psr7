@@ -1,0 +1,441 @@
+====================================================================================================
+ELAVON EPG PSR-7 - OPENAPI IMPLEMENTATION COVERAGE ANALYSIS
+====================================================================================================
+
+EXECUTIVE SUMMARY
+----------------------------------------------------------------------------------------------------
+Total Endpoints in Spec: 95
+Implemented Endpoints: 25
+Endpoint Coverage: 26.3%
+
+Total Schemas in Spec: 168
+Implemented DTOs: 18
+Schema Coverage: 10.7%
+
+
+IMPLEMENTED ENDPOINTS (FULLY IMPLEMENTED)
+----------------------------------------------------------------------------------------------------
+
+Apple Pay Payments:
+  ✓ GET    /apple-pay-payments/{id}                           [RetrieveApplePayPayment]
+  ✓ POST   /apple-pay-payments                                [CreateApplePayPayment]
+
+Forex Advices:
+  ✓ GET    /forex-advices/{id}                                [RetrieveForexAdvice]
+  ✓ POST   /forex-advices                                     [CreateForexAdvice]
+
+Google Pay Payments:
+  ✓ GET    /google-pay-payments/{id}                          [RetrieveGooglePayPayment]
+  ✓ POST   /google-pay-payments                               [CreateGooglePayPayment]
+
+Hosted Cards:
+  ✓ GET    /hosted-cards/{id}                                 [RetrieveHostedCard]
+  ✓ POST   /hosted-cards                                      [CreateHostedCard]
+
+Paze Payments:
+  ✓ GET    /paze-payments/{id}                                [RetrievePazePayment]
+  ✓ POST   /paze-payments                                     [CreatePazePayment]
+
+Refund Surcharge Advices:
+  ✓ GET    /refund-surcharge-advices/{id}                     [RetrieveRefundSurchargeAdvice]
+  ✓ POST   /refund-surcharge-advices                          [CreateRefundSurchargeAdvice]
+
+Shoppers:
+  ✓ DELETE /shoppers/{id}                                     [DeleteShopper]
+  ✓ GET    /shoppers/{id}                                     [RetrieveShopper]
+  ✓ POST   /shoppers                                          [CreateShopper]
+  ✓ POST   /shoppers/{id}                                     [UpdateShopper]
+
+Stored Cards:
+  ✓ DELETE /stored-cards/{id}                                 [DeleteStoredCard]
+  ✓ GET    /stored-cards/{id}                                 [RetrieveStoredCard]
+  ✓ POST   /stored-cards                                      [CreateStoredCard]
+  ✓ POST   /stored-cards/{id}                                 [UpdateStoredCard]
+
+Surcharge Advices:
+  ✓ GET    /surcharge-advices/{id}                            [RetrieveSurchargeAdvice]
+  ✓ POST   /surcharge-advices                                 [CreateSurchargeAdvice]
+
+Transactions:
+  ✓ GET    /transactions/{id}                                 [RetrieveTransaction]
+  ✓ POST   /transactions                                      [CreateTransaction]
+  ✓ POST   /transactions/{id}                                 [UpdateTransaction]
+
+Total Fully Implemented: 25
+
+
+PARTIALLY IMPLEMENTED ENDPOINTS
+----------------------------------------------------------------------------------------------------
+
+Hosted Cards:
+  ✗ Request | ✓ Response | POST   /hosted-cards/{id}                                 [UpdateHostedCard]
+
+Plans:
+  ✗ Request | ✓ Response | DELETE /plans/{id}                                        [DeletePlan]
+
+Shoppers:
+  ✗ Request | ✓ Response | GET    /shoppers                                          [RetrieveShoppers]
+
+Stored ACH Payments:
+  ✗ Request | ✓ Response | DELETE /stored-ach-payments/{id}                          [DeleteStoredAchPayment]
+
+Transactions:
+  ✗ Request | ✓ Response | GET    /transactions                                      [RetrieveTransactions]
+
+Total Partially Implemented: 5
+
+
+NOT IMPLEMENTED ENDPOINTS
+----------------------------------------------------------------------------------------------------
+
+Accounts:
+  ✗ GET    /accounts                                          [RetrieveAccounts]
+  ✗ GET    /accounts/{id}                                     [Account]
+
+Apple Pay Payment Sessions:
+  ✗ POST   /apple-pay-payment-sessions                        [CreateApplePayPaymentSession]
+
+Batches:
+  ✗ GET    /batches                                           [RetrieveBatches]
+  ✗ GET    /batches/{id}                                      [RetrieveBatch]
+
+Hosted ACH Payments:
+  ✗ GET    /hosted-ach-payments/{id}                          [RetrieveHostedACHPayment]
+  ✗ POST   /hosted-ach-payments                               [CreateHostedAchPayment]
+
+Hsm Cards:
+  ✗ GET    /hsm-cards/{id}                                    [RetrieveHsmCard]
+  ✗ POST   /hsm-cards                                         [CreateHsmCard]
+
+Manual Batches:
+  ✗ GET    /manual-batches                                    [RetrieveManualBatches]
+  ✗ GET    /manual-batches/{id}                               [RetrieveManualBatch]
+  ✗ POST   /manual-batches                                    [CreateManualBatch]
+  ✗ POST   /manual-batches/{id}                               [UpdateManualBatch]
+
+Merchants:
+  ✗ GET    /merchants                                         [RetrieveMerchants]
+  ✗ GET    /merchants/{id}                                    [RetrieveMerchant]
+
+Notifications:
+  ✗ GET    /notifications                                     [RetrieveNotifications]
+  ✗ GET    /notifications/{id}                                [RetrieveNotification]
+
+Orders:
+  ✗ GET    /orders                                            [RetrieveOrders]
+  ✗ GET    /orders/{id}                                       [RetrieveOrder]
+  ✗ POST   /orders                                            [CreateOrder]
+  ✗ POST   /orders/{id}                                       [UpdateOrder]
+
+Pan Tokens:
+  ✗ POST   /pan-tokens                                        [CreatePanTokens]
+
+Payment Link Events:
+  ✗ GET    /payment-link-events                               [RetrievePaymentLinkEvents]
+  ✗ GET    /payment-link-events/{id}                          [RetrievePaymentLinkEvent]
+  ✗ POST   /payment-link-events                               [CreatePaymentLinkEvent]
+
+Payment Links:
+  ✗ GET    /payment-links                                     [RetrievePaymentLinks]
+  ✗ GET    /payment-links/{id}                                [RetrievePaymentLink]
+  ✗ GET    /payment-links/{id}/payment-link-events            [RetrievePaymentLinksPaymentLinkEvents]
+  ✗ POST   /payment-links                                     [CreatePaymentLink]
+  ✗ POST   /payment-links/{id}                                [UpdatePaymentLink]
+
+Payment Method Links:
+  ✗ GET    /payment-method-links                              [RetrievePaymentMethodLinks]
+  ✗ GET    /payment-method-links/{id}                         [RetrievePaymentMethodLink]
+  ✗ POST   /payment-method-links                              [CreatePaymentMethodLink]
+  ✗ POST   /payment-method-links/{id}                         [UpdatePaymentMethodLink]
+
+Payment Method Sessions:
+  ✗ GET    /payment-method-sessions                           [RetrievePaymentMethodSessions]
+  ✗ GET    /payment-method-sessions/{id}                      [RetrievePaymentMethodSession]
+  ✗ POST   /payment-method-sessions                           [CreatePaymentMethodSession]
+  ✗ POST   /payment-method-sessions/{id}                      [UpdatePaymentMethodSession]
+
+Payment Sessions:
+  ✗ GET    /payment-sessions/{id}                             [RetrievePaymentSession]
+  ✗ POST   /payment-sessions                                  [CreatePaymentSession]
+  ✗ POST   /payment-sessions/{id}                             [UpdatePaymentSession]
+
+Plan Lists:
+  ✗ GET    /plan-lists                                        [RetrievePlanLists]
+  ✗ GET    /plan-lists/{id}                                   [RetrievePlanList]
+
+Plans:
+  ✗ GET    /plans                                             [RetrievePlans]
+  ✗ GET    /plans/{id}                                        [RetrievePlan]
+  ✗ POST   /plans                                             [CreatePlan]
+  ✗ POST   /plans/{id}                                        [UpdatePlan]
+
+Processor Accounts:
+  ✗ GET    /processor-accounts                                [RetrieveProcessorAccounts]
+  ✗ GET    /processor-accounts/{id}                           [RetrieveProcessorAccount]
+
+Shoppers:
+  ✗ GET    /shoppers/{id}/stored-cards                        [RetrieveShoppersStoredCards]
+
+Stored ACH Payments:
+  ✗ GET    /stored-ach-payments/{id}                          [RetrieveStoredAchPayment]
+  ✗ POST   /stored-ach-payments                               [CreateStoredAchPayment]
+  ✗ POST   /stored-ach-payments/{id}                          [UpdateStoredAchPayment]
+
+Subscriptions:
+  ✗ GET    /subscriptions                                     [RetrieveSubscriptions]
+  ✗ GET    /subscriptions/{id}                                [RetrieveSubscription]
+  ✗ POST   /subscriptions                                     [CreateSubscription]
+  ✗ POST   /subscriptions/{id}                                [UpdateSubscription]
+
+Terminals:
+  ✗ GET    /terminals                                         [RetrieveTerminals]
+  ✗ GET    /terminals/{id}                                    [RetrieveTerminal]
+  ✗ GET    /terminals/{id}/emv-keys                           [RetrieveEmvKeys]
+  ✗ GET    /terminals/{id}/provisioning-codes                 [RetrieveProvisioningCode]
+
+Total Adjustments:
+  ✗ GET    /total-adjustments/{id}                            [RetrieveTotalAdjustment]
+  ✗ GET    /transactions/{id}/total-adjustments               [RetrieveTotalAdjustments]
+  ✗ POST   /total-adjustments                                 [CreateTotalAdjustment]
+
+Transactions:
+  ✗ POST   /transactions/{id}/email-receipt-requests          [CreateEmailReceiptRequest]
+
+Total Not Implemented: 65
+
+
+SCHEMA/DTO MAPPING
+----------------------------------------------------------------------------------------------------
+
+Implemented Schemas (18):
+  ✓ AchPayment                               → Academe\Elavon\Epg\Psr7\Dtos\AchPayment
+  ✓ ApplePayPayment                          → Academe\Elavon\Epg\Psr7\Dtos\ApplePayPayment
+  ✓ Blik                                     → Academe\Elavon\Epg\Psr7\Dtos\Blik
+  ✓ Card                                     → Academe\Elavon\Epg\Psr7\Dtos\Card
+  ✓ Contact                                  → Academe\Elavon\Epg\Psr7\Dtos\Contact
+  ✓ Failure                                  → Academe\Elavon\Epg\Psr7\Dtos\Failure
+  ✓ ForexAdvice                              → Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice
+  ✓ GooglePayPayment                         → Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment
+  ✓ HostedCard                               → Academe\Elavon\Epg\Psr7\Dtos\HostedCard
+  ✓ PazePayment                              → Academe\Elavon\Epg\Psr7\Dtos\PazePayment
+  ✓ RefundSurchargeAdvice                    → Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice
+  ✓ Shopper                                  → Academe\Elavon\Epg\Psr7\Dtos\Shopper
+  ✓ ShopperStatement                         → Academe\Elavon\Epg\Psr7\Dtos\ShopperStatement
+  ✓ StoredCard                               → Academe\Elavon\Epg\Psr7\Dtos\StoredCard
+  ✓ Surcharge                                → Academe\Elavon\Epg\Psr7\Dtos\Surcharge
+  ✓ SurchargeAdvice                          → Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice
+  ✓ ThreeDSecure                             → Academe\Elavon\Epg\Psr7\Dtos\ThreeDSecure
+  ✓ Transaction                              → Academe\Elavon\Epg\Psr7\Dtos\Transaction
+
+Not Implemented Schemas (150):
+  ✗ Account
+  ✗ AccountEntryMode
+  ✗ AchAccountType
+  ✗ Address
+  ✗ AmountAndCurrency
+  ✗ ApplePayPaymentInput
+  ✗ ApplePayPaymentSession
+  ✗ ApplePayPaymentSessionInput
+  ✗ AutoSettleAt
+  ✗ Batch
+  ✗ BatchState
+  ✗ BillingInterval
+  ✗ CardBrand
+  ✗ CardDataOutputCapability
+  ✗ CardFundingSource
+  ✗ CardScheme
+  ✗ CardholderActivatedTerminalType
+  ✗ CardholderVerificationCapability
+  ✗ CardholderVerificationMethod
+  ✗ CountAndTotal
+  ✗ CredentialOnFileType
+  ✗ Credentials
+  ✗ DebitSteering
+  ✗ DebitSteeringPreference
+  ✗ DebtorAccount
+  ✗ DeviceFormat
+  ✗ DeviceInteraction
+  ✗ DoAutoCaptureAfter
+  ✗ DoAutoCaptureAfterTimeUnit
+  ✗ EmailReceiptRequest
+  ✗ Emv
+  ✗ EmvKey
+  ✗ EmvKeys
+  ✗ EncryptedData
+  ✗ EventType
+  ✗ FailureWrapper
+  ✗ FieldPolicy
+  ✗ GooglePayPaymentInput
+  ✗ HistoryEntry
+  ✗ HostedAchPayment
+  ✗ HostedAchPaymentInput
+  ✗ HostedCardInput
+  ✗ HppType
+  ✗ HsmCard
+  ✗ ListOfPanTokens
+  ✗ ManualBatch
+  ✗ ManualBatchInput
+  ✗ MarketSegment
+  ✗ MarkupRateAnnotation
+  ✗ Merchant
+  ... and 100 more
+
+====================================================================================================
+
+
+====================================================================================================
+VALIDATION RULES SUMMARY
+====================================================================================================
+
+Total Classes with Validation Rules: 106
+Total Fields with Validation Rules: 1009
+
+Validation Rule Types Used:
+  required            : 1009 occurrences
+  readOnly            :  543 occurrences
+  format              :  337 occurrences
+  maxLength           :  156 occurrences
+  pattern             :   59 occurrences
+  writeOnly           :   31 occurrences
+  items               :   28 occurrences
+  minLength           :   23 occurrences
+  default             :   17 occurrences
+  minimum             :   11 occurrences
+  maximum             :    4 occurrences
+  maxItems            :    3 occurrences
+  enum                :    2 occurrences
+
+Sample Validation Rules by DTO:
+----------------------------------------------------------------------------------------------------
+
+Academe\Elavon\Epg\Psr7\Dtos\AchPayment:
+  • accountName                    [type=string, required, maxLength=255]
+  • achAccountType                 [type=string, required]
+  • achFingerprint                 [type=string]
+  • bankAccountNumber              [type=string, pattern=^\\d{5,16}?...]
+  • bankAccountToken               []
+  ... and 2 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\ApplePayPayment:
+  • card                           []
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  • expiresAt                      [type=string, format=date-time]
+  ... and 5 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\Blik:
+  • code                           [type=string, required, pattern=\\d{6}...]
+
+Academe\Elavon\Epg\Psr7\Dtos\Card:
+  • billTo                         []
+  • bin                            [type=string, maxLength=6, minLength=6, pattern=\d{6}...]
+  • brand                          []
+  • encryptedCard                  [type=string]
+  • encryptedPin                   [type=string]
+  ... and 18 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\Contact:
+  • alternatePhone                 [type=string, maxLength=255, pattern=[\w \-+:()/]*...]
+  • city                           [type=string, maxLength=255, pattern=[^%<>/\[\]{}\\]*...]
+  • company                        [type=string, maxLength=255, pattern=[^%<>/\[\]{}\\]*...]
+  • countryCode                    [type=string, maxLength=3, minLength=3]
+  • email                          [type=string, maxLength=254]
+  ... and 7 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\Failure:
+  • code                           [type=string]
+  • description                    [type=string]
+  • field                          [type=string]
+
+Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice:
+  • account                        [type=string, format=url]
+  • bin                            [type=string, maxLength=6, minLength=6]
+  • cardNumber                     [type=string, maxLength=23, minLength=13, pattern=\D*(?:\d\D*){13,19}...]
+  • conversionRate                 [type=string]
+  • createdAt                      [type=string, format=date-time]
+  ... and 20 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment:
+  • card                           []
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  • expiresAt                      [type=string, format=date-time]
+  ... and 5 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\HostedCard:
+  • card                           [required]
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  • doVerify                       [type=boolean]
+  ... and 6 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\PazePayment:
+  • card                           []
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  • expiresAt                      [type=string, format=date-time]
+  ... and 7 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice:
+  • adjustedTotal                  []
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  • expiresAt                      [type=string, format=date-time]
+  ... and 8 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\Shopper:
+  • alternatePhone                 [type=string, maxLength=255, pattern=[\w \-+:()/]*...]
+  • company                        [type=string, maxLength=255, pattern=[^%<>/\[\]{}\\]*...]
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  ... and 13 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\ShopperStatement:
+  • name                           [type=string, maxLength=25, pattern=[^%<>/\[\]{}\\]*...]
+  • phone                          [type=string, maxLength=20, pattern=[\w \-+:()/]*...]
+  • url                            [type=string, maxLength=13]
+
+Academe\Elavon\Epg\Psr7\Dtos\StoredCard:
+  • card                           []
+  • createdAt                      [type=string, format=date-time]
+  • credentialOnFileType           [type=string, format=url]
+  • customFields                   []
+  • customReference                [type=string, maxLength=255]
+  ... and 11 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\Surcharge:
+  • rate                           [type=string]
+  • surchargeTotal                 []
+  • unadjustedRefundableTotal      []
+  • unadjustedTotal                []
+
+Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice:
+  • adjustedTotal                  []
+  • applePayPayment                [type=string, format=url]
+  • bin                            [type=string, maxLength=6, minLength=6]
+  • createdAt                      [type=string, format=date-time]
+  • customFields                   []
+  ... and 16 more fields
+
+Academe\Elavon\Epg\Psr7\Dtos\ThreeDSecure:
+  • authenticationValue            [type=string, maxLength=28, minLength=28]
+  • directoryServerTransactionId   [type=string, required, pattern=[0-9a-f]{8}-[0-9a-f]{4}-[12345...]
+  • electronicCommerceIndicator    [type=string, pattern=0?[012567]...]
+  • protocolVersion                [type=string, required, maxLength=8, minLength=1, pattern=\d+.\d+.\d+...]
+  • transactionStatus              [type=string, required, pattern=[YNUA]...]
+
+Academe\Elavon\Epg\Psr7\Dtos\Transaction:
+  • account                        [type=string, format=url]
+  • achPayment                     []
+  • authorizationCode              [type=string]
+  • authorizationExpiresAt         [type=string, format=date-time]
+  • batch                          [type=string, format=url]
+  ... and 79 more fields
+
+====================================================================================================

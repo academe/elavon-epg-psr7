@@ -1,0 +1,1803 @@
+{
+  "endpoints": {
+    "GET /accounts/{id}": {
+      "operationId": "Account",
+      "tags": [
+        "Accounts"
+      ],
+      "summary": "Retrieve Account",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /accounts": {
+      "operationId": "RetrieveAccounts",
+      "tags": [
+        "Accounts"
+      ],
+      "summary": "Retrieve Accounts",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /apple-pay-payment-sessions": {
+      "operationId": "CreateApplePayPaymentSession",
+      "tags": [
+        "Apple Pay Payment Sessions"
+      ],
+      "summary": "Create ApplePayPaymentSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /apple-pay-payments": {
+      "operationId": "CreateApplePayPayment",
+      "tags": [
+        "Apple Pay Payments"
+      ],
+      "summary": "Create ApplePayPayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /apple-pay-payments/{id}": {
+      "operationId": "RetrieveApplePayPayment",
+      "tags": [
+        "Apple Pay Payments"
+      ],
+      "summary": "Retrieve ApplePayPayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /batches/{id}": {
+      "operationId": "RetrieveBatch",
+      "tags": [
+        "Batches"
+      ],
+      "summary": "Retrieve Batch",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /batches": {
+      "operationId": "RetrieveBatches",
+      "tags": [
+        "Batches"
+      ],
+      "summary": "Retrieve Batches",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /forex-advices": {
+      "operationId": "CreateForexAdvice",
+      "tags": [
+        "Forex Advices"
+      ],
+      "summary": "Create ForexAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /forex-advices/{id}": {
+      "operationId": "RetrieveForexAdvice",
+      "tags": [
+        "Forex Advices"
+      ],
+      "summary": "Retrieve ForexAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /google-pay-payments": {
+      "operationId": "CreateGooglePayPayment",
+      "tags": [
+        "Google Pay Payments"
+      ],
+      "summary": "Create GooglePayPayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /google-pay-payments/{id}": {
+      "operationId": "RetrieveGooglePayPayment",
+      "tags": [
+        "Google Pay Payments"
+      ],
+      "summary": "Retrieve GooglePayPayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /hosted-ach-payments": {
+      "operationId": "CreateHostedAchPayment",
+      "tags": [
+        "Hosted ACH Payments"
+      ],
+      "summary": "Create a hosted ACH payment.",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /hosted-ach-payments/{id}": {
+      "operationId": "RetrieveHostedACHPayment",
+      "tags": [
+        "Hosted ACH Payments"
+      ],
+      "summary": "Retrieve Hosted ACH Payment resource",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /hosted-cards": {
+      "operationId": "CreateHostedCard",
+      "tags": [
+        "Hosted Cards"
+      ],
+      "summary": "Create HostedCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /hosted-cards/{id}": {
+      "operationId": "RetrieveHostedCard",
+      "tags": [
+        "Hosted Cards"
+      ],
+      "summary": "Retrieve HostedCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /hosted-cards/{id}": {
+      "operationId": "UpdateHostedCard",
+      "tags": [
+        "Hosted Cards"
+      ],
+      "summary": "Update HostedCard",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": true
+    },
+    "POST /hsm-cards": {
+      "operationId": "CreateHsmCard",
+      "tags": [
+        "Hsm Cards"
+      ],
+      "summary": "Create HsmCard",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /hsm-cards/{id}": {
+      "operationId": "RetrieveHsmCard",
+      "tags": [
+        "Hsm Cards"
+      ],
+      "summary": "Retrieve HsmCard",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /manual-batches": {
+      "operationId": "RetrieveManualBatches",
+      "tags": [
+        "Manual Batches"
+      ],
+      "summary": "Retrieve Manual Batches",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /manual-batches": {
+      "operationId": "CreateManualBatch",
+      "tags": [
+        "Manual Batches"
+      ],
+      "summary": "Create Manual Batch",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /manual-batches/{id}": {
+      "operationId": "RetrieveManualBatch",
+      "tags": [
+        "Manual Batches"
+      ],
+      "summary": "Retrieve Manual Batch",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /manual-batches/{id}": {
+      "operationId": "UpdateManualBatch",
+      "tags": [
+        "Manual Batches"
+      ],
+      "summary": "Update Manual Batch",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /merchants": {
+      "operationId": "RetrieveMerchants",
+      "tags": [
+        "Merchants"
+      ],
+      "summary": "Retrieve Merchants",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /merchants/{id}": {
+      "operationId": "RetrieveMerchant",
+      "tags": [
+        "Merchants"
+      ],
+      "summary": "Retrieve Merchant",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /plan-lists/{id}": {
+      "operationId": "RetrievePlanList",
+      "tags": [
+        "Plan Lists"
+      ],
+      "summary": "Retrieve PlanList",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /plan-lists": {
+      "operationId": "RetrievePlanLists",
+      "tags": [
+        "Plan Lists"
+      ],
+      "summary": "Retrieve PlanLists",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /notifications/{id}": {
+      "operationId": "RetrieveNotification",
+      "tags": [
+        "Notifications"
+      ],
+      "summary": "Retrieve Notification",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /notifications": {
+      "operationId": "RetrieveNotifications",
+      "tags": [
+        "Notifications"
+      ],
+      "summary": "Retrieve Notifications",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /orders": {
+      "operationId": "RetrieveOrders",
+      "tags": [
+        "Orders"
+      ],
+      "summary": "Retrieve Orders",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /orders": {
+      "operationId": "CreateOrder",
+      "tags": [
+        "Orders"
+      ],
+      "summary": "Create Order",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /orders/{id}": {
+      "operationId": "RetrieveOrder",
+      "tags": [
+        "Orders"
+      ],
+      "summary": "Retrieve Order",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /orders/{id}": {
+      "operationId": "UpdateOrder",
+      "tags": [
+        "Orders"
+      ],
+      "summary": "Update Order",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /pan-tokens": {
+      "operationId": "CreatePanTokens",
+      "tags": [
+        "Pan Tokens"
+      ],
+      "summary": "Create PanTokens",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-links": {
+      "operationId": "RetrievePaymentLinks",
+      "tags": [
+        "Payment Links"
+      ],
+      "summary": "Retrieve PaymentLinks",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-links": {
+      "operationId": "CreatePaymentLink",
+      "tags": [
+        "Payment Links"
+      ],
+      "summary": "Create PaymentLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-links/{id}": {
+      "operationId": "RetrievePaymentLink",
+      "tags": [
+        "Payment Links"
+      ],
+      "summary": "Retrieve PaymentLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-links/{id}": {
+      "operationId": "UpdatePaymentLink",
+      "tags": [
+        "Payment Links"
+      ],
+      "summary": "Update PaymentLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-links/{id}/payment-link-events": {
+      "operationId": "RetrievePaymentLinksPaymentLinkEvents",
+      "tags": [
+        "Payment Links"
+      ],
+      "summary": "Retrieve PaymentLinks PaymentLinkEvents",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-link-events": {
+      "operationId": "RetrievePaymentLinkEvents",
+      "tags": [
+        "Payment Link Events"
+      ],
+      "summary": "Retrieve PaymentLinkEvents",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-link-events": {
+      "operationId": "CreatePaymentLinkEvent",
+      "tags": [
+        "Payment Link Events"
+      ],
+      "summary": "Create PaymentLinkEvent",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-link-events/{id}": {
+      "operationId": "RetrievePaymentLinkEvent",
+      "tags": [
+        "Payment Link Events"
+      ],
+      "summary": "Retrieve PaymentLinkEvent",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-sessions/{id}": {
+      "operationId": "RetrievePaymentSession",
+      "tags": [
+        "Payment Sessions"
+      ],
+      "summary": "Retrieve PaymentSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-sessions/{id}": {
+      "operationId": "UpdatePaymentSession",
+      "tags": [
+        "Payment Sessions"
+      ],
+      "summary": "Update PaymentSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /paze-payments": {
+      "operationId": "CreatePazePayment",
+      "tags": [
+        "Paze Payments"
+      ],
+      "summary": "Create PazePayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /paze-payments/{id}": {
+      "operationId": "RetrievePazePayment",
+      "tags": [
+        "Paze Payments"
+      ],
+      "summary": "Retrieve PazePayment",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /plans": {
+      "operationId": "RetrievePlans",
+      "tags": [
+        "Plans"
+      ],
+      "summary": "Retrieve Plans",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /plans": {
+      "operationId": "CreatePlan",
+      "tags": [
+        "Plans"
+      ],
+      "summary": "Create Plan",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /plans/{id}": {
+      "operationId": "RetrievePlan",
+      "tags": [
+        "Plans"
+      ],
+      "summary": "Retrieve Plan",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /plans/{id}": {
+      "operationId": "UpdatePlan",
+      "tags": [
+        "Plans"
+      ],
+      "summary": "Update Plan",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "DELETE /plans/{id}": {
+      "operationId": "DeletePlan",
+      "tags": [
+        "Plans"
+      ],
+      "summary": "Delete Plan",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": true
+    },
+    "GET /processor-accounts": {
+      "operationId": "RetrieveProcessorAccounts",
+      "tags": [
+        "Processor Accounts"
+      ],
+      "summary": "Retrieve ProcessorAccounts",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-sessions": {
+      "operationId": "CreatePaymentSession",
+      "tags": [
+        "Payment Sessions"
+      ],
+      "summary": "Create PaymentSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-method-links": {
+      "operationId": "RetrievePaymentMethodLinks",
+      "tags": [
+        "Payment Method Links"
+      ],
+      "summary": "Retrieve Payment Method Links",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-method-links": {
+      "operationId": "CreatePaymentMethodLink",
+      "tags": [
+        "Payment Method Links"
+      ],
+      "summary": "Create PaymentMethodLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-method-links/{id}": {
+      "operationId": "RetrievePaymentMethodLink",
+      "tags": [
+        "Payment Method Links"
+      ],
+      "summary": "Retrieve PaymentMethodLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-method-links/{id}": {
+      "operationId": "UpdatePaymentMethodLink",
+      "tags": [
+        "Payment Method Links"
+      ],
+      "summary": "Update PaymentMethodLink",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-method-sessions": {
+      "operationId": "RetrievePaymentMethodSessions",
+      "tags": [
+        "Payment Method Sessions"
+      ],
+      "summary": "Retrieve Payment Method Sessions",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-method-sessions": {
+      "operationId": "CreatePaymentMethodSession",
+      "tags": [
+        "Payment Method Sessions"
+      ],
+      "summary": "Create PaymentMethodSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /payment-method-sessions/{id}": {
+      "operationId": "RetrievePaymentMethodSession",
+      "tags": [
+        "Payment Method Sessions"
+      ],
+      "summary": "Retrieve PaymentMethodSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /payment-method-sessions/{id}": {
+      "operationId": "UpdatePaymentMethodSession",
+      "tags": [
+        "Payment Method Sessions"
+      ],
+      "summary": "Update PaymentMethodSession",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /processor-accounts/{id}": {
+      "operationId": "RetrieveProcessorAccount",
+      "tags": [
+        "Processor Accounts"
+      ],
+      "summary": "Retrieve ProcessorAccount",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /refund-surcharge-advices": {
+      "operationId": "CreateRefundSurchargeAdvice",
+      "tags": [
+        "Refund Surcharge Advices"
+      ],
+      "summary": "Create RefundSurchargeAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /refund-surcharge-advices/{id}": {
+      "operationId": "RetrieveRefundSurchargeAdvice",
+      "tags": [
+        "Refund Surcharge Advices"
+      ],
+      "summary": "Retrieve RefundSurchargeAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /shoppers": {
+      "operationId": "RetrieveShoppers",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Retrieve Shoppers",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": true
+    },
+    "POST /shoppers": {
+      "operationId": "CreateShopper",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Create Shopper",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /shoppers/{id}": {
+      "operationId": "RetrieveShopper",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Retrieve Shopper",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /shoppers/{id}": {
+      "operationId": "UpdateShopper",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Update Shopper",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "DELETE /shoppers/{id}": {
+      "operationId": "DeleteShopper",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Delete Shopper",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /shoppers/{id}/stored-cards": {
+      "operationId": "RetrieveShoppersStoredCards",
+      "tags": [
+        "Shoppers"
+      ],
+      "summary": "Retrieve Shoppers StoredCards",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /stored-ach-payments": {
+      "operationId": "CreateStoredAchPayment",
+      "tags": [
+        "Stored ACH Payments"
+      ],
+      "summary": "Create Stored ACH payment",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /stored-ach-payments/{id}": {
+      "operationId": "RetrieveStoredAchPayment",
+      "tags": [
+        "Stored ACH Payments"
+      ],
+      "summary": "Retrieve StoredAchPayment",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /stored-ach-payments/{id}": {
+      "operationId": "UpdateStoredAchPayment",
+      "tags": [
+        "Stored ACH Payments"
+      ],
+      "summary": "Update StoredAchPayment",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "DELETE /stored-ach-payments/{id}": {
+      "operationId": "DeleteStoredAchPayment",
+      "tags": [
+        "Stored ACH Payments"
+      ],
+      "summary": "Delete StoredAchPayment",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": true
+    },
+    "POST /stored-cards": {
+      "operationId": "CreateStoredCard",
+      "tags": [
+        "Stored Cards"
+      ],
+      "summary": "Create StoredCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /stored-cards/{id}": {
+      "operationId": "RetrieveStoredCard",
+      "tags": [
+        "Stored Cards"
+      ],
+      "summary": "Retrieve StoredCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /stored-cards/{id}": {
+      "operationId": "UpdateStoredCard",
+      "tags": [
+        "Stored Cards"
+      ],
+      "summary": "Update StoredCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "DELETE /stored-cards/{id}": {
+      "operationId": "DeleteStoredCard",
+      "tags": [
+        "Stored Cards"
+      ],
+      "summary": "Delete StoredCard",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /subscriptions": {
+      "operationId": "RetrieveSubscriptions",
+      "tags": [
+        "Subscriptions"
+      ],
+      "summary": "Retrieve Subscriptions",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /subscriptions": {
+      "operationId": "CreateSubscription",
+      "tags": [
+        "Subscriptions"
+      ],
+      "summary": "Create Subscription",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /subscriptions/{id}": {
+      "operationId": "RetrieveSubscription",
+      "tags": [
+        "Subscriptions"
+      ],
+      "summary": "Retrieve Subscription",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /subscriptions/{id}": {
+      "operationId": "UpdateSubscription",
+      "tags": [
+        "Subscriptions"
+      ],
+      "summary": "Update Subscription",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /surcharge-advices": {
+      "operationId": "CreateSurchargeAdvice",
+      "tags": [
+        "Surcharge Advices"
+      ],
+      "summary": "Create SurchargeAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /surcharge-advices/{id}": {
+      "operationId": "RetrieveSurchargeAdvice",
+      "tags": [
+        "Surcharge Advices"
+      ],
+      "summary": "Retrieve SurchargeAdvice",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /terminals": {
+      "operationId": "RetrieveTerminals",
+      "tags": [
+        "Terminals"
+      ],
+      "summary": "Retrieve Terminals",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /terminals/{id}": {
+      "operationId": "RetrieveTerminal",
+      "tags": [
+        "Terminals"
+      ],
+      "summary": "Retrieve Terminal details",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /terminals/{id}/emv-keys": {
+      "operationId": "RetrieveEmvKeys",
+      "tags": [
+        "Terminals"
+      ],
+      "summary": "Retrieve EMV keys",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /terminals/{id}/provisioning-codes": {
+      "operationId": "RetrieveProvisioningCode",
+      "tags": [
+        "Terminals"
+      ],
+      "summary": "Retrieve Provisioning Code",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /transactions": {
+      "operationId": "RetrieveTransactions",
+      "tags": [
+        "Transactions"
+      ],
+      "summary": "Retrieve Transactions",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": true
+    },
+    "POST /transactions": {
+      "operationId": "CreateTransaction",
+      "tags": [
+        "Transactions"
+      ],
+      "summary": "Create Transaction",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "GET /transactions/{id}": {
+      "operationId": "RetrieveTransaction",
+      "tags": [
+        "Transactions"
+      ],
+      "summary": "Retrieve Transaction",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /transactions/{id}": {
+      "operationId": "UpdateTransaction",
+      "tags": [
+        "Transactions"
+      ],
+      "summary": "Update Transaction",
+      "implemented": true,
+      "request_implemented": true,
+      "response_implemented": true
+    },
+    "POST /transactions/{id}/email-receipt-requests": {
+      "operationId": "CreateEmailReceiptRequest",
+      "tags": [
+        "Transactions"
+      ],
+      "summary": "Create email receipt request",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /transactions/{id}/total-adjustments": {
+      "operationId": "RetrieveTotalAdjustments",
+      "tags": [
+        "Total Adjustments",
+        "Transactions"
+      ],
+      "summary": "Retrieve Total Adjustments",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "POST /total-adjustments": {
+      "operationId": "CreateTotalAdjustment",
+      "tags": [
+        "Total Adjustments"
+      ],
+      "summary": "Create total adjustment",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    },
+    "GET /total-adjustments/{id}": {
+      "operationId": "RetrieveTotalAdjustment",
+      "tags": [
+        "Total Adjustments"
+      ],
+      "summary": "Retrieve Total Adjustment details",
+      "implemented": false,
+      "request_implemented": false,
+      "response_implemented": false
+    }
+  },
+  "schemas": {
+    "Account": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "AccountEntryMode": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "AchAccountType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "AchPayment": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\AchPayment",
+      "implemented": true,
+      "has_properties": true
+    },
+    "Address": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "AmountAndCurrency": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ApplePayPaymentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ApplePayPayment": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ApplePayPayment",
+      "implemented": true,
+      "has_properties": true
+    },
+    "ApplePayPaymentSessionInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ApplePayPaymentSession": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "AutoSettleAt": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Batch": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "BatchState": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "BillingInterval": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Blik": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Blik",
+      "implemented": true,
+      "has_properties": true
+    },
+    "Card": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Card",
+      "implemented": true,
+      "has_properties": true
+    },
+    "CardBrand": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardDataOutputCapability": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardFundingSource": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardholderActivatedTerminalType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardholderVerificationCapability": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardholderVerificationMethod": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "CardScheme": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Contact": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Contact",
+      "implemented": true,
+      "has_properties": true
+    },
+    "CountAndTotal": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "CredentialOnFileType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Credentials": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "DebitSteering": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "DebitSteeringPreference": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "DebtorAccount": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "DeviceFormat": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "DeviceInteraction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "DoAutoCaptureAfter": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "DoAutoCaptureAfterTimeUnit": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "EmailReceiptRequest": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Emv": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "EmvKey": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "EmvKeys": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "EncryptedData": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "EventType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Failure": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Failure",
+      "implemented": true,
+      "has_properties": true
+    },
+    "FailureWrapper": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "FieldPolicy": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ForexAdvice": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ForexAdvice",
+      "implemented": true,
+      "has_properties": true
+    },
+    "GooglePayPaymentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "GooglePayPayment": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\GooglePayPayment",
+      "implemented": true,
+      "has_properties": true
+    },
+    "HistoryEntry": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "HostedAchPaymentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "HostedAchPayment": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "HostedCardInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "HostedCard": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\HostedCard",
+      "implemented": true,
+      "has_properties": true
+    },
+    "HppType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "HsmCard": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ListOfPanTokens": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "MarketSegment": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "MarkupRateAnnotation": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ManualBatchInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ManualBatch": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Merchant": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "MobilePosAcceptanceDeviceType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "NonNegativeAmountAndCurrency": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Notification": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Order": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "OrderInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "OrderItem": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "OrderItemType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedList": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentMethodQualifier": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PaymentSession": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentSessionInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfAccounts": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfBatches": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfEmvKeys": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfManualBatches": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfMerchants": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfNotifications": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfOrders": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfPaymentLinks": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfPaymentLinkEvents": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfPaymentMethodLinks": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfPaymentMethodSessions": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfPlans": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfPlanLists": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfProcessorAccounts": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PagedListOfShoppers": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfStoredAchPayments": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfStoredCards": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfSubscriptions": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfTerminals": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfTotalAdjustments": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PagedListOfTransactions": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PartialAuthorization": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentLinkInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentLink": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentLinkEvent": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentLinkEventInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentLinkEventType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PaymentLinkStatus": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PaymentMethod": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PaymentMethodLink": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentMethodLinkInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentMethodOrigin": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PaymentMethodSessionInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PaymentMethodSession": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PazePaymentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PazePayment": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\PazePayment",
+      "implemented": true,
+      "has_properties": true
+    },
+    "PinDeviceFormat": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PinEncryptedData": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PinLengthCapability": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PinlessDebit": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PinlessDebitCardScheme": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Plan": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PlanInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PlanList": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PanToken": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PointOfInteraction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "PosEntryCapability": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "PositiveAmountAndCurrency": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ProcessorAccount": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ProcessorDirective": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ProcessorAccountFieldPolicies": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ProcessorAccountTransactionFieldPolicies": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ProcessorAccountTransactionPostalOrSecurityCodePolicies": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "ProvisioningCode": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "RefundSurchargeAdvice": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\RefundSurchargeAdvice",
+      "implemented": true,
+      "has_properties": true
+    },
+    "RefundSurchargeAdviceInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Region": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ResourceType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "SalesTaxDefaultEntryMethod": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Shopper": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Shopper",
+      "implemented": true,
+      "has_properties": true
+    },
+    "SaleTransaction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "SalesTaxEntry": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Signature": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "RefundTransaction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ShopperInteraction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ShopperStatement": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ShopperStatement",
+      "implemented": true,
+      "has_properties": true
+    },
+    "SignatureVerification": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Source": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "StoredAchPayment": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "StoredAchPaymentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "StoredCard": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\StoredCard",
+      "implemented": true,
+      "has_properties": true
+    },
+    "StoredCardInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Subscription": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "SubscriptionInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "SubscriptionSurcharge": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Surcharge": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Surcharge",
+      "implemented": true,
+      "has_properties": true
+    },
+    "SurchargeAdvice": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\SurchargeAdvice",
+      "implemented": true,
+      "has_properties": true
+    },
+    "SurchargeAdviceInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Surcharging": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "SubscriptionState": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TerminalOutputCapability": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "Terminal": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "TerminalType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ThreeDSecure": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ThreeDSecure",
+      "implemented": true,
+      "has_properties": true
+    },
+    "TimeUnit": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TotalAdjustment": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "TotalAdjustmentInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Transaction": {
+      "php_class": "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Transaction",
+      "implemented": true,
+      "has_properties": true
+    },
+    "TransactionInput": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "TransactionAdvice": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TransactionState": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TransactionType": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TrueFalseOrDefault": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "TrueFalseOrUnknown": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "ValueToken": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "Verification": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    },
+    "VerificationResults": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": true
+    },
+    "VoidTransaction": {
+      "php_class": null,
+      "implemented": false,
+      "has_properties": false
+    }
+  },
+  "summary": {
+    "total_endpoints": 95,
+    "implemented_endpoints": 25,
+    "total_schemas": 168,
+    "implemented_schemas": 18
+  }
+}
