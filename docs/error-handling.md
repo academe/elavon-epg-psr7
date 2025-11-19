@@ -16,8 +16,8 @@ The `TransactionResponse` class automatically parses both types of responses bas
 Always check for errors before accessing transaction data:
 
 ```php
-use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 
 // Build and send request
 $request = new CreateTransactionRequest(...);
@@ -178,8 +178,8 @@ $failureArray = $failure->toArray();
 ```php
 <?php
 
-use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 use GuzzleHttp\Client;
 
 // Create HTTP client
@@ -258,7 +258,7 @@ if ($response->hasError()) {
 When testing, you can simulate error responses:
 
 ```php
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 
 // Create a mock error response
 $errorBody = json_encode([

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Integration;
 
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
-use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
