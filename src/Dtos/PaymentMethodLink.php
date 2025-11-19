@@ -1,0 +1,152 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Dtos;
+
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+
+/**
+ * PaymentMethodLink data transfer object.
+ *
+ * A link containing a URL that may be provided to shoppers in order to capture payment method
+ * using the HPP without requiring a transaction.
+ *
+ * Properties marked [Response] are typically only present in API responses.
+ * Properties marked [Request] are typically sent in API requests.
+ * Properties without markers may appear in both contexts.
+ */
+class PaymentMethodLink implements DataTransferObject
+{
+    use SerializesData;
+
+    /**
+     * Get property type definitions for this DTO.
+     *
+     * @return array<string, array<string>>
+     */
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'array' => ['status', 'customFields'],
+            'string' => [
+                'href', 'id', 'merchant', 'account', 'url', 'returnUrl',
+                'createdAt', 'modifiedAt', 'expiresAt', 'cancelledAt',
+                'cancelledBy', 'description', 'shopper', 'customReference',
+            ],
+            'bool' => ['doCancel'],
+        ];
+    }
+
+    /**
+     * @param string|null $href [Response] PaymentMethodLink Resource URL (self link)
+     * @param string|null $id [Response] Unique identifier assigned by server
+     * @param string|null $merchant [Response] Merchant Resource URL
+     * @param string|null $account [Response] Account Resource URL, defaults to Merchant
+     * @param string|null $url [Response] URL to send to shoppers
+     * @param string|null $returnUrl URL to redirect to after payment details are collected (max 2048 chars)
+     * @param string|null $createdAt [Response] Creation timestamp
+     * @param string|null $modifiedAt [Response] Modification timestamp
+     * @param string|null $expiresAt An expiration timestamp (required for creation)
+     * @param string|null $cancelledAt [Response] Cancellation timestamp
+     * @param string|null $cancelledBy Who or what cancelled the payment link (max 255 chars)
+     * @param bool|null $doCancel Cancel payment link. Defaults to false
+     * @param string|null $description [Response] Description of the payment (max 255 chars)
+     * @param string|null $shopper Shopper Resource URL (required for creation)
+     * @param array<string>|null $status [Response] The status of the paymentMethodLink
+     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
+     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
+     *
+     * @throws InvalidArgumentException When validation fails
+     */
+    public function __construct(
+        // Response-only fields
+        public readonly ?string $href = null,
+        public readonly ?string $id = null,
+        public readonly ?string $merchant = null,
+        public readonly ?string $account = null,
+        public readonly ?string $url = null,
+        public readonly ?string $createdAt = null,
+        public readonly ?string $modifiedAt = null,
+        public readonly ?string $cancelledAt = null,
+
+        // Request/Response fields
+        public readonly ?string $returnUrl = null,
+        public readonly ?string $expiresAt = null,
+        public readonly ?string $cancelledBy = null,
+        public readonly ?bool $doCancel = null,
+        public readonly ?string $description = null,
+        public readonly ?string $shopper = null,
+        public readonly ?array $status = null,
+        public readonly ?string $customReference = null,
+        public readonly ?array $customFields = null,
+    ) {
+        $this->validate();
+    }
+
+    /**
+     * Validates payment method link data.
+     *
+     * @throws InvalidArgumentException When validation fails
+     */
+    private function validate(): void
+    {
+        // Validate returnUrl length
+        if ($this->returnUrl !== null && strlen($this->returnUrl) > 2048) {
+            throw new InvalidArgumentException('Return URL must not exceed 2048 characters');
+        }
+
+        // Validate returnUrl pattern
+        if ($this->returnUrl !== null && !preg_match('#^https?://[^/]{2,}.*$#', $this->returnUrl)) {
+            throw new InvalidArgumentException('Return URL must be a valid http or https URL');
+        }
+
+        // Validate description length
+        if ($this->description !== null && strlen($this->description) > 255) {
+            throw new InvalidArgumentException('Description must not exceed 255 characters');
+        }
+
+        // Validate cancelledBy length
+        if ($this->cancelledBy !== null && strlen($this->cancelledBy) > 255) {
+            throw new InvalidArgumentException('Cancelled by must not exceed 255 characters');
+        }
+
+        // Validate customReference length
+        if ($this->customReference !== null && strlen($this->customReference) > 255) {
+            throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
+        }
+
+        // Validate status array items
+        if ($this->status !== null) {
+            foreach ($this->status as $statusValue) {
+                if (!is_string($statusValue)) {
+                    throw new InvalidArgumentException('Status array must contain only strings');
+                }
+                // Validate against PaymentLinkStatus enum
+                try {
+                    PaymentLinkStatus::from($statusValue);
+                } catch (\ValueError $e) {
+                    throw new InvalidArgumentException(
+                        "Invalid status value: {$statusValue}",
+                        previous: $e
+                    );
+                }
+            }
+        }
+
+        // Validate customFields
+        if ($this->customFields !== null) {
+            foreach ($this->customFields as $key => $value) {
+                if (strlen($key) > 64) {
+                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
+                }
+                if (strlen($value) > 1024) {
+                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
+                }
+            }
+        }
+    }
+}

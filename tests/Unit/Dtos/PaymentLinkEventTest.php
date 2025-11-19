@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLinkEvent;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkEventType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +22,7 @@ class PaymentLinkEventTest extends TestCase
         );
 
         // Assert
-        $this->assertSame('payment', $event->type);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $event->type);
         $this->assertNull($event->id);
         $this->assertNull($event->paymentLink);
     }
@@ -48,7 +49,7 @@ class PaymentLinkEventTest extends TestCase
         $this->assertSame('2025-11-19T10:00:00Z', $event->createdAt);
         $this->assertSame('https://api.example.com/transactions/t123', $event->transaction);
         $this->assertSame('https://api.example.com/payment-links/pl123', $event->paymentLink);
-        $this->assertSame('payment', $event->type);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $event->type);
         $this->assertSame('user@example.com', $event->createdBy);
         $this->assertSame('shopper@example.com', $event->shopperEmailAddress);
     }
@@ -56,8 +57,8 @@ class PaymentLinkEventTest extends TestCase
     public function test_construct_withInvalidType_throwsException(): void
     {
         // Assert
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid event type: invalid_type');
+        $this->expectException(\ValueError::class);
+        $this->expectExceptionMessage('is not a valid backing value for enum');
 
         // Act
         new PaymentLinkEvent(
@@ -73,9 +74,9 @@ class PaymentLinkEventTest extends TestCase
         $unknownEvent = new PaymentLinkEvent(type: 'unknown');
 
         // Assert
-        $this->assertSame('payment', $paymentEvent->type);
-        $this->assertSame('reminderSent', $reminderEvent->type);
-        $this->assertSame('unknown', $unknownEvent->type);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $paymentEvent->type);
+        $this->assertSame(PaymentLinkEventType::REMINDER_SENT, $reminderEvent->type);
+        $this->assertSame(PaymentLinkEventType::UNKNOWN, $unknownEvent->type);
     }
 
     public function test_construct_withTooLongCreatedBy_throwsException(): void
@@ -105,7 +106,7 @@ class PaymentLinkEventTest extends TestCase
         $event = PaymentLinkEvent::fromData($data);
 
         // Assert
-        $this->assertSame('reminderSent', $event->type);
+        $this->assertSame(PaymentLinkEventType::REMINDER_SENT, $event->type);
         $this->assertNull($event->id);
     }
 
@@ -129,7 +130,7 @@ class PaymentLinkEventTest extends TestCase
 
         // Assert
         $this->assertSame('e123', $event->id);
-        $this->assertSame('payment', $event->type);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $event->type);
         $this->assertSame('user@example.com', $event->createdBy);
         $this->assertSame('shopper@example.com', $event->shopperEmailAddress);
     }

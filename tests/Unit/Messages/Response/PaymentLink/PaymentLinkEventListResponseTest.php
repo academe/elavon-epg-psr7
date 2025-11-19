@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response\PaymentLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLinkEvent;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkEventType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\PaymentLink\PaymentLinkEventListResponse;
 use PHPUnit\Framework\TestCase;
@@ -42,9 +43,9 @@ class PaymentLinkEventListResponseTest extends TestCase
         $this->assertCount(2, $listResponse->getPaymentLinkEvents());
         $this->assertInstanceOf(PaymentLinkEvent::class, $listResponse->getPaymentLinkEvents()[0]);
         $this->assertSame('e1', $listResponse->getPaymentLinkEvents()[0]->id);
-        $this->assertSame('payment', $listResponse->getPaymentLinkEvents()[0]->type);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $listResponse->getPaymentLinkEvents()[0]->type);
         $this->assertSame('e2', $listResponse->getPaymentLinkEvents()[1]->id);
-        $this->assertSame('reminderSent', $listResponse->getPaymentLinkEvents()[1]->type);
+        $this->assertSame(PaymentLinkEventType::REMINDER_SENT, $listResponse->getPaymentLinkEvents()[1]->type);
     }
 
     public function test_construct_withPaginationLinks_parsesPagination(): void

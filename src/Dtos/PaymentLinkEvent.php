@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkEventType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
@@ -22,6 +23,9 @@ class PaymentLinkEvent implements DataTransferObject
 {
     use SerializesData;
 
+    // Normalized properties (enums)
+    public readonly ?PaymentLinkEventType $type;
+
     /**
      * Get property type definitions for this DTO.
      *
@@ -30,8 +34,9 @@ class PaymentLinkEvent implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
+            'enum' => ['type'],
             'string' => [
-                'href', 'id', 'merchant', 'paymentLink', 'type',
+                'href', 'id', 'merchant', 'paymentLink',
                 'createdAt', 'createdBy', 'transaction', 'shopperEmailAddress',
             ],
         ];
@@ -42,7 +47,7 @@ class PaymentLinkEvent implements DataTransferObject
      * @param string|null $id [Response] PaymentLinkEvent Resource ID assigned by server
      * @param string|null $merchant [Response] Merchant Resource URL
      * @param string|null $paymentLink PaymentLink Resource URL
-     * @param string|null $type Event type (payment, reminderSent, unknown)
+     * @param PaymentLinkEventType|string|null $type Event type (payment, reminderSent, unknown)
      * @param string|null $createdAt [Response] Creation timestamp
      * @param string|null $createdBy Who or what created the event (max 255 chars)
      * @param string|null $transaction [Response] Transaction Resource URL (required if type is 'payment')
@@ -60,10 +65,17 @@ class PaymentLinkEvent implements DataTransferObject
 
         // Request/Response fields
         public readonly ?string $paymentLink = null,
-        public readonly ?string $type = null,
+        PaymentLinkEventType|string|null $type = null,
         public readonly ?string $createdBy = null,
         public readonly ?string $shopperEmailAddress = null,
     ) {
+        // Normalize PaymentLinkEventType enum
+        $this->type = match (true) {
+            $type instanceof PaymentLinkEventType => $type,
+            is_string($type) => PaymentLinkEventType::from($type),
+            default => null,
+        };
+
         $this->validate();
     }
 
@@ -74,14 +86,6 @@ class PaymentLinkEvent implements DataTransferObject
      */
     private function validate(): void
     {
-        // Validate type
-        if ($this->type !== null) {
-            $validTypes = ['payment', 'reminderSent', 'unknown'];
-            if (!in_array($this->type, $validTypes, true)) {
-                throw new InvalidArgumentException("Invalid event type: {$this->type}");
-            }
-        }
-
         // Validate createdBy length
         if ($this->createdBy !== null && strlen($this->createdBy) > 255) {
             throw new InvalidArgumentException('Created by must not exceed 255 characters');
