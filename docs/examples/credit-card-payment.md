@@ -7,8 +7,8 @@ This example shows how to create a PSR-7 request for a credit card payment trans
 ```php
 <?php
 
-use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
-use Academe\Elavon\Epg\Psr7\Messages\Response\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 
 // Option 1: Using arrays (simplest - uses built-in PSR-7 factory)
 $request = new CreateTransactionRequest(

@@ -1,0 +1,2022 @@
+{
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\AchPayment": {
+    "bankRoutingNumber": {
+      "type": "string",
+      "pattern": "^\\\\d{9}?",
+      "description": "Bank routing number. Must be 9 digits.",
+      "required": false
+    },
+    "bankAccountNumber": {
+      "type": "string",
+      "pattern": "^\\\\d{5,16}?",
+      "description": "Bank account number. Must be 5 to 16 digits.",
+      "required": false
+    },
+    "bankAccountToken": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ValueToken"
+        }
+      ],
+      "description": "Bank account number token.",
+      "required": false
+    },
+    "achFingerprint": {
+      "type": "string",
+      "description": " ACH fingerprint",
+      "readOnly": true,
+      "required": false
+    },
+    "last4": {
+      "type": "string",
+      "pattern": "^\\\\d{4}?",
+      "description": "Last 4 digits of the bank account number.",
+      "readOnly": true,
+      "required": false
+    },
+    "achAccountType": {
+      "type": "string",
+      "description": "ACH account type",
+      "required": true
+    },
+    "accountName": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "The ACH account name",
+      "required": true
+    },
+    "__required_fields__": [
+      "achAccountType",
+      "accountName"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ApplePayPayment": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "ApplePayPayment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "ApplePayPayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp calculated from the Apple Pay token signing time and not the createdAt value of this resource.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values) (self link), suppressed when a public API key is used",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Apple Pay payment info.",
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "description": "Verification results (all fields except cryptogramSecurity will be unprovided always).",
+      "readOnly": true,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Blik": {
+    "code": {
+      "type": "string",
+      "pattern": "\\\\d{6}",
+      "description": "Six-digit BLIK code.",
+      "required": true
+    },
+    "__required_fields__": [
+      "code"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Card": {
+    "holderName": {
+      "type": "string",
+      "maxLength": 45,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's full name",
+      "required": false
+    },
+    "number": {
+      "type": "string",
+      "minLength": 13,
+      "maxLength": 23,
+      "pattern": "\\D*(?:\\d\\D*){13,19}",
+      "description": "Cardholder's personal account number (PAN), not returned",
+      "writeOnly": true,
+      "required": false
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ValueToken"
+        }
+      ],
+      "description": "Cardholder's personal account number (PAN) token, not returned",
+      "writeOnly": true,
+      "required": false
+    },
+    "paymentAccountReference": {
+      "type": "string",
+      "description": "Payment Account Reference (PAR). It is a desensitized, non-financial value. A single PAR exists throughout the life of a card account, and can link transactions across different channels and payment instruments. It allows a merchant to identify all transactions made on one credit or debit card account whether a personal account number (PAN), device PAN (DPAN), or network token was used.\n\nPAR is returned from the card network and issuer during authorization whether the transaction is authorized or declined. However, not all card schemes support PAR. Currently, it is returned for Visa, Mastercard, and Discover transactions. In addition, for a given scheme, some card types do not support PAR and is dependent on the issuing bank.\n",
+      "readOnly": true,
+      "required": false
+    },
+    "panFingerprint": {
+      "type": "string",
+      "description": "Cardholder's personal account number (PAN) fingerprint",
+      "readOnly": true,
+      "required": false
+    },
+    "expirationMonth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "format": "int32",
+      "description": "Card's expiration month",
+      "required": true
+    },
+    "expirationYear": {
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 2099,
+      "format": "int32",
+      "description": "Card's expiration year",
+      "required": true
+    },
+    "securityCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 4,
+      "pattern": "\\d{3,4}",
+      "description": "Card's security code / CVC / CVV / CVD / CID, 3 or 4 digits, not returned and ignored if provided with a StoredCard",
+      "writeOnly": true,
+      "required": true
+    },
+    "billTo": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Contact"
+        }
+      ],
+      "description": "Cardholder's billing contact details",
+      "required": false
+    },
+    "maskedNumber": {
+      "type": "string",
+      "pattern": "\\D+(\\d\\D*){4}",
+      "description": "Masked card number",
+      "readOnly": true,
+      "required": false
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "pattern": "\\d{4}",
+      "description": "Last 4 digits of the card number",
+      "readOnly": true,
+      "required": false
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "pattern": "\\d{6}",
+      "description": "Issuer/Bank identification number (IIN/BIN)",
+      "readOnly": true,
+      "required": false
+    },
+    "scheme": {
+      "$ref": "#/components/schemas/CardScheme",
+      "required": false
+    },
+    "brand": {
+      "$ref": "#/components/schemas/CardBrand",
+      "required": false
+    },
+    "fundingSource": {
+      "$ref": "#/components/schemas/CardFundingSource",
+      "required": false
+    },
+    "issuingBank": {
+      "type": "string",
+      "description": "Issuing bank",
+      "readOnly": true,
+      "required": false
+    },
+    "issuingCountry": {
+      "type": "string",
+      "description": "Issuing country",
+      "readOnly": true,
+      "required": false
+    },
+    "issuingCurrency": {
+      "type": "string",
+      "description": "Issuer currency",
+      "readOnly": true,
+      "required": false
+    },
+    "isDebit": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TrueFalseOrUnknown"
+        }
+      ],
+      "description": "Is the card debit ?",
+      "readOnly": true,
+      "required": false
+    },
+    "isCorporate": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TrueFalseOrUnknown"
+        }
+      ],
+      "description": "Is the account corporate ?",
+      "readOnly": true,
+      "required": false
+    },
+    "isDccAllowed": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TrueFalseOrUnknown"
+        }
+      ],
+      "description": "Is DCC supported ?",
+      "readOnly": true,
+      "required": false
+    },
+    "encryptedCard": {
+      "type": "string",
+      "description": "",
+      "required": false
+    },
+    "encryptedPin": {
+      "type": "string",
+      "description": "",
+      "required": false
+    },
+    "__required_fields__": [
+      "expirationMonth",
+      "expirationYear",
+      "securityCode"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Contact": {
+    "fullName": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's full name",
+      "required": false
+    },
+    "company": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's company",
+      "required": false
+    },
+    "street1": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Street line 1",
+      "required": false
+    },
+    "street2": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Street line 2",
+      "required": false
+    },
+    "city": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Locality/Town/City",
+      "required": false
+    },
+    "region": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "State/Province/Region",
+      "required": false
+    },
+    "postalCode": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Zip/Postal code; Required for UK Merchants",
+      "required": false
+    },
+    "countryCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "ISO 3166-1 Alpha-3 country code, a three-letter country code that represents countries, dependent territories, and special areas of geographical interest",
+      "required": false
+    },
+    "primaryPhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's primary phone",
+      "required": false
+    },
+    "alternatePhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's alternate phone",
+      "required": false
+    },
+    "fax": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's fax number",
+      "required": false
+    },
+    "email": {
+      "type": "string",
+      "maxLength": 254,
+      "description": "Cardholder's email address",
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Failure": {
+    "code": {
+      "type": "string",
+      "description": "Failure code",
+      "readOnly": true,
+      "required": false
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the failure; intended for the developer",
+      "readOnly": true,
+      "required": false
+    },
+    "field": {
+      "type": "string",
+      "description": "Field, if failure is linked to a specific field",
+      "readOnly": true,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ForexAdvice": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "ForexAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "ForexAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values). Suppressed when using a public API key.",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values).",
+      "writeOnly": true,
+      "required": false
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "writeOnly": true,
+      "required": false
+    },
+    "storedCard": {
+      "type": "string",
+      "description": "StoredCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true,
+      "required": false
+    },
+    "hostedCard": {
+      "type": "string",
+      "description": "HostedCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true,
+      "required": false
+    },
+    "hsmCard": {
+      "type": "string",
+      "description": "HsmCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true,
+      "required": false
+    },
+    "cardNumber": {
+      "type": "string",
+      "minLength": 13,
+      "maxLength": 23,
+      "pattern": "\\D*(?:\\d\\D*){13,19}",
+      "description": "Personal account number (PAN), not returned.",
+      "writeOnly": true,
+      "required": false
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ValueToken"
+        }
+      ],
+      "description": "Cardholder's personal account number (PAN) token.",
+      "required": false
+    },
+    "maskedNumber": {
+      "type": "string",
+      "description": "Masked card number.",
+      "readOnly": true,
+      "required": false
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "description": "Last 4 of a card number.",
+      "readOnly": true,
+      "required": false
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "description": "Issuer/Bank identification number / IIN / BIN.",
+      "readOnly": true,
+      "required": false
+    },
+    "panFingerprint": {
+      "type": "string",
+      "description": "Personal account number (PAN) fingerprint.",
+      "readOnly": true,
+      "required": false
+    },
+    "total": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/AmountAndCurrency"
+        }
+      ],
+      "description": "Total in the source currency.",
+      "required": true
+    },
+    "issuerTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/AmountAndCurrency"
+        }
+      ],
+      "description": "Total in the target currency.",
+      "readOnly": true,
+      "required": false
+    },
+    "conversionRate": {
+      "type": "string",
+      "description": "The currency exchange rate (1 unit of total currency = 11.89 units of issuer currency).",
+      "readOnly": true,
+      "required": false
+    },
+    "markupRate": {
+      "type": "string",
+      "description": "The markup percent. A value of 0.0399 means 3.99%.",
+      "readOnly": true,
+      "required": false
+    },
+    "markupRateAnnotation": {
+      "$ref": "#/components/schemas/MarkupRateAnnotation",
+      "required": false
+    },
+    "rateProvideName": {
+      "type": "string",
+      "description": "Rate provider name",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperInteraction": {
+      "$ref": "#/components/schemas/ShopperInteraction",
+      "required": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant.",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "__required_fields__": [
+      "shopperInteraction",
+      "total"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\GooglePayPayment": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "GooglePayPayment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "GooglePayPayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp",
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values), suppressed when a public API key is used",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Google Pay payment info.",
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "description": "Verification results (all fields except cryptogramSecurity will be unprovided always).",
+      "readOnly": true,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\HostedCard": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "HostedCard [Resource URL](#section/Overview/Values) (self link).",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "HostedCard [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Modification timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values). Suppressed when using a public API key.",
+      "readOnly": true,
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "readOnly": true,
+      "required": true
+    },
+    "doVerify": {
+      "type": "boolean",
+      "description": "If true, verify Card",
+      "default": false,
+      "readOnly": true,
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "description": "Verification results if doVerify was true",
+      "readOnly": true,
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "__required_fields__": [
+      "card"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\PazePayment": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "PazePayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp",
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values), suppressed when a public API key is used",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Google Pay payment info.",
+      "required": false
+    },
+    "payloadId": {
+      "type": "string",
+      "maxLength": 64,
+      "description": "An alphanumeric string returned from PAZE that refers to the current token and sessionId.",
+      "required": false
+    },
+    "sessionId": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "An alphanumeric string returned from PAZE that refers to the current token and payloadId.",
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "description": "Verification results (all fields except cryptogramSecurity will be unprovided always).",
+      "readOnly": true,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\RefundSurchargeAdvice": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "RefundSurchargeAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "RefundSurchargeAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "parentTransaction": {
+      "type": "string",
+      "format": "url",
+      "description": "Transaction [Resource URL](#section/Overview/Values) of the parent transaction for surcharge.",
+      "required": false
+    },
+    "total": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The refund total excluding the surcharge amount. A value for partial refund can be specified.",
+      "required": false
+    },
+    "surchargeRate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "readOnly": true,
+      "required": false
+    },
+    "surchargeTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The calculated surcharge total. This value is prorated based on the total amount to be refunded.",
+      "readOnly": true,
+      "required": false
+    },
+    "adjustedTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The adjusted total refund including the calculated surcharge. The calculated surcharge is prorated based on the total amount to be refunded.",
+      "readOnly": true,
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Shopper": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "Shopper [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "Shopper [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Modification timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deletion timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "defaultStoredCard": {
+      "type": "string",
+      "format": "url",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)\n\nStoredCard to which all payments will be billed and which must belong to the provided Shopper\n",
+      "required": false
+    },
+    "defaultStoredAchPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "Default stored ACH payment",
+      "required": false
+    },
+    "fullName": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Name",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Additional info that the Merchant may wish to provide about the Shopper",
+      "required": false
+    },
+    "company": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Company",
+      "required": false
+    },
+    "primaryAddress": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Address"
+        }
+      ],
+      "description": "Primary address that can be offered as a default for shipping and/or billing",
+      "required": false
+    },
+    "primaryPhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Primary phone",
+      "required": false
+    },
+    "alternatePhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Alternate phone",
+      "required": false
+    },
+    "fax": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Fax",
+      "required": false
+    },
+    "email": {
+      "type": "string",
+      "maxLength": 254,
+      "description": "Email",
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "__required_fields__": [
+      "fullName"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ShopperStatement": {
+    "name": {
+      "type": "string",
+      "maxLength": 25,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "required": false
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "[\\w \\-+:()/]*",
+      "required": false
+    },
+    "url": {
+      "type": "string",
+      "maxLength": 13,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\StoredCard": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "StoredCard [Resource URL](#section/Overview/Values) (self link).",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "StoredCard [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Modification timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deletion timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "description": "Shopper [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperInteraction": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ShopperInteraction"
+        }
+      ],
+      "description": "Shopper interaction, defaults to 'ecommerce'",
+      "readOnly": true,
+      "required": false
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "description": "HostedCard [Resource URL](#section/Overview/Values)\n\nThe hosted card details to use when initializing this stored card.\n",
+      "writeOnly": true,
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "description": "Card details",
+      "readOnly": true,
+      "required": false
+    },
+    "credentialOnFileType": {
+      "type": "string",
+      "format": "url",
+      "description": "Credential on file type, used with cards in a wallet, defaults to 'unScheduled'",
+      "default": "unscheduled",
+      "readOnly": true,
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "paymentMethodLink": {
+      "type": "string",
+      "format": "url",
+      "description": "Payment Method Link [Resource URL](#section/Overview/Values).",
+      "required": false
+    },
+    "paymentMethodSession": {
+      "type": "string",
+      "format": "url",
+      "description": "Payment Method Session [Resource URL](#section/Overview/Values).",
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Surcharge": {
+    "unadjustedTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "Transaction total before adding surcharge total.",
+      "readOnly": true,
+      "required": false
+    },
+    "unadjustedRefundableTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "Amount of original unadjusted transaction still available for refund.",
+      "readOnly": true,
+      "required": false
+    },
+    "surchargeTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/NonNegativeAmountAndCurrency"
+        }
+      ],
+      "description": "Surcharge total.",
+      "readOnly": true,
+      "required": false
+    },
+    "rate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "readOnly": true,
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\SurchargeAdvice": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "SurchargeAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "SurchargeAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp.",
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "hsmCard": {
+      "type": "string",
+      "format": "url",
+      "description": "Hsm Card [Resource URL](#section/Overview/Values)",
+      "required": false
+    },
+    "googlePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "GooglePayPayment used to create a surcharge advice for a transaction.",
+      "required": false
+    },
+    "applePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "ApplePayPayment used to create a surcharge advice for a transaction.",
+      "required": false
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment used to create a surcharge advice for a transaction.",
+      "required": false
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ValueToken"
+        }
+      ],
+      "required": false
+    },
+    "maskedNumber": {
+      "type": "string",
+      "description": "Masked card number.",
+      "readOnly": true,
+      "required": false
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "description": "Last 4 digits of a card number.",
+      "readOnly": true,
+      "required": false
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "description": "Issuer/Bank identification number / IIN / BIN.",
+      "readOnly": true,
+      "required": false
+    },
+    "panFingerprint": {
+      "type": "string",
+      "description": "Personal account number (PAN) fingerprint.",
+      "readOnly": true,
+      "required": false
+    },
+    "total": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The transaction total excluding the surcharge amount.",
+      "required": false
+    },
+    "surchargeRate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "readOnly": true,
+      "required": false
+    },
+    "surchargeTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The calculated surcharge total.",
+      "readOnly": true,
+      "required": false
+    },
+    "adjustedTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The adjusted total including the calculated surcharge.",
+      "readOnly": true,
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    }
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\ThreeDSecure": {
+    "directoryServerTransactionId": {
+      "type": "string",
+      "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[12345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
+      "description": "A universally unique transaction identifier assigned by the directory server that maps authentications to authorizations, in IETF RFC 4122 format\n",
+      "required": true
+    },
+    "transactionStatus": {
+      "type": "string",
+      "pattern": "[YNUA]",
+      "description": "Often shortened to 'transStatus', a code to indicate the outcome of the shopper authentication\n\nMust be 'Y', 'N', 'U', or 'A'\n",
+      "required": true
+    },
+    "electronicCommerceIndicator": {
+      "type": "string",
+      "pattern": "0?[012567]",
+      "description": "Often shortened to 'eci', a code to indicate the security level used to authenticate the shopper\n\nMust be '0', '1', '2', '5', '6', or '7', optionally with a leading zero\n",
+      "required": false
+    },
+    "authenticationValue": {
+      "type": "string",
+      "minLength": 28,
+      "maxLength": 28,
+      "description": "Proof of authentication provided by the access control server, 20 bytes Base64 encoded giving a 28 character value\n",
+      "required": false
+    },
+    "protocolVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8,
+      "pattern": "\\d+.\\d+.\\d+",
+      "description": "Version provided by the access control server",
+      "required": true
+    },
+    "__required_fields__": [
+      "directoryServerTransactionId",
+      "transactionStatus",
+      "protocolVersion"
+    ]
+  },
+  "Academe\\Elavon\\Epg\\Psr7\\Dtos\\Transaction": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "description": "Transaction [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "required": false
+    },
+    "id": {
+      "type": "string",
+      "description": "Transaction [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Modification timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "authorizationExpiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction's expiration timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "refundableUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Refundable until timestamp",
+      "readOnly": true,
+      "required": false
+    },
+    "type": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TransactionType"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "processorDirective": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ProcessorDirective"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "paymentMethod": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PaymentMethod"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "paymentMethodOrigin": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PaymentMethodOrigin"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "paymentMethodQualifier": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PaymentMethodQualifier"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "source": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Source"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "terminal": {
+      "description": "Terminal [Resource URL](#section/Overview/Values)",
+      "required": false
+    },
+    "total": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "Transaction total",
+      "readOnly": true,
+      "required": false
+    },
+    "totalRefunded": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PositiveAmountAndCurrency"
+        }
+      ],
+      "description": "The sum of all refunds against this transaction",
+      "readOnly": true,
+      "required": false
+    },
+    "issuerTotal": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/AmountAndCurrency"
+        }
+      ],
+      "description": "Total in the target currency",
+      "readOnly": true,
+      "required": false
+    },
+    "tip": {
+      "type": "object",
+      "description": "Tip amount.",
+      "readOnly": true,
+      "required": false
+    },
+    "salesTax": {
+      "type": "object",
+      "description": "Sales Tax",
+      "required": false
+    },
+    "conversionRate": {
+      "type": "string",
+      "description": "The currency exchange rate (1 unit of total currency = 11.89 units of issuer currency)",
+      "readOnly": true,
+      "required": false
+    },
+    "markupRate": {
+      "type": "string",
+      "description": "The markup percent. A value of 0.0399 means 3.99%",
+      "readOnly": true,
+      "required": false
+    },
+    "markupRateAnnotation": {
+      "$ref": "#/components/schemas/MarkupRateAnnotation",
+      "required": false
+    },
+    "rateProviderName": {
+      "type": "string",
+      "description": "Rate provider name",
+      "readOnly": true,
+      "required": false
+    },
+    "forexAdvice": {
+      "type": "string",
+      "format": "url",
+      "description": "ForexAdvice [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "surcharge": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Surcharge"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "parentTransaction": {
+      "type": "string",
+      "format": "url",
+      "description": "Transaction [Resource URL](#section/Overview/Values) of the parent Transaction",
+      "readOnly": true,
+      "required": false
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Description, which appears on the dashboard and might appear on receipts",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperStatement": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ShopperStatement"
+        }
+      ],
+      "description": "Dynamic overrides of what might appear on a shopper's statement",
+      "readOnly": true,
+      "required": false
+    },
+    "debtorAccount": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/DebtorAccount"
+        }
+      ],
+      "description": "Account information required for MCC 6012/6050/6051 merchants",
+      "readOnly": true,
+      "required": false
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant",
+      "required": false
+    },
+    "shopperReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the shopper, such as a purchase order",
+      "readOnly": true,
+      "required": false
+    },
+    "purchaserReference": {
+      "type": "string",
+      "maxLength": 17,
+      "description": "Optional identifier provided by the merchant/integrator to represent the shopper.",
+      "readOnly": true,
+      "required": false
+    },
+    "processorReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true,
+      "required": false
+    },
+    "issuerReference": {
+      "type": "string",
+      "description": "Reference assigned by the card issuer",
+      "readOnly": true,
+      "required": false
+    },
+    "orderReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional order reference which we'll display in the merchant dashboard. We'll automatically copy this from a 'sale'",
+      "readOnly": true,
+      "required": false
+    },
+    "invoiceNumber": {
+      "type": "string",
+      "maxLength": 25,
+      "description": "Optional invoice number.",
+      "required": false
+    },
+    "marketSegment": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/MarketSegment"
+        }
+      ],
+      "description": "Market segment for this transaction, to be sent on to processor",
+      "required": false
+    },
+    "shopperInteraction": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ShopperInteraction"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "description": "Shopper [Resource URL](#section/Overview/Values)\n\nShopper, if applicable.\n",
+      "readOnly": true,
+      "required": false
+    },
+    "shipTo": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Contact"
+        }
+      ],
+      "description": "Shipping contact details",
+      "readOnly": true,
+      "required": false
+    },
+    "shippingDate": {
+      "type": "string",
+      "format": "local-date",
+      "description": "Optional shipping date.",
+      "required": false
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperIpAddress": {
+      "type": "string",
+      "description": "Shopper's IP address, useful for fraud detection",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Shopper's IETF language tag, useful for localising the receipt",
+      "readOnly": true,
+      "required": false
+    },
+    "shopperTimeZone": {
+      "type": "string",
+      "description": "Shopper's time zone, specified by the IANA Time Zone Database name",
+      "readOnly": true,
+      "required": false
+    },
+    "order": {
+      "type": "string",
+      "format": "url",
+      "description": "Order [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "subscription": {
+      "type": "string",
+      "format": "url",
+      "description": "Subscription [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "credentialOnFileType": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/CredentialOnFileType"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "credentialOnFileData": {
+      "type": "string",
+      "maxLength": 29,
+      "description": "Value returned when creating an initial transaction for an integrator-managed card. This should be saved and set for succeeding transactions with the same integrator-managed card.",
+      "required": false
+    },
+    "card": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Card"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "description": "HostedCard [Resource URL](#section/Overview/Values) obtained through the Create HostedCard API call, not returned. Required for 'ecommerce' 'sale' transactions.",
+      "readOnly": true,
+      "required": false
+    },
+    "hsmCard": {
+      "type": "string",
+      "format": "url",
+      "description": "HsmCard [Resource URL](#section/Overview/Values) obtained through the card present API call, not returned.",
+      "readOnly": true,
+      "required": false
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "achPayment": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/AchPayment"
+        }
+      ],
+      "description": "ACH payment details",
+      "readOnly": true,
+      "required": false
+    },
+    "storedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "StoredAchPayment [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "hostedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "HostedAchPayment [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "deviceInteraction": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/DeviceInteraction"
+        }
+      ],
+      "description": "Information when using a hardware terminal.",
+      "required": false
+    },
+    "pointOfInteraction": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PointOfInteraction"
+        }
+      ],
+      "description": "Information about location of interaction.",
+      "required": false
+    },
+    "paymentLink": {
+      "type": "string",
+      "format": "url",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "paymentSession": {
+      "type": "string",
+      "format": "url",
+      "description": "PaymentSession [Resource URL](#section/Overview/Values)",
+      "readOnly": true,
+      "required": false
+    },
+    "threeDSecure": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ThreeDSecure"
+        }
+      ],
+      "description": "Additional data that's only needed for 3-D Secure version 2 processing.",
+      "readOnly": true,
+      "required": false
+    },
+    "createdBy": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question.",
+      "readOnly": true,
+      "required": false
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "required": false
+    },
+    "isHeldForReview": {
+      "type": "boolean",
+      "description": "If true, the transaction was authorized but has been held for review. While this is true, no further processing will occur for this transaction. All held transactions can be reviewed by the merchant in their dashboard. To approve with the API, update this field to false. To decline instead, create a 'void' transaction.",
+      "required": false
+    },
+    "isTotalAdjustable": {
+      "type": "boolean",
+      "description": "If true, the authorized total for the transaction can be adjusted.",
+      "required": false
+    },
+    "doCapture": {
+      "type": "boolean",
+      "description": "If false, authorize only; if true (default), authorize and capture funds for settlement",
+      "required": false
+    },
+    "doAutoCaptureAfter": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/DoAutoCaptureAfter"
+        }
+      ],
+      "required": false
+    },
+    "doSendReceipt": {
+      "type": "boolean",
+      "description": "Send receipt to shopper's email address. Default value is based on the merchant's back office configuration.",
+      "required": false
+    },
+    "signature": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/Signature"
+        }
+      ],
+      "description": "Point of Sale Signature",
+      "required": false
+    },
+    "isAuthorized": {
+      "type": "boolean",
+      "description": "Indicates whether a transaction is authorized. Transactions of type 'sale' are authorized by the gateway, the processor, and the issuer. Transactions of type 'void' and 'refund' are authorized by the gateway.",
+      "readOnly": true,
+      "required": false
+    },
+    "partialAuthorization": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/PartialAuthorization"
+        }
+      ],
+      "description": "Partial Authorization Information",
+      "required": false
+    },
+    "authorizationCode": {
+      "type": "string",
+      "description": "Authorization code",
+      "readOnly": true,
+      "required": false
+    },
+    "issuerResponseCode": {
+      "type": "string",
+      "description": "Issuer response code",
+      "readOnly": true,
+      "required": false
+    },
+    "verificationResults": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/VerificationResults"
+        }
+      ],
+      "description": "Verification results, if available",
+      "readOnly": true,
+      "required": false
+    },
+    "state": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TransactionState"
+        }
+      ],
+      "readOnly": true,
+      "required": false
+    },
+    "batch": {
+      "type": "string",
+      "format": "url",
+      "description": "Batch [Resource URL](#section/Overview/Values). The Batch in which this Transaction was settled.",
+      "readOnly": true,
+      "required": false
+    },
+    "manualBatch": {
+      "type": "string",
+      "format": "url",
+      "description": "ManualBatch [Resource URL](#section/Overview/Values). The Manual Batch the transaction belongs to.",
+      "readOnly": true,
+      "required": false
+    },
+    "processorBatchReference": {
+      "type": "string",
+      "description": "Processor Batch reference txn is  settled in.",
+      "readOnly": true,
+      "required": false
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment [Resource URL](#section/Overview/Values). PazePayment used to create a transaction.",
+      "readOnly": true,
+      "required": false
+    },
+    "relatedTransactions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "url"
+      },
+      "description": "Transaction [Resource URL](#section/Overview/Values)(s) related to this Transaction (e.g. refunds)",
+      "readOnly": true,
+      "required": false
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/Failure"
+      },
+      "description": "Failure details, if the transaction was not authorized",
+      "readOnly": true,
+      "required": false
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/HistoryEntry"
+      },
+      "description": "History",
+      "readOnly": true,
+      "required": false
+    }
+  }
+}
