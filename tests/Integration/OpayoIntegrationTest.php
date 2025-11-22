@@ -7,7 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Integration;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
-use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
+use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -88,16 +88,12 @@ class OpayoIntegrationTest extends TestCase
 
         // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
-        $elavonRequest = ElavonApiRequest::create($psr7Request)
+        $decoratedRequest = ElavonApiFactory::configure()
             ->withBaseUri($this->baseUri)
-            ->withAuthentication($this->merchantAlias, $this->apiSecret);
+            ->withAuthentication($this->merchantAlias, $this->apiSecret)
+            ->decorate($psr7Request);
 
-        // Dump the headers for debugging.
-        // foreach ($elavonRequest->getHeaders() as $name => $values) {
-        //     echo $name . ': ' . implode(', ', $values) . "\n";
-        // }
-
-        $psr7Response = $this->httpClient->send($elavonRequest);
+        $psr7Response = $this->httpClient->send($decoratedRequest);
 
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);
@@ -202,10 +198,11 @@ class OpayoIntegrationTest extends TestCase
 
         // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
-        $elavonRequest = ElavonApiRequest::create($psr7Request)
+        $decoratedRequest = ElavonApiFactory::configure()
             ->withBaseUri($this->baseUri)
-            ->withAuthentication($this->merchantAlias, $this->apiSecret);
-        $psr7Response = $this->httpClient->send($elavonRequest);
+            ->withAuthentication($this->merchantAlias, $this->apiSecret)
+            ->decorate($psr7Request);
+        $psr7Response = $this->httpClient->send($decoratedRequest);
 
         // Parse the response
         $response = TransactionResponse::fromPsr7Response($psr7Response);
