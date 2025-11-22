@@ -10,7 +10,7 @@ use Psr\Http\Message\RequestInterface;
  * Elavon API Request Factory.
  *
  * A simpler alternative to ElavonApiRequest that doesn't implement RequestInterface.
- * Configure once, apply to multiple requests via decorate().
+ * Configure once, apply to multiple requests via apply().
  *
  * Adds the following headers automatically:
  * - Accept: application/json;charset=UTF-8
@@ -21,11 +21,11 @@ use Psr\Http\Message\RequestInterface;
  * Basic usage:
  * ```php
  * $request = (new CreateTransactionRequest($transaction))->build();
- * $decoratedRequest = ElavonApiFactory::configure()
+ * $apiRequest = ElavonApiFactory::configure()
  *     ->withEuSandbox()
  *     ->withAuthentication($merchantAlias, $apiSecret)
- *     ->decorate($request);
- * $client->sendRequest($decoratedRequest);
+ *     ->apply($request);
+ * $client->sendRequest($apiRequest);
  * ```
  *
  * Reusing configuration for multiple requests:
@@ -36,9 +36,9 @@ use Psr\Http\Message\RequestInterface;
  *     ->withAuthentication($merchantAlias, $apiSecret);
  *
  * // Apply to multiple requests - returns plain PSR-7 RequestInterface
- * $request1 = $factory->decorate($firstRequest);
- * $request2 = $factory->decorate($secondRequest);
- * $request3 = $factory->decorate($thirdRequest);
+ * $request1 = $factory->apply($firstRequest);
+ * $request2 = $factory->apply($secondRequest);
+ * $request3 = $factory->apply($thirdRequest);
  * ```
  *
  * Environment shortcuts:
@@ -118,12 +118,12 @@ class ElavonApiFactory
     }
 
     /**
-     * Decorates a PSR-7 request with Elavon API headers and configuration.
+     * Applies Elavon API headers and configuration to a PSR-7 request.
      *
-     * @param RequestInterface $request The request to decorate
-     * @return RequestInterface The decorated request (plain PSR-7, not this class)
+     * @param RequestInterface $request The request to configure
+     * @return RequestInterface The configured request (plain PSR-7, not this class)
      */
-    public function decorate(RequestInterface $request): RequestInterface
+    public function apply(RequestInterface $request): RequestInterface
     {
         // Add Accept header if not already present
         if (!$request->hasHeader('Accept')) {
