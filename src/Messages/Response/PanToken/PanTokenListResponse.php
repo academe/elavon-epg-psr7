@@ -56,22 +56,4 @@ class PanTokenListResponse
 
         return array_map(fn($item) => PanToken::fromData($item), $data);
     }
-
-    private function parseJsonBody(): array
-    {
-        $body = (string) $this->response->getBody();
-
-        if ($body === '') {
-            throw new InvalidArgumentException('Response body is empty');
-        }
-
-        try {
-            return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new InvalidArgumentException(
-                'Failed to decode JSON response: ' . $e->getMessage(),
-                previous: $e
-            );
-        }
-    }
 }
