@@ -478,6 +478,9 @@ class ElavonApiRequest implements RequestInterface
     /**
      * Replaces the base URI of a URI while preserving the path and query.
      *
+     * Handles cases where the original URI might not have a proper scheme/host
+     * (e.g., when built with an alias like 'eu-sandbox/transactions').
+     *
      * @param UriInterface $currentUri
      * @param string $newBaseUri
      * @return UriInterface
@@ -486,9 +489,26 @@ class ElavonApiRequest implements RequestInterface
     {
         $newUri = new Uri($newBaseUri);
 
+        // Get the path from the original URI
+        $path = $currentUri->getPath();
+
+        // If the original URI had no scheme/host, the "path" might include
+        // non-path segments (e.g., "eu-sandbox/transactions" instead of "/transactions").
+        // In this case, extract only the portion starting with a known API path prefix.
+        if ($currentUri->getHost() === '' && !str_starts_with($path, '/')) {
+            // Find the first slash which indicates the start of the actual path
+            $slashPos = strpos($path, '/');
+            if ($slashPos !== false) {
+                $path = substr($path, $slashPos);
+            } else {
+                // No path found, use empty path
+                $path = '';
+            }
+        }
+
         // Preserve the path and query from the original URI
         return $newUri
-            ->withPath($currentUri->getPath())
+            ->withPath($path)
             ->withQuery($currentUri->getQuery());
     }
 
