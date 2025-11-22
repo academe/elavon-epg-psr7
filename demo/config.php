@@ -34,12 +34,18 @@ foreach ($lines as $line) {
     }
 }
 
+// Auto-detect demo URL from current request
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
+$demoUrl = "{$scheme}://{$host}{$basePath}";
+
 // Configuration
 return [
     'merchant_alias' => getenv('ELAVON_MERCHANT_ALIAS') ?: die('ELAVON_MERCHANT_ALIAS not set'),
     'api_secret' => getenv('ELAVON_API_SECRET') ?: die('ELAVON_API_SECRET not set'),
     'base_uri' => getenv('ELAVON_BASE_URI') ?: 'https://uat.api.converge.eu.elavonaws.com',
 
-    // Demo server URL (update if using different port)
-    'demo_url' => 'http://localhost:8000',
+    // Auto-detected from request (e.g., http://elavon-ept-psr7.test/demo)
+    'demo_url' => $demoUrl,
 ];

@@ -10,6 +10,9 @@ declare(strict_types=1);
  */
 
 $config = require __DIR__ . '/config.php';
+
+// Get the base path for this script (handles both /demo/ and root deployments)
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +84,7 @@ $config = require __DIR__ . '/config.php';
     <h1>Elavon 3DS Payment Demo</h1>
 
     <div class="card">
-        <form action="checkout.php" method="POST">
+        <form action="<?= htmlspecialchars($basePath) ?>checkout.php" method="POST">
             <label for="amount">Amount</label>
             <input type="text" id="amount" name="amount" value="50.00" required
                    pattern="^\d+(\.\d{2})?$" title="Enter amount like 50.00">
