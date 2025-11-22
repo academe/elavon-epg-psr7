@@ -113,7 +113,7 @@ class ElavonApiRequest implements RequestInterface
      * @param RequestInterface $request The request to decorate with Elavon API headers
      * @param string $apiVersion API version (defaults to '1')
      * @param string|null $username Username for Basic Auth (merchant alias)
-     * @param string|null $password Password for Basic Auth (API key)
+     * @param string|null $password Password for Basic Auth (public or secret API key)
      */
     private function __construct(
         RequestInterface $request,
@@ -261,8 +261,14 @@ class ElavonApiRequest implements RequestInterface
     /**
      * Adds HTTP Basic Authentication credentials.
      *
+     * Elavon provides two types of API keys:
+     * - Public key (pk_...): For client-side hosted card operations only
+     * - Secret key (sk_...): For all server-side operations (transactions, etc.)
+     *
+     * Use the appropriate key based on the operation being performed.
+     *
      * @param string $username Username (merchant alias)
-     * @param string $password Password (API key)
+     * @param string $password Password (public or secret API key, depending on operation)
      * @return static New instance with authentication
      */
     public function withAuthentication(string $username, string $password): static
