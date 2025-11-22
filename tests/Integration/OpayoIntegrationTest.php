@@ -141,17 +141,6 @@ class OpayoIntegrationTest extends TestCase
 
         // Verify timestamp
         $this->assertNotNull($transaction->createdAt, 'CreatedAt timestamp should be set');
-
-        // Output transaction details for debugging
-        echo "\n";
-        echo "Transaction ID: {$transaction->id}\n";
-        echo "State: {$transaction->state->value}\n";
-        echo "Amount: {$transaction->total->amount} {$transaction->total->currency->value}\n";
-        echo "Card Last 4: {$transaction->card->last4}\n";
-        if ($transaction->card->scheme !== null) {
-            echo "Card Scheme: {$transaction->card->scheme->value}\n";
-        }
-        echo "Created At: {$transaction->createdAt}\n";
     }
 
     public function test_createTransaction_withDeclinedCard_returnsDeclined(): void
@@ -210,12 +199,6 @@ class OpayoIntegrationTest extends TestCase
             $transaction->state,
             'Transaction should be DECLINED for test card 4000000000000002'
         );
-
-        // Output transaction details for debugging
-        echo "\n";
-        echo "Transaction ID: {$transaction->id}\n";
-        echo "State: {$transaction->state->value}\n";
-        echo "Amount: {$transaction->total->amount} {$transaction->total->currency->value}\n";
     }
 
     /**
