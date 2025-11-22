@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Shopper List Response.
  *
- * Parses PSR-7 responses for paginated stored card lists (GET /shoppers).
+ * Parses PSR-7 responses for paginated shopper lists (GET /shoppers).
  *
  * Example usage:
  * ```php
@@ -22,8 +22,8 @@ use Psr\Http\Message\ResponseInterface;
  * $response = ShopperListResponse::fromPsr7Response($psrResponse);
  *
  * if ($response->isSuccessful()) {
- *     foreach ($response->getShoppers() as $storedCard) {
- *         echo "shopper ID: " . $storedCard->id . "\n";
+ *     foreach ($response->getShoppers() as $shopper) {
+ *         echo "Shopper ID: " . $shopper->id . "\n";
  *     }
  *
  *     if ($response->hasMorePages()) {
@@ -53,12 +53,12 @@ class ShopperListResponse
         // Parse response based on status code
         if ($this->isSuccessful()) {
             $data = $this->parseSuccessResponse();
-            $this->storedCards = $data['items'];
+            $this->shoppers = $data['items'];
             $this->nextPage = $data['next'];
             $this->firstPage = $data['first'];
             $this->error = null;
         } else {
-            $this->storedCards = null;
+            $this->shoppers = null;
             $this->nextPage = null;
             $this->firstPage = null;
             $this->error = $this->parseErrorResponse();
@@ -83,7 +83,7 @@ class ShopperListResponse
      */
     public function getShoppers(): ?array
     {
-        return $this->storedCards;
+        return $this->shoppers;
     }
 
     /**
@@ -151,7 +151,7 @@ class ShopperListResponse
             throw new InvalidArgumentException('Response must contain an "items" array');
         }
 
-        // Parse each stored card
+        // Parse each shopper
         $shoppers = [];
         foreach ($data['items'] as $index => $itemData) {
             if (!is_array($itemData)) {
