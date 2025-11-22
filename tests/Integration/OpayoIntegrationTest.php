@@ -23,7 +23,7 @@ class OpayoIntegrationTest extends TestCase
 {
     private Client $httpClient;
     private string $merchantAlias;
-    private string $apiKey;
+    private string $apiSecret;
     private string $baseUri;
 
     protected function setUp(): void
@@ -34,14 +34,16 @@ class OpayoIntegrationTest extends TestCase
         $this->loadEnv();
 
         // Get credentials from environment
+        // ELAVON_API_SECRET is preferred (required for transaction operations)
+        // ELAVON_API_KEY is supported for backwards compatibility
         $this->merchantAlias = getenv('ELAVON_MERCHANT_ALIAS') ?: '';
-        $this->apiKey = getenv('ELAVON_API_KEY') ?: '';
+        $this->apiSecret = getenv('ELAVON_API_SECRET') ?: getenv('ELAVON_API_KEY') ?: '';
         $this->baseUri = getenv('ELAVON_BASE_URI') ?: 'https://uat.api.converge.eu.elavonaws.com';
 
         // Skip test if credentials are not configured
-        if (empty($this->merchantAlias) || empty($this->apiKey)) {
+        if (empty($this->merchantAlias) || empty($this->apiSecret)) {
             $this->markTestSkipped(
-                'Integration tests require ELAVON_MERCHANT_ALIAS and ELAVON_API_KEY to be set in .env file'
+                'Integration tests require ELAVON_MERCHANT_ALIAS and ELAVON_API_SECRET (or ELAVON_API_KEY) to be set in .env file'
             );
         }
 
@@ -79,7 +81,7 @@ class OpayoIntegrationTest extends TestCase
         $psr7Request = $request->build();
         $elavonRequest = ElavonApiRequest::create($psr7Request)
             ->withBaseUri($this->baseUri)
-            ->withAuthentication($this->merchantAlias, $this->apiKey);
+            ->withAuthentication($this->merchantAlias, $this->apiSecret);
 
         // Dump the headers for debugging.
         // foreach ($elavonRequest->getHeaders() as $name => $values) {
@@ -178,7 +180,7 @@ class OpayoIntegrationTest extends TestCase
         $psr7Request = $request->build();
         $elavonRequest = ElavonApiRequest::create($psr7Request)
             ->withBaseUri($this->baseUri)
-            ->withAuthentication($this->merchantAlias, $this->apiKey);
+            ->withAuthentication($this->merchantAlias, $this->apiSecret);
         $psr7Response = $this->httpClient->send($elavonRequest);
 
         // Parse the response
