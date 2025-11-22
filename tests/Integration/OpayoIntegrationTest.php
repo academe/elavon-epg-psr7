@@ -57,6 +57,15 @@ class OpayoIntegrationTest extends TestCase
 
     public function test_createTransaction_withValidCard_returnsAuthorized(): void
     {
+        // Note: This test may fail if the merchant account requires 3D Secure authentication.
+        // The failure will include: "3dsEnforcedOnEcommerceSales"
+        // To resolve: Configure the merchant account to allow non-3DS transactions for testing,
+        // or implement 3DS flow in a separate test.
+
+        // Use expiration date 2 years in the future
+        $expirationYear = (int) date('Y') + 2;
+        $expirationMonth = (int) date('n');
+
         // Arrange - Create a transaction request with test card
         $request = new CreateTransactionRequest(
             transaction: [
@@ -67,12 +76,12 @@ class OpayoIntegrationTest extends TestCase
                 'card' => [
                     'number' => '4111111111111111', // Test card - successful
                     'securityCode' => '123',
-                    'expirationMonth' => 12,
-                    'expirationYear' => 2025,
+                    'expirationMonth' => $expirationMonth,
+                    'expirationYear' => $expirationYear,
                     'holderName' => 'Test Cardholder',
                 ],
                 'description' => 'Integration test transaction',
-                'customReference' => 'TEST-' . time(),
+                'customReference' => 'TEST-' . bin2hex(random_bytes(8)),
             ],
             baseUri: $this->baseUri,
         );
@@ -151,6 +160,10 @@ class OpayoIntegrationTest extends TestCase
 
     public function test_createTransaction_withDeclinedCard_returnsDeclined(): void
     {
+        // Use expiration date 2 years in the future
+        $expirationYear = (int) date('Y') + 2;
+        $expirationMonth = (int) date('n');
+
         // Arrange - Create a transaction request with test declined card
         $request = new CreateTransactionRequest(
             transaction: [
@@ -161,12 +174,12 @@ class OpayoIntegrationTest extends TestCase
                 'card' => [
                     'number' => '4000000000000002', // Test card - declined
                     'securityCode' => '123',
-                    'expirationMonth' => 12,
-                    'expirationYear' => 2025,
+                    'expirationMonth' => $expirationMonth,
+                    'expirationYear' => $expirationYear,
                     'holderName' => 'Test Cardholder',
                 ],
                 'description' => 'Integration test - declined transaction',
-                'customReference' => 'TEST-DECLINED-' . time(),
+                'customReference' => 'TEST-DECLINED-' . bin2hex(random_bytes(8)),
             ],
             baseUri: $this->baseUri,
         );
