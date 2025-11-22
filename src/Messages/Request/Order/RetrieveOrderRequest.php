@@ -66,8 +66,7 @@ class RetrieveOrderRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/orders/' . $this->orderId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/orders/' . $this->orderId);
     }
 
     /**

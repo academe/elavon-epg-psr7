@@ -92,8 +92,6 @@ class UpdateTransactionRequest
         // Note: PATCH is used for partial updates
         return $requestFactory
             ->createRequest('PATCH', '/transactions/' . $this->transactionId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($stream);
     }
 

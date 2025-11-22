@@ -47,8 +47,6 @@ class UpdateTransactionRequestTest extends TestCase
         // Assert
         $this->assertSame('PATCH', $psrRequest->getMethod());
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
     public function test_build_withTransactionArray_createsPatchRequest(): void

@@ -112,8 +112,6 @@ class CreateStoredCardRequestTest extends TestCase
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertSame('/stored-cards', (string) $psrRequest->getUri());
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Content-Type'));
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Accept'));
 
         // Verify body content
         $body = (string) $psrRequest->getBody();

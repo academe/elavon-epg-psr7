@@ -35,8 +35,6 @@ class CreatePazePaymentRequest
 
         return $requestFactory
             ->createRequest('POST', '/paze-payments')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

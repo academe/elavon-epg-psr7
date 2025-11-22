@@ -32,7 +32,6 @@ class RetrieveGooglePayPaymentRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/google-pay-payments/payment_456', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesPaymentIdInUri(): void

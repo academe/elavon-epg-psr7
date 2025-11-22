@@ -31,8 +31,7 @@ class RetrieveTotalAdjustmentListRequest
         }
 
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     public function getTransactionId(): string

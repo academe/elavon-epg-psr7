@@ -43,7 +43,6 @@ class RetrieveHostedCardRequestTest extends TestCase
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
         $this->assertSame('/hosted-cards/hc456', (string) $psrRequest->getUri());
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Accept'));
     }
 
     public function test_build_canBeCalledMultipleTimes(): void

@@ -66,8 +66,7 @@ class RetrieveTransactionRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/transactions/' . $this->transactionId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/transactions/' . $this->transactionId);
     }
 
     /**

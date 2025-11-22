@@ -37,8 +37,6 @@ class SendEmailReceiptRequest
 
         return $requestFactory
             ->createRequest('POST', '/transactions/' . $this->transactionId . '/email-receipt-requests')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

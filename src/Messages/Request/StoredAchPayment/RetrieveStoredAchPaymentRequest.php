@@ -66,8 +66,7 @@ class RetrieveStoredAchPaymentRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/stored-ach-payments/' . $this->storedAchPaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/stored-ach-payments/' . $this->storedAchPaymentId);
     }
 
     /**

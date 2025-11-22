@@ -26,8 +26,7 @@ class RetrievePaymentLinkEventListRequest
         }
 
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     public function getQueryParams(): array

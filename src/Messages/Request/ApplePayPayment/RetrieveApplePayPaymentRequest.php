@@ -25,8 +25,7 @@ class RetrieveApplePayPaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', '/apple-pay-payments/' . $this->applePayPaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/apple-pay-payments/' . $this->applePayPaymentId);
     }
 
     public function getApplePayPaymentId(): string

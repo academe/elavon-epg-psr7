@@ -106,8 +106,6 @@ class CreateForexAdviceRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/forex-advices')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

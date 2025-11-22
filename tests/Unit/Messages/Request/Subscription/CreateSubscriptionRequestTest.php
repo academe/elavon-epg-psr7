@@ -153,8 +153,6 @@ class CreateSubscriptionRequestTest extends TestCase
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertStringContainsString('/subscriptions', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
 
         // Verify JSON body
         $body = (string) $psrRequest->getBody();

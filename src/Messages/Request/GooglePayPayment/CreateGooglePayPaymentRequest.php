@@ -35,8 +35,6 @@ class CreateGooglePayPaymentRequest
 
         return $requestFactory
             ->createRequest('POST', '/google-pay-payments')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

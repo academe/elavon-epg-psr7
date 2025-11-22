@@ -66,8 +66,7 @@ class RetrieveSubscriptionRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/subscriptions/' . $this->subscriptionId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/subscriptions/' . $this->subscriptionId);
     }
 
     /**

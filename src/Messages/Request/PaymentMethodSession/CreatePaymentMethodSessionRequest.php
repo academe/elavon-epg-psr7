@@ -57,8 +57,6 @@ class CreatePaymentMethodSessionRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/payment-method-sessions')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

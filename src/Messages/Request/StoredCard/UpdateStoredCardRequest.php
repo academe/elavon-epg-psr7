@@ -95,8 +95,6 @@ class UpdateStoredCardRequest
         // Build PSR-7 PATCH request
         return $requestFactory
             ->createRequest('PATCH', '/stored-cards/' . $this->storedCardId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

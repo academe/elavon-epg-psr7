@@ -66,8 +66,7 @@ class RetrieveBatchRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/batches/' . $this->batchId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/batches/' . $this->batchId);
     }
 
     /**

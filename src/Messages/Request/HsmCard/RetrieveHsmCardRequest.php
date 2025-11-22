@@ -25,8 +25,7 @@ class RetrieveHsmCardRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', '/hsm-cards/' . $this->hsmCardId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/hsm-cards/' . $this->hsmCardId);
     }
 
     public function getHsmCardId(): string

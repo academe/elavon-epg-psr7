@@ -91,8 +91,6 @@ class CreateShopperRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/shoppers')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

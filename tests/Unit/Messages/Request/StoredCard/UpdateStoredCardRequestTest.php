@@ -72,8 +72,6 @@ class UpdateStoredCardRequestTest extends TestCase
         // Assert
         $this->assertSame('PATCH', $psrRequest->getMethod());
         $this->assertSame('/stored-cards/sc789', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
     public function test_build_serializesUpdatesToJson(): void

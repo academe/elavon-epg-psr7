@@ -44,7 +44,6 @@ class RetrieveTransactionListRequestTest extends TestCase
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
         $this->assertSame('/transactions', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
     public function test_build_withParams_includesQueryString(): void

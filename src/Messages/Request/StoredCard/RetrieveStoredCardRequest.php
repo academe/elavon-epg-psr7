@@ -66,8 +66,7 @@ class RetrieveStoredCardRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/stored-cards/' . $this->storedCardId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/stored-cards/' . $this->storedCardId);
     }
 
     /**

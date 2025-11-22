@@ -93,8 +93,6 @@ class CreateStoredCardRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/stored-cards')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

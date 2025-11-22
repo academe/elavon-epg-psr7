@@ -43,8 +43,6 @@ class CreateHsmCardRequest
 
         return $requestFactory
             ->createRequest('POST', '/hsm-cards')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

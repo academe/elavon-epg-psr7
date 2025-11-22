@@ -97,8 +97,6 @@ class UpdatePlanRequest
         // Build PSR-7 POST request (updates use POST, not PUT/PATCH)
         return $requestFactory
             ->createRequest('POST', '/plans/' . $this->planId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

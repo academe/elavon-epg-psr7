@@ -33,7 +33,6 @@ class RetrieveAccountListRequestTest extends TestCase
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/accounts', (string) $psr7Request->getUri());
         $this->assertStringNotContainsString('?', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_withQueryParams_includesParamsInUri(): void

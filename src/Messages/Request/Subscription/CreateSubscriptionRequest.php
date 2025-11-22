@@ -96,8 +96,6 @@ class CreateSubscriptionRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/subscriptions')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

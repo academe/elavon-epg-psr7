@@ -49,8 +49,7 @@ class RetrieveNotificationRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/notifications/' . $this->notificationId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/notifications/' . $this->notificationId);
     }
 
     /**

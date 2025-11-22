@@ -43,8 +43,7 @@ class RetrievePaymentMethodLinkRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/payment-method-links/' . $this->paymentMethodLinkId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/payment-method-links/' . $this->paymentMethodLinkId);
     }
 
     /**

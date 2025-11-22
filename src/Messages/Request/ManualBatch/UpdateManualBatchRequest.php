@@ -95,8 +95,6 @@ class UpdateManualBatchRequest
         // Build PSR-7 POST request (API uses POST for updates)
         return $requestFactory
             ->createRequest('POST', '/manual-batches/' . $this->manualBatchId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

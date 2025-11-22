@@ -25,8 +25,7 @@ class RetrievePazePaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', '/paze-payments/' . $this->pazePaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/paze-payments/' . $this->pazePaymentId);
     }
 
     public function getPazePaymentId(): string

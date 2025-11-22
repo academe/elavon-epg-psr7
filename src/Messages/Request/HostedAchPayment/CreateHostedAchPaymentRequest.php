@@ -97,8 +97,6 @@ class CreateHostedAchPaymentRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/hosted-ach-payments')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

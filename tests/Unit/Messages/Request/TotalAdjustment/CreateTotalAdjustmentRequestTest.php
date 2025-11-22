@@ -51,8 +51,6 @@ class CreateTotalAdjustmentRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/total-adjustments', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
 
         // Verify body contains serialized data
         $body = (string) $psr7Request->getBody();

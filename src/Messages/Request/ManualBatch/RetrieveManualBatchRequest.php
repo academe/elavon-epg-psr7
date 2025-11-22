@@ -66,8 +66,7 @@ class RetrieveManualBatchRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/manual-batches/' . $this->manualBatchId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/manual-batches/' . $this->manualBatchId);
     }
 
     /**

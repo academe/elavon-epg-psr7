@@ -41,8 +41,6 @@ class UpdateHostedCardRequest
 
         return $requestFactory
             ->createRequest('POST', '/hosted-cards/' . $this->hostedCardId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

@@ -66,8 +66,7 @@ class RetrieveSurchargeAdviceRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/surcharge-advices/' . $this->surchargeAdviceId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/surcharge-advices/' . $this->surchargeAdviceId);
     }
 
     /**

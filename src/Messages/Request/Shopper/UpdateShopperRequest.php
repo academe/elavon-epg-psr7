@@ -95,8 +95,6 @@ class UpdateShopperRequest
         // Build PSR-7 PATCH request
         return $requestFactory
             ->createRequest('PATCH', '/shoppers/' . $this->shopperId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

@@ -66,8 +66,7 @@ class DeleteStoredAchPaymentRequest
 
         // Build PSR-7 DELETE request
         return $requestFactory
-            ->createRequest('DELETE', '/stored-ach-payments/' . $this->storedAchPaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('DELETE', '/stored-ach-payments/' . $this->storedAchPaymentId);
     }
 
     /**

@@ -66,8 +66,7 @@ class RetrieveForexAdviceRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/forex-advices/' . $this->forexAdviceId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/forex-advices/' . $this->forexAdviceId);
     }
 
     /**

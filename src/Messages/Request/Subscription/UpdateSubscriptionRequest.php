@@ -98,8 +98,6 @@ class UpdateSubscriptionRequest
         // Build PSR-7 POST request (updates use POST, not PUT/PATCH)
         return $requestFactory
             ->createRequest('POST', '/subscriptions/' . $this->subscriptionId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

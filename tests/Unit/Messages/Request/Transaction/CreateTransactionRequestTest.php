@@ -79,8 +79,6 @@ class CreateTransactionRequestTest extends TestCase
         // Assert
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertSame('/transactions', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_bodyContainsSerializedTransaction(): void
@@ -139,7 +137,6 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertSame('POST', $psr7Request->getMethod());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
     }
 
     public function test_getTransaction_withTransactionArray_returnsTransactionObject(): void
@@ -317,6 +314,5 @@ class CreateTransactionRequestTest extends TestCase
         // Assert
         $this->assertSame('application/json', $psr7Request->getHeaderLine('content-type'));
         $this->assertSame('application/json', $psr7Request->getHeaderLine('CONTENT-TYPE'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
     }
 }

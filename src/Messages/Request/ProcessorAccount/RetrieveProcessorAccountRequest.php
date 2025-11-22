@@ -49,8 +49,7 @@ class RetrieveProcessorAccountRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/processor-accounts/' . $this->processorAccountId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/processor-accounts/' . $this->processorAccountId);
     }
 
     /**

@@ -49,8 +49,7 @@ class RetrievePlanListRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/plan-lists/' . $this->planListId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/plan-lists/' . $this->planListId);
     }
 
     /**

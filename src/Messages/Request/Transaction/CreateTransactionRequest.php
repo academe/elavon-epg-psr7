@@ -98,8 +98,6 @@ class CreateTransactionRequest
         // Build PSR-7 request
         return $requestFactory
             ->createRequest('POST', '/transactions')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($stream);
     }
 

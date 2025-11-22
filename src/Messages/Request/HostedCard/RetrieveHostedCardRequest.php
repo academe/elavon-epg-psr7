@@ -66,8 +66,7 @@ class RetrieveHostedCardRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/hosted-cards/' . $this->hostedCardId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/hosted-cards/' . $this->hostedCardId);
     }
 
     /**

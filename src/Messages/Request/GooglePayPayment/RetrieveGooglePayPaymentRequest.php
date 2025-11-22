@@ -25,8 +25,7 @@ class RetrieveGooglePayPaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', '/google-pay-payments/' . $this->googlePayPaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/google-pay-payments/' . $this->googlePayPaymentId);
     }
 
     public function getGooglePayPaymentId(): string

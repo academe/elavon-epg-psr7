@@ -90,8 +90,6 @@ class CreateManualBatchRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/manual-batches')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

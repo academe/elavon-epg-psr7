@@ -66,8 +66,7 @@ class DeleteShopperRequest
 
         // Build PSR-7 DELETE request
         return $requestFactory
-            ->createRequest('DELETE', '/shoppers/' . $this->storedCardId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('DELETE', '/shoppers/' . $this->storedCardId);
     }
 
     /**

@@ -25,8 +25,7 @@ class RetrievePaymentLinkEventRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', '/payment-link-events/' . $this->paymentLinkEventId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/payment-link-events/' . $this->paymentLinkEventId);
     }
 
     public function getPaymentLinkEventId(): string

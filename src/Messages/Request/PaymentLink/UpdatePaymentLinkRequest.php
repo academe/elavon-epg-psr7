@@ -96,8 +96,6 @@ class UpdatePaymentLinkRequest
         // Build PSR-7 POST request
         return $requestFactory
             ->createRequest('POST', '/payment-links/' . $this->paymentLinkId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

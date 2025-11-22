@@ -43,7 +43,6 @@ class RetrieveStoredCardRequestTest extends TestCase
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
         $this->assertSame('/stored-cards/sc456', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
     public function test_build_hasNoBody(): void

@@ -35,8 +35,6 @@ class CreatePanTokenRequest
 
         return $requestFactory
             ->createRequest('POST', '/pan-tokens')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

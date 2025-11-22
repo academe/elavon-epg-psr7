@@ -37,7 +37,6 @@ class CreateShopperRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/shoppers', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
     }
 
     public function test_build_includesShopperDataInBody(): void

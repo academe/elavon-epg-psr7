@@ -40,8 +40,6 @@ class CreateApplePayPaymentSessionRequest
 
         return $requestFactory
             ->createRequest('POST', '/apple-pay-payment-sessions')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

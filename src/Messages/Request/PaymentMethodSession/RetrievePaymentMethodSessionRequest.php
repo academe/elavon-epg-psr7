@@ -43,8 +43,7 @@ class RetrievePaymentMethodSessionRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/payment-method-sessions/' . $this->paymentMethodSessionId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/payment-method-sessions/' . $this->paymentMethodSessionId);
     }
 
     /**

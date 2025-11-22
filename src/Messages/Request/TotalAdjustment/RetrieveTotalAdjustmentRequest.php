@@ -49,8 +49,7 @@ class RetrieveTotalAdjustmentRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', '/total-adjustments/' . $this->totalAdjustmentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/total-adjustments/' . $this->totalAdjustmentId);
     }
 
     /**

@@ -95,8 +95,6 @@ class UpdatePaymentSessionRequest
         // Build PSR-7 POST request (update uses POST, not PUT/PATCH)
         return $requestFactory
             ->createRequest('POST', '/payment-sessions/' . $this->paymentSessionId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

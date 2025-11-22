@@ -66,8 +66,7 @@ class DeletePlanRequest
 
         // Build PSR-7 DELETE request
         return $requestFactory
-            ->createRequest('DELETE', '/plans/' . $this->planId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('DELETE', '/plans/' . $this->planId);
     }
 
     /**

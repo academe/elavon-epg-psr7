@@ -33,7 +33,6 @@ class RetrieveOrderListRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringEndsWith('/orders', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_withQueryParams_includesParamsInUri(): void

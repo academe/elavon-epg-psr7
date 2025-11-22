@@ -101,8 +101,6 @@ class UpdateStoredAchPaymentRequest
         // Build PSR-7 POST request (API uses POST for updates)
         return $requestFactory
             ->createRequest('POST', '/stored-ach-payments/' . $this->storedAchPaymentId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

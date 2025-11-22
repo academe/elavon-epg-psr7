@@ -38,8 +38,6 @@ class CreatePaymentLinkEventRequest
 
         return $requestFactory
             ->createRequest('POST', '/payment-link-events')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
     }
 

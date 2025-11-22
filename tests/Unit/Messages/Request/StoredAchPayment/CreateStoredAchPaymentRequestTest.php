@@ -81,7 +81,5 @@ class CreateStoredAchPaymentRequestTest extends TestCase
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertStringContainsString('/stored-ach-payments', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 }
