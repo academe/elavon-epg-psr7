@@ -88,10 +88,12 @@ class OpayoIntegrationTest extends TestCase
 
         // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
-        $decoratedRequest = ElavonApiFactory::configure()
+        
+        $requestDecorator = ElavonApiFactory::configure()
             ->withBaseUri($this->baseUri)
-            ->withAuthentication($this->merchantAlias, $this->apiSecret)
-            ->decorate($psr7Request);
+            ->withAuthentication($this->merchantAlias, $this->apiSecret);
+
+        $decoratedRequest = $requestDecorator->decorate($psr7Request);
 
         $psr7Response = $this->httpClient->send($decoratedRequest);
 
