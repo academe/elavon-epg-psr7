@@ -59,7 +59,6 @@ class CreateStoredAchPaymentRequest
      * @param StoredAchPayment|array<string, mixed> $storedAchPayment Stored ACH payment data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When stored ACH payment data is invalid
      */
@@ -67,7 +66,6 @@ class CreateStoredAchPaymentRequest
         StoredAchPayment|array $storedAchPayment,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         // Normalize to StoredAchPayment object
         $this->storedAchPayment = match (true) {
@@ -95,7 +93,7 @@ class CreateStoredAchPaymentRequest
 
         // Build PSR-7 POST request
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/stored-ach-payments')
+            ->createRequest('POST', '/stored-ach-payments')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

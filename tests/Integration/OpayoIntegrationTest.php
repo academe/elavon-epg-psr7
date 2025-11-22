@@ -82,8 +82,7 @@ class OpayoIntegrationTest extends TestCase
                 ],
                 'description' => 'Integration test transaction',
                 'customReference' => 'TEST-' . bin2hex(random_bytes(8)),
-            ],
-            baseUri: $this->baseUri,
+            ]->baseUri,
         );
 
         // Act - Build request, add Elavon API headers and authentication, then send
@@ -194,8 +193,7 @@ class OpayoIntegrationTest extends TestCase
                 ],
                 'description' => 'Integration test - declined transaction',
                 'customReference' => 'TEST-DECLINED-' . bin2hex(random_bytes(8)),
-            ],
-            baseUri: $this->baseUri,
+            ]->baseUri,
         );
 
         // Act - Build request, add Elavon API headers and authentication, then send

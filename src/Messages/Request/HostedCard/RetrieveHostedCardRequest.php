@@ -42,14 +42,12 @@ class RetrieveHostedCardRequest
     /**
      * @param string $hostedCardId Hosted card ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When hosted card ID is empty
      */
     public function __construct(
         private readonly string $hostedCardId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->hostedCardId)) {
             throw new InvalidArgumentException('Hosted card ID cannot be empty');
@@ -68,7 +66,7 @@ class RetrieveHostedCardRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/hosted-cards/' . $this->hostedCardId)
+            ->createRequest('GET', '/hosted-cards/' . $this->hostedCardId)
             ->withHeader('Accept', 'application/json');
     }
 

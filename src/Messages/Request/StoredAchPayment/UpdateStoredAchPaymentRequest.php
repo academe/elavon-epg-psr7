@@ -63,7 +63,6 @@ class UpdateStoredAchPaymentRequest
      * @param StoredAchPayment|array<string, mixed> $updates Update data (partial stored ACH payment)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When stored ACH payment ID is empty or updates are invalid
      */
@@ -72,7 +71,6 @@ class UpdateStoredAchPaymentRequest
         StoredAchPayment|array $updates,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->storedAchPaymentId)) {
             throw new InvalidArgumentException('Stored ACH payment ID cannot be empty');
@@ -102,7 +100,7 @@ class UpdateStoredAchPaymentRequest
 
         // Build PSR-7 POST request (API uses POST for updates)
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/stored-ach-payments/' . $this->storedAchPaymentId)
+            ->createRequest('POST', '/stored-ach-payments/' . $this->storedAchPaymentId)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

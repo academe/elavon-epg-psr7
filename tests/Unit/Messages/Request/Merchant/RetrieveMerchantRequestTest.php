@@ -35,15 +35,4 @@ class RetrieveMerchantRequestTest extends TestCase
         $this->assertStringContainsString('/merchants/merchant456', (string) $psr7Request->getUri());
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveMerchantRequest('merchant789', baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/merchants/merchant789', (string) $psr7Request->getUri());
-    }
 }

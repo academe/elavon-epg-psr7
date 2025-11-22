@@ -42,14 +42,12 @@ class RetrieveTransactionRequest
     /**
      * @param string $transactionId Transaction ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When transaction ID is empty
      */
     public function __construct(
         private readonly string $transactionId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -68,7 +66,7 @@ class RetrieveTransactionRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/transactions/' . $this->transactionId)
+            ->createRequest('GET', '/transactions/' . $this->transactionId)
             ->withHeader('Accept', 'application/json');
     }
 

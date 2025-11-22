@@ -20,7 +20,6 @@ class UpdateHostedCardRequest
         HostedCard|array $hostedCard,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->hostedCardId)) {
             throw new InvalidArgumentException('HostedCard ID cannot be empty');
@@ -41,7 +40,7 @@ class UpdateHostedCardRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/hosted-cards/' . $this->hostedCardId)
+            ->createRequest('POST', '/hosted-cards/' . $this->hostedCardId)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

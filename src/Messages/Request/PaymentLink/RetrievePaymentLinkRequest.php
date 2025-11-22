@@ -42,14 +42,12 @@ class RetrievePaymentLinkRequest
     /**
      * @param string $paymentLinkId PaymentLink Resource ID
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment link ID is empty
      */
     public function __construct(
         private readonly string $paymentLinkId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
@@ -68,7 +66,7 @@ class RetrievePaymentLinkRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/payment-links/' . $this->paymentLinkId)
+            ->createRequest('GET', '/payment-links/' . $this->paymentLinkId)
             ->withHeader('Accept', 'application/json');
     }
 

@@ -78,27 +78,9 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertSame('POST', $psr7Request->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/transactions', (string) $psr7Request->getUri());
+        $this->assertSame('/transactions', (string) $psr7Request->getUri());
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
-                'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
-                'card' => ['number' => '4111111111111111'],
-            ],
-            baseUri: 'https://uat.api.converge.eu.elavonaws.com',
-        );
-
-        // Act
-        $psr7Request = $request->build();
-
-        // Assert
-        $this->assertSame('https://uat.api.converge.eu.elavonaws.com/transactions', (string) $psr7Request->getUri());
     }
 
     public function test_build_bodyContainsSerializedTransaction(): void

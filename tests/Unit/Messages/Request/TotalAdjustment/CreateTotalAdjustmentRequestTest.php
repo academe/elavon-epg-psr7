@@ -63,15 +63,4 @@ class CreateTotalAdjustmentRequestTest extends TestCase
         $this->assertSame('USD', $decodedBody['total']['currencyCode']);
         $this->assertFalse($decodedBody['doCapture']);
     }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $totalAdjustment = new TotalAdjustment();
-        $customUri = 'https://custom.api.example.com';
-        $request = new CreateTotalAdjustmentRequest($totalAdjustment, baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-    }
 }

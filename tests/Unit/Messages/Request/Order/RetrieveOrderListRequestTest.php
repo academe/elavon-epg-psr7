@@ -46,14 +46,4 @@ class RetrieveOrderListRequestTest extends TestCase
         $this->assertStringContainsString('limit=25', $uri);
         $this->assertStringContainsString('offset=50', $uri);
     }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveOrderListRequest([], baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-    }
 }

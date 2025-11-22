@@ -42,23 +42,8 @@ class RetrieveHostedCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/hosted-cards/hc456', (string) $psrRequest->getUri());
+        $this->assertSame('/hosted-cards/hc456', (string) $psrRequest->getUri());
         $this->assertSame(['application/json'], $psrRequest->getHeader('Accept'));
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $request = new RetrieveHostedCardRequest(
-            hostedCardId: 'hc789',
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/hosted-cards/hc789', (string) $psrRequest->getUri());
     }
 
     public function test_build_canBeCalledMultipleTimes(): void

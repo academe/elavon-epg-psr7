@@ -36,17 +36,6 @@ class RetrieveBatchRequestTest extends TestCase
         $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveBatchRequest('batch789', baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/batches/batch789', (string) $psr7Request->getUri());
-    }
-
     public function test_build_withLongBatchId_createsRequest(): void
     {
         $longId = 'wrKK4HcHCXcK3KkXwFRMXVjQ';

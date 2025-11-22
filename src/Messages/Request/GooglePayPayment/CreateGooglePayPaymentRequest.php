@@ -18,7 +18,6 @@ class CreateGooglePayPaymentRequest
         GooglePayPayment|array $googlePayPayment,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->googlePayPayment = match (true) {
             $googlePayPayment instanceof GooglePayPayment => $googlePayPayment,
@@ -35,7 +34,7 @@ class CreateGooglePayPaymentRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/google-pay-payments')
+            ->createRequest('POST', '/google-pay-payments')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

@@ -42,14 +42,12 @@ class RetrieveStoredAchPaymentRequest
     /**
      * @param string $storedAchPaymentId Stored ACH payment ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When stored ACH payment ID is empty
      */
     public function __construct(
         private readonly string $storedAchPaymentId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->storedAchPaymentId)) {
             throw new InvalidArgumentException('Stored ACH payment ID cannot be empty');
@@ -68,7 +66,7 @@ class RetrieveStoredAchPaymentRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/stored-ach-payments/' . $this->storedAchPaymentId)
+            ->createRequest('GET', '/stored-ach-payments/' . $this->storedAchPaymentId)
             ->withHeader('Accept', 'application/json');
     }
 

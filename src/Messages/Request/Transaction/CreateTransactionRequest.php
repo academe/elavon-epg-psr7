@@ -57,7 +57,6 @@ class CreateTransactionRequest
      * @param array<string>|null $requiredFields List of required field names (uses DEFAULT_REQUIRED_FIELDS if null)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When transaction data is invalid
      */
@@ -66,7 +65,6 @@ class CreateTransactionRequest
         private readonly ?array $requiredFields = null,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
     }
 
@@ -99,7 +97,7 @@ class CreateTransactionRequest
 
         // Build PSR-7 request
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/transactions')
+            ->createRequest('POST', '/transactions')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($stream);

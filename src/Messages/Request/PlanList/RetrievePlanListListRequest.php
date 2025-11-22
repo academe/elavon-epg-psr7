@@ -26,12 +26,10 @@ class RetrievePlanListListRequest
     /**
      * @param array<string, mixed> $queryParams Query parameters for pagination/filtering
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      */
     public function __construct(
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
     }
 
@@ -46,7 +44,7 @@ class RetrievePlanListListRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         // Build URI with query parameters
-        $uri = $this->baseUri . '/plan-lists';
+        $uri = '/plan-lists';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }

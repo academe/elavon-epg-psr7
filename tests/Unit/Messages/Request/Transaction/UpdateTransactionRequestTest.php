@@ -68,23 +68,6 @@ class UpdateTransactionRequestTest extends TestCase
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
     }
 
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $updates = new Transaction();
-        $request = new UpdateTransactionRequest(
-            transactionId: 'txn123',
-            updates: $updates,
-            baseUri: 'https://custom.api.example.com'
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/transactions/txn123', (string) $psrRequest->getUri());
-    }
-
     public function test_build_serializesOnlyNonNullFields(): void
     {
         // Arrange

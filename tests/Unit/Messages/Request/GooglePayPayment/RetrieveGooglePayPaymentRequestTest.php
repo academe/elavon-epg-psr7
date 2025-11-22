@@ -45,18 +45,6 @@ class RetrieveGooglePayPaymentRequestTest extends TestCase
         $this->assertStringEndsWith('/payment_789', $uri);
     }
 
-    public function test_usesCustomBaseUri(): void
-    {
-        $request = new RetrieveGooglePayPaymentRequest(
-            googlePayPaymentId: 'payment_999',
-            baseUri: 'https://custom.api.com',
-        );
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith('https://custom.api.com', (string) $psr7Request->getUri());
-    }
-
     public function test_requestHasNoBody(): void
     {
         $request = new RetrieveGooglePayPaymentRequest('payment_000');

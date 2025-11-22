@@ -48,7 +48,6 @@ class RetrievePaymentLinkEventListRequest
      * @param string $paymentLinkId PaymentLink Resource ID
      * @param array<string, mixed> $queryParams Query parameters for pagination/filtering
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment link ID is empty
      */
@@ -56,7 +55,6 @@ class RetrievePaymentLinkEventListRequest
         private readonly string $paymentLinkId,
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
@@ -74,7 +72,7 @@ class RetrievePaymentLinkEventListRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         // Build URI with query parameters
-        $uri = $this->baseUri . '/payment-links/' . $this->paymentLinkId . '/payment-link-events';
+        $uri = '/payment-links/' . $this->paymentLinkId . '/payment-link-events';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }

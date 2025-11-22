@@ -58,7 +58,7 @@ try {
         shopperEmailAddress: $email,
     );
 
-    $orderRequest = (new CreateOrderRequest($order, baseUri: $config['base_uri']))->build();
+    $orderRequest = (new CreateOrderRequest($order))->build();
     $orderRequest = $apiFactory->apply($orderRequest);
 
     $orderHttpResponse = $httpClient->send($orderRequest);
@@ -85,7 +85,7 @@ try {
         shopperEmailAddress: $email,
     );
 
-    $sessionRequest = (new CreatePaymentSessionRequest($paymentSession, baseUri: $config['base_uri']))->build();
+    $sessionRequest = (new CreatePaymentSessionRequest($paymentSession))->build();
     $sessionRequest = $apiFactory->apply($sessionRequest);
 
     $sessionHttpResponse = $httpClient->send($sessionRequest);

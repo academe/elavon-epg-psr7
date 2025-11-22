@@ -18,7 +18,6 @@ class CreatePanTokenRequest
         array $panTokens,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->panTokens = array_map(
             fn($token) => $token instanceof PanToken ? $token : PanToken::fromData($token),
@@ -35,7 +34,7 @@ class CreatePanTokenRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/pan-tokens')
+            ->createRequest('POST', '/pan-tokens')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

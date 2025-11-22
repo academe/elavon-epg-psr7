@@ -110,15 +110,4 @@ class CreateOrderRequestTest extends TestCase
         $this->assertSame('Item 2', $data['items'][1]['description']);
         $this->assertSame('service', $data['items'][1]['type']);
     }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $order = new Order(total: ['amount' => '50.00', 'currencyCode' => 'USD']);
-        $customUri = 'https://custom.api.example.com';
-
-        $request = new CreateOrderRequest($order, baseUri: $customUri);
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-    }
 }

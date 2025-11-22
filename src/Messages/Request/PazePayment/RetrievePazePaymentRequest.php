@@ -14,7 +14,6 @@ class RetrievePazePaymentRequest
     public function __construct(
         private readonly string $pazePaymentId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->pazePaymentId)) {
             throw new InvalidArgumentException('Paze payment ID cannot be empty');
@@ -26,7 +25,7 @@ class RetrievePazePaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/paze-payments/' . $this->pazePaymentId)
+            ->createRequest('GET', '/paze-payments/' . $this->pazePaymentId)
             ->withHeader('Accept', 'application/json');
     }
 

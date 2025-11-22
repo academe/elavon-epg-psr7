@@ -15,7 +15,6 @@ class RetrieveShopperStoredCardsRequest
         private readonly string $shopperId,
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->shopperId)) {
             throw new InvalidArgumentException('Shopper ID cannot be empty');
@@ -26,7 +25,7 @@ class RetrieveShopperStoredCardsRequest
     {
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
-        $uri = $this->baseUri . '/shoppers/' . $this->shopperId . '/stored-cards';
+        $uri = '/shoppers/' . $this->shopperId . '/stored-cards';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }

@@ -14,7 +14,6 @@ class RetrieveApplePayPaymentRequest
     public function __construct(
         private readonly string $applePayPaymentId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->applePayPaymentId)) {
             throw new InvalidArgumentException('Apple Pay payment ID cannot be empty');
@@ -26,7 +25,7 @@ class RetrieveApplePayPaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/apple-pay-payments/' . $this->applePayPaymentId)
+            ->createRequest('GET', '/apple-pay-payments/' . $this->applePayPaymentId)
             ->withHeader('Accept', 'application/json');
     }
 

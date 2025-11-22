@@ -42,7 +42,7 @@ class RetrieveStoredCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/stored-cards/sc456', (string) $psrRequest->getUri());
+        $this->assertSame('/stored-cards/sc456', (string) $psrRequest->getUri());
         $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
@@ -57,21 +57,6 @@ class RetrieveStoredCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('', $body);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $request = new RetrieveStoredCardRequest(
-            storedCardId: 'sc999',
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/stored-cards/sc999', (string) $psrRequest->getUri());
     }
 
     public function test_build_multipleCalls_returnsSeparateInstances(): void

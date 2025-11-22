@@ -63,17 +63,4 @@ class CreatePazePaymentRequestTest extends TestCase
         $this->assertSame('encrypted_data', $data['token']);
         $this->assertSame('ref789', $data['customReference']);
     }
-
-    public function test_usesCustomBaseUri(): void
-    {
-        $payment = new PazePayment(token: 'token');
-        $request = new CreatePazePaymentRequest(
-            pazePayment: $payment,
-            baseUri: 'https://custom.api.com',
-        );
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith('https://custom.api.com', (string) $psr7Request->getUri());
-    }
 }

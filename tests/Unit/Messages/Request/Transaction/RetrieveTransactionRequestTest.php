@@ -46,21 +46,6 @@ class RetrieveTransactionRequestTest extends TestCase
         $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $request = new RetrieveTransactionRequest(
-            transactionId: 'txn123',
-            baseUri: 'https://custom.api.example.com'
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/transactions/txn123', (string) $psrRequest->getUri());
-    }
-
     public function test_build_hasNoBody(): void
     {
         // Arrange
@@ -91,17 +76,5 @@ class RetrieveTransactionRequestTest extends TestCase
 
         $request2 = new RetrieveTransactionRequest('abc-xyz-789');
         $this->assertStringEndsWith('/transactions/abc-xyz-789', (string) $request2->build()->getUri());
-    }
-
-    public function test_build_usesDefaultBaseUri(): void
-    {
-        // Arrange
-        $request = new RetrieveTransactionRequest('txn123');
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertStringStartsWith('https://api.eu.elavonpayments.com', (string) $psrRequest->getUri());
     }
 }

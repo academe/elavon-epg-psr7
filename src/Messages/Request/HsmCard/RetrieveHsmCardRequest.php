@@ -14,7 +14,6 @@ class RetrieveHsmCardRequest
     public function __construct(
         private readonly string $hsmCardId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->hsmCardId)) {
             throw new InvalidArgumentException('HsmCard ID cannot be empty');
@@ -26,7 +25,7 @@ class RetrieveHsmCardRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/hsm-cards/' . $this->hsmCardId)
+            ->createRequest('GET', '/hsm-cards/' . $this->hsmCardId)
             ->withHeader('Accept', 'application/json');
     }
 

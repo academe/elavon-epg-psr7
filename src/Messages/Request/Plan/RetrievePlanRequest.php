@@ -42,14 +42,12 @@ class RetrievePlanRequest
     /**
      * @param string $planId Plan ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When plan ID is empty
      */
     public function __construct(
         private readonly string $planId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
@@ -68,7 +66,7 @@ class RetrievePlanRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/plans/' . $this->planId)
+            ->createRequest('GET', '/plans/' . $this->planId)
             ->withHeader('Accept', 'application/json');
     }
 

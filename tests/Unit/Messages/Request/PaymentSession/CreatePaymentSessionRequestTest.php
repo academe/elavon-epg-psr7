@@ -130,17 +130,4 @@ class CreatePaymentSessionRequestTest extends TestCase
         $this->assertSame('10.50', $data['salesTax']['amount']);
         $this->assertSame('USD', $data['salesTax']['currencyCode']);
     }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $paymentSession = new PaymentSession(
-            order: 'https://api.example.com/orders/ord123',
-        );
-        $customUri = 'https://custom.api.example.com';
-
-        $request = new CreatePaymentSessionRequest($paymentSession, baseUri: $customUri);
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-    }
 }

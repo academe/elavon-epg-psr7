@@ -25,14 +25,12 @@ class RetrieveNotificationRequest
     /**
      * @param string $notificationId Notification ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When notification ID is empty
      */
     public function __construct(
         private readonly string $notificationId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->notificationId)) {
             throw new InvalidArgumentException('Notification ID cannot be empty');
@@ -51,7 +49,7 @@ class RetrieveNotificationRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/notifications/' . $this->notificationId)
+            ->createRequest('GET', '/notifications/' . $this->notificationId)
             ->withHeader('Accept', 'application/json');
     }
 

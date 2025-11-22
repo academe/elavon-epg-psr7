@@ -58,7 +58,6 @@ class CreateShopperRequest
      * @param Shopper|array<string, mixed> $shopper shopper data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When stored card data is invalid
      */
@@ -66,7 +65,6 @@ class CreateShopperRequest
         Shopper|array $shopper,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         // Normalize to Shopper object
         $this->shopper = match (true) {
@@ -92,7 +90,7 @@ class CreateShopperRequest
 
         // Build PSR-7 POST request
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/shoppers')
+            ->createRequest('POST', '/shoppers')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

@@ -18,7 +18,6 @@ class CreatePazePaymentRequest
         PazePayment|array $pazePayment,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->pazePayment = match (true) {
             $pazePayment instanceof PazePayment => $pazePayment,
@@ -35,7 +34,7 @@ class CreatePazePaymentRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/paze-payments')
+            ->createRequest('POST', '/paze-payments')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

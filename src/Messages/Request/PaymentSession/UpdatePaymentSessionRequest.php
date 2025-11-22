@@ -57,7 +57,6 @@ class UpdatePaymentSessionRequest
      * @param PaymentSession|array<string, mixed> $paymentSession PaymentSession data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment session data is invalid or ID is empty
      */
@@ -66,7 +65,6 @@ class UpdatePaymentSessionRequest
         PaymentSession|array $paymentSession,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentSessionId)) {
             throw new InvalidArgumentException('PaymentSession ID cannot be empty');
@@ -96,7 +94,7 @@ class UpdatePaymentSessionRequest
 
         // Build PSR-7 POST request (update uses POST, not PUT/PATCH)
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/payment-sessions/' . $this->paymentSessionId)
+            ->createRequest('POST', '/payment-sessions/' . $this->paymentSessionId)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));

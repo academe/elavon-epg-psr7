@@ -25,14 +25,12 @@ class RetrieveMerchantRequest
     /**
      * @param string $merchantId Merchant ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When merchant ID is empty
      */
     public function __construct(
         private readonly string $merchantId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->merchantId)) {
             throw new InvalidArgumentException('Merchant ID cannot be empty');
@@ -51,7 +49,7 @@ class RetrieveMerchantRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/merchants/' . $this->merchantId)
+            ->createRequest('GET', '/merchants/' . $this->merchantId)
             ->withHeader('Accept', 'application/json');
     }
 

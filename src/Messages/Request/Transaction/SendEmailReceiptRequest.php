@@ -17,7 +17,6 @@ class SendEmailReceiptRequest
         private readonly string $shopperEmailAddress,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -37,7 +36,7 @@ class SendEmailReceiptRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/transactions/' . $this->transactionId . '/email-receipt-requests')
+            ->createRequest('POST', '/transactions/' . $this->transactionId . '/email-receipt-requests')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
             ->withBody($streamFactory->createStream($json));
