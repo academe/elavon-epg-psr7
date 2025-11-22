@@ -128,7 +128,13 @@ class OpayoIntegrationTest extends TestCase
         $this->assertContains(
             $transaction->state,
             [TransactionState::AUTHORIZED, TransactionState::CAPTURED],
-            'Transaction should be either AUTHORIZED or CAPTURED'
+            sprintf(
+                'Transaction should be AUTHORIZED or CAPTURED, got %s. Failures: %s',
+                $transaction->state?->value ?? 'null',
+                $transaction->failures
+                    ? json_encode(array_map(fn($f) => $f->toData(), $transaction->failures))
+                    : 'none'
+            )
         );
 
         // Verify amount
