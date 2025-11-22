@@ -106,8 +106,8 @@ $statusMessage = 'Payment status could not be determined.';
 
 if ($isVerified && $paymentSession) {
     if ($transaction) {
-        // Use actual transaction state
-        $transactionState = $transaction->transactionState ?? 'unknown';
+        // Use actual transaction state (it's an enum)
+        $transactionState = $transaction->state?->value ?? 'unknown';
 
         if (in_array($transactionState, ['AUTHORIZED', 'CAPTURED', 'SETTLED'])) {
             $status = 'completed';
@@ -300,11 +300,11 @@ if ($isVerified && $paymentSession) {
         </div>
         <div class="detail-row">
             <div class="detail-label">Status</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->transactionState ?? 'N/A') ?></div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->state?->value ?? 'N/A') ?></div>
         </div>
         <div class="detail-row">
             <div class="detail-label">Type</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->transactionType ?? 'N/A') ?></div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->type?->value ?? 'N/A') ?></div>
         </div>
         <?php if ($transaction->total): ?>
         <div class="detail-row">
@@ -315,17 +315,15 @@ if ($isVerified && $paymentSession) {
         <?php if ($transaction->card): ?>
         <div class="detail-row">
             <div class="detail-label">Card</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->card->maskedPan ?? 'N/A') ?> (<?= htmlspecialchars($transaction->card->cardBrand ?? 'N/A') ?>)</div>
+            <div class="detail-value">**** <?= htmlspecialchars($transaction->card->last4 ?? 'N/A') ?> (<?= htmlspecialchars($transaction->card->scheme?->value ?? 'N/A') ?>)</div>
         </div>
         <?php endif; ?>
+        <?php if ($transaction->processorReference): ?>
         <div class="detail-row">
-            <div class="detail-label">Approval Code</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->approvalCode ?? 'N/A') ?></div>
+            <div class="detail-label">Processor Reference</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->processorReference) ?></div>
         </div>
-        <div class="detail-row">
-            <div class="detail-label">Response Code</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->responseCode ?? 'N/A') ?></div>
-        </div>
+        <?php endif; ?>
         <?php endif; ?>
 
         <?php if ($paymentSession->threeDSecure): ?>
