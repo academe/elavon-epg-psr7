@@ -156,9 +156,9 @@ class ElavonApiRequestTest extends TestCase
         // Act
         $elavonRequest = ElavonApiRequest::create($request)->withProduction();
 
-        // Assert
+        // Assert - withProduction() defaults to EU production
         $uri = $elavonRequest->getUri();
-        $this->assertStringStartsWith('https://api.convergepay.com', (string) $uri);
+        $this->assertStringStartsWith('https://api.eu.convergepay.com', (string) $uri);
         $this->assertTrue($elavonRequest->hasHeader('Accept-Version'));
         $this->assertSame('1', $elavonRequest->getApiVersion());
     }
@@ -591,8 +591,8 @@ class ElavonApiRequestTest extends TestCase
         $this->assertNotSame($decorator, $elavonRequest2);
         $this->assertNotSame($elavonRequest1, $elavonRequest2);
 
-        // Both should have production environment
-        $this->assertStringContainsString('api.convergepay.com', (string) $elavonRequest1->getUri());
-        $this->assertStringContainsString('api.convergepay.com', (string) $elavonRequest2->getUri());
+        // Both should have production environment (EU by default)
+        $this->assertStringContainsString('api.eu.convergepay.com', (string) $elavonRequest1->getUri());
+        $this->assertStringContainsString('api.eu.convergepay.com', (string) $elavonRequest2->getUri());
     }
 }
