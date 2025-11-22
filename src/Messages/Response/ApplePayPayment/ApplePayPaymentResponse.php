@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\ApplePayPayment;
 
-use Academe\Elavon\Epg\Psr7\Dtos\ApplePayPayment;
+use Academe\Elavon\Epg\Psr7\Dtos\ApplePayPayment as ApplePayPaymentDto;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
 use Psr\Http\Message\ResponseInterface;
@@ -13,7 +13,7 @@ class ApplePayPaymentResponse
 {
     use HandlesErrors;
 
-    private readonly ?ApplePayPayment $applePayPayment;
+    private readonly ?ApplePayPaymentDto $applePayPayment;
 
     public function __construct(
         private readonly ResponseInterface $response,
@@ -32,7 +32,7 @@ class ApplePayPaymentResponse
         return new self($response);
     }
 
-    public function getApplePayPayment(): ?ApplePayPayment
+    public function getApplePayPayment(): ?ApplePayPaymentDto
     {
         return $this->applePayPayment;
     }
@@ -47,9 +47,9 @@ class ApplePayPaymentResponse
         return $this->response;
     }
 
-    private function parseSuccessResponse(): ApplePayPayment
+    private function parseSuccessResponse(): ApplePayPaymentDto
     {
         $data = $this->parseJsonBody();
-        return ApplePayPayment::fromData($data);
+        return ApplePayPaymentDto::fromData($data);
     }
 }
