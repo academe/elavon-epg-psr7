@@ -24,7 +24,9 @@ foreach ($autoloadPaths as $path) {
 }
 
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentSession\RetrievePaymentSessionRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\RetrieveTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\PaymentSession\PaymentSessionResponse;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 use GuzzleHttp\Client;
 
@@ -71,6 +73,23 @@ if ($sessionId) {
             } else {
                 $paymentSession = $sessionResponse->getPaymentSession();
                 $isVerified = true;
+
+                // If a transaction exists, fetch its details
+                $transactionUrl = $paymentSession->transaction ?? null;
+                if ($transactionUrl) {
+                    // Extract transaction ID from URL (e.g., "/transactions/abc123" -> "abc123")
+                    $transactionId = basename($transactionUrl);
+
+                    $txnRequest = (new RetrieveTransactionRequest($transactionId))->build();
+                    $txnRequest = $apiFactory->apply($txnRequest);
+
+                    $txnResponse = $httpClient->send($txnRequest);
+                    $transactionResponse = TransactionResponse::fromPsr7Response($txnResponse);
+
+                    if (!$transactionResponse->hasError()) {
+                        $transaction = $transactionResponse->getTransaction();
+                    }
+                }
             }
         } catch (Throwable $e) {
             $verificationError = 'Verification error: ' . $e->getMessage();
@@ -86,13 +105,28 @@ $statusClass = 'pending';
 $statusMessage = 'Payment status could not be determined.';
 
 if ($isVerified && $paymentSession) {
-    // Check if a transaction was created
-    $transactionUrl = $paymentSession->transaction ?? null;
+    if ($transaction) {
+        // Use actual transaction state
+        $transactionState = $transaction->transactionState ?? 'unknown';
 
-    if ($transactionUrl) {
+        if (in_array($transactionState, ['AUTHORIZED', 'CAPTURED', 'SETTLED'])) {
+            $status = 'completed';
+            $statusClass = 'success';
+            $statusMessage = "Payment {$transactionState} and verified from the gateway.";
+        } elseif ($transactionState === 'DECLINED') {
+            $status = 'declined';
+            $statusClass = 'error';
+            $statusMessage = 'Payment was declined by the processor.';
+        } else {
+            $status = 'pending';
+            $statusClass = 'pending';
+            $statusMessage = "Transaction state: {$transactionState}";
+        }
+    } elseif ($paymentSession->transaction) {
+        // Transaction URL exists but we couldn't fetch details
         $status = 'completed';
         $statusClass = 'success';
-        $statusMessage = 'Payment completed successfully and verified from the gateway.';
+        $statusMessage = 'Payment completed and verified from the gateway.';
     } else {
         $status = 'pending';
         $statusClass = 'pending';
@@ -255,6 +289,42 @@ if ($isVerified && $paymentSession) {
         <div class="detail-row">
             <div class="detail-label">Customer Name</div>
             <div class="detail-value"><?= htmlspecialchars($paymentSession->billTo->fullName ?? 'N/A') ?></div>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($transaction): ?>
+        <h2>Transaction Details</h2>
+        <div class="detail-row">
+            <div class="detail-label">Transaction ID</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->id ?? 'N/A') ?></div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Status</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->transactionState ?? 'N/A') ?></div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Type</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->transactionType ?? 'N/A') ?></div>
+        </div>
+        <?php if ($transaction->total): ?>
+        <div class="detail-row">
+            <div class="detail-label">Amount</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->total->amount ?? 'N/A') ?> <?= htmlspecialchars($transaction->total->currencyCode ?? '') ?></div>
+        </div>
+        <?php endif; ?>
+        <?php if ($transaction->card): ?>
+        <div class="detail-row">
+            <div class="detail-label">Card</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->card->maskedPan ?? 'N/A') ?> (<?= htmlspecialchars($transaction->card->cardBrand ?? 'N/A') ?>)</div>
+        </div>
+        <?php endif; ?>
+        <div class="detail-row">
+            <div class="detail-label">Approval Code</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->approvalCode ?? 'N/A') ?></div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Response Code</div>
+            <div class="detail-value"><?= htmlspecialchars($transaction->responseCode ?? 'N/A') ?></div>
         </div>
         <?php endif; ?>
 
