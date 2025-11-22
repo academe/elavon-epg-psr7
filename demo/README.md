@@ -25,22 +25,47 @@ A minimal demo showing the 3D Secure payment flow using Elavon's Hosted Payment 
 
 ## Flow
 
-1. **index.php** - Simple payment form (amount, currency, description)
-2. **checkout.php** - Creates Order + PaymentSession with 3DS, redirects to HPP
+1. **index.php** - Payment form with customer name, email, amount, and test card reference
+2. **checkout.php** - Creates Order + PaymentSession with 3DS, stores session ID, redirects to HPP
 3. **Elavon HPP** - User enters card details, completes 3DS challenge
-4. **return.php** - Shows payment result after completion
+4. **return.php** - Fetches PaymentSession from API to verify result (security)
 5. **cancel.php** - Shows cancellation message if user cancels
 
 ## Test Cards
 
-For UAT/sandbox testing, use Elavon's test card numbers. Check your Elavon documentation for current test cards that trigger different 3DS scenarios:
+| Card Number | Type | 3DS Result |
+|-------------|------|------------|
+| `4000000000001091` | Visa | 3DS Challenge (authenticated) |
+| `4000000000001000` | Visa | 3DS Frictionless (authenticated) |
+| `4000000000001109` | Visa | 3DS Not Authenticated |
+| `4000000000001026` | Visa | 3DS Unavailable |
+| `5100000000000511` | Mastercard | 3DS Challenge (authenticated) |
+| `5100000000000529` | Mastercard | 3DS Frictionless (authenticated) |
 
-- 3DS challenge required
-- 3DS frictionless flow
-- 3DS authentication failed
+**For all test cards:**
+- Expiry: Any future date (e.g., 12/25)
+- CVV: Any 3 digits (e.g., 123)
+- 3DS Password (if prompted): `password`
 
-## Notes
+## Security Model
 
-- This demo uses `doThreeDSecure: true` to enforce 3DS authentication
-- The `returnUrl` and `cancelUrl` point back to this demo server
-- In production, you would verify the transaction status on return
+This demo demonstrates secure payment verification:
+
+1. **Session ID stored server-side**: The PaymentSession ID is stored in the PHP session during checkout, not passed via URL parameters
+2. **API verification on return**: When the user returns from HPP, we fetch the PaymentSession directly from the Elavon API to verify the result
+3. **Prevents result manipulation**: Users cannot fake a successful payment by manipulating URL parameters
+
+In production, you should:
+- Always verify payment status from your server
+- Never trust client-side data alone
+- Store transaction references in your database
+- Implement idempotency to handle duplicate callbacks
+
+## Features Demonstrated
+
+- Creating Orders with `CreateOrderRequest`
+- Creating PaymentSessions with `CreatePaymentSessionRequest`
+- Using `billTo` Contact for customer name
+- Enabling 3DS with `doThreeDSecure: true`
+- Retrieving PaymentSessions with `RetrievePaymentSessionRequest`
+- Using `ElavonApiFactory` for authentication and base URI

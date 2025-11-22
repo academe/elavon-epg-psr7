@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Demo: Payment Form
  *
  * Simple form to initiate a 3DS payment.
- * Run with: php -S localhost:8000
+ * Run with: php -S localhost:8000 -t demo
  */
 
 $config = require __DIR__ . '/config.php';
@@ -24,17 +24,19 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
         * { box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 500px;
+            max-width: 600px;
             margin: 40px auto;
             padding: 20px;
             background: #f5f5f5;
         }
         h1 { color: #333; font-size: 24px; }
+        h2 { color: #555; font-size: 18px; margin-top: 30px; }
         .card {
             background: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         label {
             display: block;
@@ -78,6 +80,46 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
             font-size: 12px;
             color: #888;
         }
+        .test-cards {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-cards h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .test-cards table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .test-cards th, .test-cards td {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .test-cards th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        .test-cards code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+        }
+        .test-cards .note {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +127,14 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 
     <div class="card">
         <form action="<?= htmlspecialchars($basePath) ?>checkout.php" method="POST">
+            <label for="customer_name">Customer Name</label>
+            <input type="text" id="customer_name" name="customer_name"
+                   value="Test Customer" required maxlength="100">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   value="demo@example.com" required maxlength="254">
+
             <label for="amount">Amount</label>
             <input type="text" id="amount" name="amount" value="50.00" required
                    pattern="^\d+(\.\d{2})?$" title="Enter amount like 50.00">
@@ -100,10 +150,6 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
             <input type="text" id="description" name="description"
                    value="Test payment with 3DS" required maxlength="255">
 
-            <label for="email">Email (optional)</label>
-            <input type="email" id="email" name="email"
-                   placeholder="shopper@example.com">
-
             <button type="submit">Pay with 3DS</button>
         </form>
 
@@ -114,6 +160,56 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 
         <div class="env-info">
             Environment: <?= htmlspecialchars($config['base_uri']) ?>
+        </div>
+    </div>
+
+    <div class="test-cards">
+        <h2>Test Cards</h2>
+        <p>Use these test card numbers in the Hosted Payment Page:</p>
+
+        <table>
+            <tr>
+                <th>Card Number</th>
+                <th>Type</th>
+                <th>3DS Result</th>
+            </tr>
+            <tr>
+                <td><code>4000000000001091</code></td>
+                <td>Visa</td>
+                <td>3DS Challenge (authenticated)</td>
+            </tr>
+            <tr>
+                <td><code>4000000000001000</code></td>
+                <td>Visa</td>
+                <td>3DS Frictionless (authenticated)</td>
+            </tr>
+            <tr>
+                <td><code>4000000000001109</code></td>
+                <td>Visa</td>
+                <td>3DS Not Authenticated</td>
+            </tr>
+            <tr>
+                <td><code>4000000000001026</code></td>
+                <td>Visa</td>
+                <td>3DS Unavailable</td>
+            </tr>
+            <tr>
+                <td><code>5100000000000511</code></td>
+                <td>Mastercard</td>
+                <td>3DS Challenge (authenticated)</td>
+            </tr>
+            <tr>
+                <td><code>5100000000000529</code></td>
+                <td>Mastercard</td>
+                <td>3DS Frictionless (authenticated)</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            <strong>For all test cards:</strong><br>
+            Expiry: Any future date (e.g., 12/25)<br>
+            CVV: Any 3 digits (e.g., 123)<br>
+            3DS Password (if prompted): <code>password</code>
         </div>
     </div>
 </body>

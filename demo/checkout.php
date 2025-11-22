@@ -23,6 +23,7 @@ if (!class_exists(\Academe\Elavon\Epg\Psr7\Dtos\Order::class)) {
     die('Autoloader not found. Run: composer install');
 }
 
+use Academe\Elavon\Epg\Psr7\Dtos\Contact;
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentSession;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\CreateOrderRequest;
@@ -35,10 +36,11 @@ use GuzzleHttp\Client;
 $config = require __DIR__ . '/config.php';
 
 // Validate input
+$customerName = filter_input(INPUT_POST, 'customer_name', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'Test Customer';
+$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?: 'demo@example.com';
 $amount = filter_input(INPUT_POST, 'amount', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 $currency = filter_input(INPUT_POST, 'currency', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'EUR';
 $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'Test payment';
-$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?: null;
 
 if (!$amount || (float)$amount <= 0) {
     die('Invalid amount');
@@ -76,6 +78,7 @@ try {
     }
 
     // Step 2: Create PaymentSession with 3DS enabled
+    // Include billTo with customer name - this pre-fills the cardholder name on HPP
     $paymentSession = new PaymentSession(
         order: $orderHref,
         returnUrl: $config['demo_url'] . '/return.php',
@@ -83,6 +86,7 @@ try {
         doThreeDSecure: true,
         doCreateTransaction: true,
         shopperEmailAddress: $email,
+        billTo: new Contact(fullName: $customerName, email: $email),
     );
 
     $sessionRequest = (new CreatePaymentSessionRequest($paymentSession))->build();
@@ -97,6 +101,7 @@ try {
 
     $sessionData = $sessionResponse->getPaymentSession();
     $hppUrl = $sessionData->url ?? null;
+    $sessionId = $sessionData->id ?? null;
 
     if (!$hppUrl) {
         // Debug: show what we got
@@ -104,6 +109,12 @@ try {
         echo '<pre>' . htmlspecialchars(json_encode($sessionData->toData(), JSON_PRETTY_PRINT)) . '</pre>';
         die('PaymentSession created but no HPP URL returned');
     }
+
+    // Store session ID in PHP session for verification on return
+    // This prevents users from faking the result by manipulating URL parameters
+    session_start();
+    $_SESSION['payment_session_id'] = $sessionId;
+    $_SESSION['payment_session_created'] = time();
 
     // Step 3: Redirect to Hosted Payment Page
     header('Location: ' . $hppUrl);
