@@ -42,14 +42,12 @@ class RetrieveStoredCardRequest
     /**
      * @param string $storedCardId Stored card ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When stored card ID is empty
      */
     public function __construct(
         private readonly string $storedCardId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->storedCardId)) {
             throw new InvalidArgumentException('Stored card ID cannot be empty');
@@ -68,8 +66,7 @@ class RetrieveStoredCardRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/stored-cards/' . $this->storedCardId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/stored-cards/' . $this->storedCardId);
     }
 
     /**

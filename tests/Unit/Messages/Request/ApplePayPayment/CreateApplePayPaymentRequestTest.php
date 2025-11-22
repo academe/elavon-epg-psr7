@@ -43,8 +43,6 @@ class CreateApplePayPaymentRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/apple-pay-payments', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesPaymentDataInBody(): void
@@ -62,18 +60,5 @@ class CreateApplePayPaymentRequestTest extends TestCase
 
         $this->assertSame('encrypted_data', $data['token']);
         $this->assertSame('ref789', $data['customReference']);
-    }
-
-    public function test_usesCustomBaseUri(): void
-    {
-        $payment = new ApplePayPayment(token: 'token');
-        $request = new CreateApplePayPaymentRequest(
-            applePayPayment: $payment,
-            baseUri: 'https://custom.api.com',
-        );
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith('https://custom.api.com', (string) $psr7Request->getUri());
     }
 }

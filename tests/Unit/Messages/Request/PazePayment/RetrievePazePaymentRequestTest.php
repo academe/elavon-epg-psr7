@@ -32,7 +32,6 @@ class RetrievePazePaymentRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/paze-payments/payment_456', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesPaymentIdInUri(): void
@@ -43,18 +42,6 @@ class RetrievePazePaymentRequestTest extends TestCase
         $uri = (string) $psr7Request->getUri();
 
         $this->assertStringEndsWith('/payment_789', $uri);
-    }
-
-    public function test_usesCustomBaseUri(): void
-    {
-        $request = new RetrievePazePaymentRequest(
-            pazePaymentId: 'payment_999',
-            baseUri: 'https://custom.api.com',
-        );
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith('https://custom.api.com', (string) $psr7Request->getUri());
     }
 
     public function test_requestHasNoBody(): void

@@ -13,7 +13,6 @@ class RetrievePaymentLinkEventListRequest
     public function __construct(
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
     }
 
@@ -21,14 +20,13 @@ class RetrievePaymentLinkEventListRequest
     {
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
-        $uri = $this->baseUri . '/payment-link-events';
+        $uri = '/payment-link-events';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     public function getQueryParams(): array

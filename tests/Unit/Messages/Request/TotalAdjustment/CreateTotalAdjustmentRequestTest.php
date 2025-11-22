@@ -51,8 +51,6 @@ class CreateTotalAdjustmentRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/total-adjustments', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
 
         // Verify body contains serialized data
         $body = (string) $psr7Request->getBody();
@@ -62,16 +60,5 @@ class CreateTotalAdjustmentRequestTest extends TestCase
         $this->assertSame('200.00', $decodedBody['total']['amount']);
         $this->assertSame('USD', $decodedBody['total']['currencyCode']);
         $this->assertFalse($decodedBody['doCapture']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $totalAdjustment = new TotalAdjustment();
-        $customUri = 'https://custom.api.example.com';
-        $request = new CreateTotalAdjustmentRequest($totalAdjustment, baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
     }
 }

@@ -71,8 +71,6 @@ class CreatePaymentLinkRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/payment-links', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesPaymentLinkDataInBody(): void

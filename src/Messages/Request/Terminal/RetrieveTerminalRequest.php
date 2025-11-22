@@ -25,14 +25,12 @@ class RetrieveTerminalRequest
     /**
      * @param string $terminalId Terminal ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When terminal ID is empty
      */
     public function __construct(
         private readonly string $terminalId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->terminalId)) {
             throw new InvalidArgumentException('Terminal ID cannot be empty');
@@ -51,8 +49,7 @@ class RetrieveTerminalRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/terminals/' . $this->terminalId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/terminals/' . $this->terminalId);
     }
 
     /**

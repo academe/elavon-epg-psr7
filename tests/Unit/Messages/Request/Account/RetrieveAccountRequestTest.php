@@ -33,18 +33,6 @@ class RetrieveAccountRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/accounts/account456', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveAccountRequest('account789', baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/accounts/account789', (string) $psr7Request->getUri());
     }
 
     public function test_build_withLongAccountId_createsRequest(): void

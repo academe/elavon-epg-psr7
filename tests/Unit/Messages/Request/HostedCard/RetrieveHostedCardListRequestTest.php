@@ -43,8 +43,7 @@ class RetrieveHostedCardListRequestTest extends TestCase
 
         // Assert
         $this->assertSame('GET', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/hosted-cards', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
+        $this->assertSame('/hosted-cards', (string) $psrRequest->getUri());
     }
 
     public function test_build_withParams_includesQueryString(): void
@@ -60,7 +59,7 @@ class RetrieveHostedCardListRequestTest extends TestCase
         // Assert
         $this->assertStringContainsString('limit=50', $uri);
         $this->assertStringContainsString('offset=100', $uri);
-        $this->assertStringStartsWith('https://api.eu.elavonpayments.com/hosted-cards?', $uri);
+        $this->assertStringStartsWith('/hosted-cards?', $uri);
     }
 
     public function test_build_hasNoBody(): void
@@ -74,22 +73,6 @@ class RetrieveHostedCardListRequestTest extends TestCase
 
         // Assert
         $this->assertSame('', $body);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $request = new RetrieveHostedCardListRequest(
-            queryParams: ['limit' => 10],
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-        $uri = (string) $psrRequest->getUri();
-
-        // Assert
-        $this->assertStringStartsWith('https://custom.api.example.com/hosted-cards?', $uri);
     }
 
     public function test_build_multipleCalls_returnsSeparateInstances(): void

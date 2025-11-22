@@ -42,14 +42,12 @@ class RetrieveBatchRequest
     /**
      * @param string $batchId Batch ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When batch ID is empty
      */
     public function __construct(
         private readonly string $batchId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->batchId)) {
             throw new InvalidArgumentException('Batch ID cannot be empty');
@@ -68,8 +66,7 @@ class RetrieveBatchRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/batches/' . $this->batchId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/batches/' . $this->batchId);
     }
 
     /**

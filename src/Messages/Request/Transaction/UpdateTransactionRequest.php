@@ -50,7 +50,6 @@ class UpdateTransactionRequest
      * @param Transaction|array<string, mixed> $updates Partial transaction data (only fields to update)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When transaction ID is empty
      */
@@ -59,7 +58,6 @@ class UpdateTransactionRequest
         private readonly Transaction|array $updates,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -93,9 +91,7 @@ class UpdateTransactionRequest
         // Build PSR-7 request
         // Note: PATCH is used for partial updates
         return $requestFactory
-            ->createRequest('PATCH', $this->baseUri . '/transactions/' . $this->transactionId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('PATCH', '/transactions/' . $this->transactionId)
             ->withBody($stream);
     }
 

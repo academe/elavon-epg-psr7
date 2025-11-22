@@ -19,14 +19,12 @@ class RetrievePaymentMethodSessionRequest
     /**
      * @param string $paymentMethodSessionId PaymentMethodSession ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment method session ID is empty
      */
     public function __construct(
         private readonly string $paymentMethodSessionId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentMethodSessionId)) {
             throw new InvalidArgumentException('PaymentMethodSession ID cannot be empty');
@@ -45,8 +43,7 @@ class RetrievePaymentMethodSessionRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/payment-method-sessions/' . $this->paymentMethodSessionId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/payment-method-sessions/' . $this->paymentMethodSessionId);
     }
 
     /**

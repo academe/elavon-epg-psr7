@@ -58,7 +58,6 @@ class CreateOrderRequest
      * @param Order|array<string, mixed> $order Order data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When order data is invalid
      */
@@ -66,7 +65,6 @@ class CreateOrderRequest
         Order|array $order,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         // Normalize to Order object
         $this->order = match (true) {
@@ -95,9 +93,7 @@ class CreateOrderRequest
 
         // Build PSR-7 POST request
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/orders')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/orders')
             ->withBody($streamFactory->createStream($json));
     }
 

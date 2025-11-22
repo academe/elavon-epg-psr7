@@ -33,7 +33,6 @@ class RetrieveAccountListRequestTest extends TestCase
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/accounts', (string) $psr7Request->getUri());
         $this->assertStringNotContainsString('?', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_withQueryParams_includesParamsInUri(): void
@@ -47,17 +46,6 @@ class RetrieveAccountListRequestTest extends TestCase
         $this->assertStringContainsString('/accounts?', $uri);
         $this->assertStringContainsString('limit=100', $uri);
         $this->assertStringContainsString('pageToken=xyz789', $uri);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveAccountListRequest(baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/accounts', (string) $psr7Request->getUri());
     }
 
     public function test_build_withMultipleQueryParams_encodesAllParams(): void

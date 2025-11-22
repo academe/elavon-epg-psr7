@@ -15,7 +15,6 @@ class RetrieveTotalAdjustmentListRequest
         private readonly string $transactionId,
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -26,14 +25,13 @@ class RetrieveTotalAdjustmentListRequest
     {
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
-        $uri = $this->baseUri . '/transactions/' . $this->transactionId . '/total-adjustments';
+        $uri = '/transactions/' . $this->transactionId . '/total-adjustments';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     public function getTransactionId(): string

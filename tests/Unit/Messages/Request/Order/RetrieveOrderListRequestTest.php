@@ -33,7 +33,6 @@ class RetrieveOrderListRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringEndsWith('/orders', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_withQueryParams_includesParamsInUri(): void
@@ -45,15 +44,5 @@ class RetrieveOrderListRequestTest extends TestCase
         $uri = (string) $psr7Request->getUri();
         $this->assertStringContainsString('limit=25', $uri);
         $this->assertStringContainsString('offset=50', $uri);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveOrderListRequest([], baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
     }
 }

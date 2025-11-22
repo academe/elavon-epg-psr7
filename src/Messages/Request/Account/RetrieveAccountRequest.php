@@ -42,14 +42,12 @@ class RetrieveAccountRequest
     /**
      * @param string $accountId Account ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When account ID is empty
      */
     public function __construct(
         private readonly string $accountId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->accountId)) {
             throw new InvalidArgumentException('Account ID cannot be empty');
@@ -68,8 +66,7 @@ class RetrieveAccountRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/accounts/' . $this->accountId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/accounts/' . $this->accountId);
     }
 
     /**

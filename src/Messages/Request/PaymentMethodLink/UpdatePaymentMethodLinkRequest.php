@@ -27,7 +27,6 @@ class UpdatePaymentMethodLinkRequest
      * @param PaymentMethodLink|array<string, mixed> $paymentMethodLink PaymentMethodLink data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment method link data is invalid
      */
@@ -36,7 +35,6 @@ class UpdatePaymentMethodLinkRequest
         PaymentMethodLink|array $paymentMethodLink,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentMethodLinkId)) {
             throw new InvalidArgumentException('PaymentMethodLink ID cannot be empty');
@@ -66,9 +64,7 @@ class UpdatePaymentMethodLinkRequest
 
         // Build PSR-7 POST request (update uses POST, not PUT/PATCH)
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/payment-method-links/' . $this->paymentMethodLinkId)
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/payment-method-links/' . $this->paymentMethodLinkId)
             ->withBody($streamFactory->createStream($json));
     }
 

@@ -14,7 +14,6 @@ class RetrievePaymentLinkEventRequest
     public function __construct(
         private readonly string $paymentLinkEventId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->paymentLinkEventId)) {
             throw new InvalidArgumentException('PaymentLinkEvent ID cannot be empty');
@@ -26,8 +25,7 @@ class RetrievePaymentLinkEventRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/payment-link-events/' . $this->paymentLinkEventId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/payment-link-events/' . $this->paymentLinkEventId);
     }
 
     public function getPaymentLinkEventId(): string

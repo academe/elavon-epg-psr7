@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Concerns;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Error Handling for Response Messages.
  *
  * Provides error detection and parsing for PSR-7 response messages.
  * Responses using this trait can handle both success and error responses.
+ *
+ * Includes ParsesJsonBody trait for JSON parsing functionality.
  */
 trait HandlesErrors
 {
+    use ParsesJsonBody;
+
     private readonly ?ErrorResponse $error;
 
     /**
@@ -55,23 +57,12 @@ trait HandlesErrors
      * Parses an error response into an ErrorResponse object.
      *
      * @return ErrorResponse
-     * @throws InvalidArgumentException When response cannot be parsed
      */
     private function parseErrorResponse(): ErrorResponse
     {
         $data = $this->parseJsonBody();
         return ErrorResponse::fromData($data);
     }
-
-    /**
-     * Parses the JSON response body.
-     *
-     * Must be implemented by the using class.
-     *
-     * @return array<string, mixed>
-     * @throws InvalidArgumentException When JSON is invalid
-     */
-    abstract private function parseJsonBody(): array;
 
     /**
      * Gets the HTTP status code.

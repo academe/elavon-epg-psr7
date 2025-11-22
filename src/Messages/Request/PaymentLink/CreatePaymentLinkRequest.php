@@ -59,7 +59,6 @@ class CreatePaymentLinkRequest
      * @param PaymentLink|array<string, mixed> $paymentLink PaymentLink data or array
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
      * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When payment link data is invalid
      */
@@ -67,7 +66,6 @@ class CreatePaymentLinkRequest
         PaymentLink|array $paymentLink,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         // Normalize to PaymentLink object
         $this->paymentLink = match (true) {
@@ -96,9 +94,7 @@ class CreatePaymentLinkRequest
 
         // Build PSR-7 POST request
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/payment-links')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/payment-links')
             ->withBody($streamFactory->createStream($json));
     }
 

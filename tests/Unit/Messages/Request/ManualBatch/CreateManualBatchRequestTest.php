@@ -58,8 +58,6 @@ class CreateManualBatchRequestTest extends TestCase
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertStringContainsString('/manual-batches', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
 
         // Verify body contains the data
         $body = (string) $psrRequest->getBody();

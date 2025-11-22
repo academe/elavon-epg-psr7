@@ -56,8 +56,6 @@ class UpdatePaymentSessionRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/payment-sessions/ps123', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesPaymentSessionDataInBody(): void
@@ -77,17 +75,5 @@ class UpdatePaymentSessionRequestTest extends TestCase
         $this->assertSame('UPDATED-123', $data['customReference']);
         $this->assertTrue($data['doReset']);
         $this->assertSame('fr-FR', $data['shopperLanguageTag']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $paymentSession = new PaymentSession(doReset: false);
-        $customUri = 'https://custom.api.example.com';
-
-        $request = new UpdatePaymentSessionRequest('ps999', $paymentSession, baseUri: $customUri);
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/payment-sessions/ps999', (string) $psr7Request->getUri());
     }
 }

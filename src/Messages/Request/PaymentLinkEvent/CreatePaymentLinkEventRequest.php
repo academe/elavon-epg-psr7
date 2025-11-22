@@ -19,7 +19,6 @@ class CreatePaymentLinkEventRequest
         PaymentLinkEvent|array $paymentLinkEvent,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->paymentLinkEvent = match (true) {
             $paymentLinkEvent instanceof PaymentLinkEvent => $paymentLinkEvent,
@@ -38,9 +37,7 @@ class CreatePaymentLinkEventRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/payment-link-events')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/payment-link-events')
             ->withBody($streamFactory->createStream($json));
     }
 

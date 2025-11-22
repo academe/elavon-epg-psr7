@@ -90,28 +90,4 @@ class TotalAdjustmentListResponse
             'first' => isset($data['first']) ? (string) $data['first'] : null,
         ];
     }
-
-    private function parseJsonBody(): array
-    {
-        $body = (string) $this->response->getBody();
-
-        if ($body === '') {
-            throw new InvalidArgumentException('Response body is empty');
-        }
-
-        try {
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new InvalidArgumentException(
-                'Failed to decode JSON response: ' . $e->getMessage(),
-                previous: $e
-            );
-        }
-
-        if (!is_array($data) || $data === [] || array_keys($data) === range(0, count($data) - 1)) {
-            throw new InvalidArgumentException('Response body is not a JSON object');
-        }
-
-        return $data;
-    }
 }

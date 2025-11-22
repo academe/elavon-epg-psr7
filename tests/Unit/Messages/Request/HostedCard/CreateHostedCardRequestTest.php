@@ -88,9 +88,7 @@ class CreateHostedCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/hosted-cards', (string) $psrRequest->getUri());
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Content-Type'));
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Accept'));
+        $this->assertSame('/hosted-cards', (string) $psrRequest->getUri());
 
         // Verify body content
         $body = (string) $psrRequest->getBody();
@@ -99,23 +97,6 @@ class CreateHostedCardRequestTest extends TestCase
         $this->assertArrayHasKey('card', $decoded);
         $this->assertSame('4111111111111111', $decoded['card']['number']);
         $this->assertSame('order-789', $decoded['customReference']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $card = new Card(number: '4111111111111111');
-        $hostedCard = new HostedCard(card: $card);
-        $request = new CreateHostedCardRequest(
-            hostedCard: $hostedCard,
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/hosted-cards', (string) $psrRequest->getUri());
     }
 
     public function test_build_canBeCalledMultipleTimes(): void

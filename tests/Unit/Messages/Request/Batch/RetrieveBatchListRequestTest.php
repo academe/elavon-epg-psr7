@@ -33,7 +33,6 @@ class RetrieveBatchListRequestTest extends TestCase
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/batches', (string) $psr7Request->getUri());
         $this->assertStringNotContainsString('?', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_withQueryParams_includesParamsInUri(): void
@@ -47,17 +46,6 @@ class RetrieveBatchListRequestTest extends TestCase
         $this->assertStringContainsString('/batches?', $uri);
         $this->assertStringContainsString('limit=25', $uri);
         $this->assertStringContainsString('pageToken=xyz789', $uri);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrieveBatchListRequest(baseUri: $customUri);
-
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/batches', (string) $psr7Request->getUri());
     }
 
     public function test_build_withLimitOnly_includesLimitInUri(): void

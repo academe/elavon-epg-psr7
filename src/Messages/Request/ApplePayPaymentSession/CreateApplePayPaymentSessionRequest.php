@@ -19,7 +19,6 @@ class CreateApplePayPaymentSessionRequest
         ApplePayPaymentSession|array $applePayPaymentSession,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->applePayPaymentSession = match (true) {
             $applePayPaymentSession instanceof ApplePayPaymentSession => $applePayPaymentSession,
@@ -40,9 +39,7 @@ class CreateApplePayPaymentSessionRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/apple-pay-payment-sessions')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/apple-pay-payment-sessions')
             ->withBody($streamFactory->createStream($json));
     }
 

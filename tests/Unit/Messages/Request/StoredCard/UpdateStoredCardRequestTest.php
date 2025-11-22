@@ -71,9 +71,7 @@ class UpdateStoredCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('PATCH', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/stored-cards/sc789', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
+        $this->assertSame('/stored-cards/sc789', (string) $psrRequest->getUri());
     }
 
     public function test_build_serializesUpdatesToJson(): void
@@ -97,23 +95,6 @@ class UpdateStoredCardRequestTest extends TestCase
         $this->assertSame('subscription-123', $data['customReference']);
         $this->assertSame('annual', $data['customFields']['planType']);
         $this->assertSame('yes', $data['customFields']['autoRenew']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $updates = new StoredCard(customReference: 'ref');
-        $request = new UpdateStoredCardRequest(
-            storedCardId: 'sc111',
-            updates: $updates,
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/stored-cards/sc111', (string) $psrRequest->getUri());
     }
 
     public function test_build_multipleCalls_returnsSeparateInstances(): void

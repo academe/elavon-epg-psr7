@@ -25,14 +25,12 @@ class RetrieveProcessorAccountRequest
     /**
      * @param string $processorAccountId ProcessorAccount ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When processor account ID is empty
      */
     public function __construct(
         private readonly string $processorAccountId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->processorAccountId)) {
             throw new InvalidArgumentException('ProcessorAccount ID cannot be empty');
@@ -51,8 +49,7 @@ class RetrieveProcessorAccountRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/processor-accounts/' . $this->processorAccountId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/processor-accounts/' . $this->processorAccountId);
     }
 
     /**

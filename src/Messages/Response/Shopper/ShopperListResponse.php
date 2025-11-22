@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Shopper List Response.
  *
- * Parses PSR-7 responses for paginated stored card lists (GET /shoppers).
+ * Parses PSR-7 responses for paginated shopper lists (GET /shoppers).
  *
  * Example usage:
  * ```php
@@ -22,8 +22,8 @@ use Psr\Http\Message\ResponseInterface;
  * $response = ShopperListResponse::fromPsr7Response($psrResponse);
  *
  * if ($response->isSuccessful()) {
- *     foreach ($response->getShoppers() as $storedCard) {
- *         echo "shopper ID: " . $storedCard->id . "\n";
+ *     foreach ($response->getShoppers() as $shopper) {
+ *         echo "Shopper ID: " . $shopper->id . "\n";
  *     }
  *
  *     if ($response->hasMorePages()) {
@@ -53,12 +53,12 @@ class ShopperListResponse
         // Parse response based on status code
         if ($this->isSuccessful()) {
             $data = $this->parseSuccessResponse();
-            $this->storedCards = $data['items'];
+            $this->shoppers = $data['items'];
             $this->nextPage = $data['next'];
             $this->firstPage = $data['first'];
             $this->error = null;
         } else {
-            $this->storedCards = null;
+            $this->shoppers = null;
             $this->nextPage = null;
             $this->firstPage = null;
             $this->error = $this->parseErrorResponse();
@@ -83,7 +83,7 @@ class ShopperListResponse
      */
     public function getShoppers(): ?array
     {
-        return $this->storedCards;
+        return $this->shoppers;
     }
 
     /**
@@ -151,7 +151,7 @@ class ShopperListResponse
             throw new InvalidArgumentException('Response must contain an "items" array');
         }
 
-        // Parse each stored card
+        // Parse each shopper
         $shoppers = [];
         foreach ($data['items'] as $index => $itemData) {
             if (!is_array($itemData)) {
@@ -168,38 +168,4 @@ class ShopperListResponse
         ];
     }
 
-    /**
-     * Parses the JSON response body.
-     *
-     * @return array<string, mixed>
-     * @throws InvalidArgumentException When JSON is invalid
-     */
-    private function parseJsonBody(): array
-    {
-        $body = (string) $this->response->getBody();
-
-        if ($body === '') {
-            throw new InvalidArgumentException('Response body is empty');
-        }
-
-        try {
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new InvalidArgumentException(
-                'Failed to decode JSON response: ' . $e->getMessage(),
-                previous: $e
-            );
-        }
-
-        if (!is_array($data)) {
-            throw new InvalidArgumentException('Response body is not a JSON object');
-        }
-
-        // Check if it's an indexed array (JSON array) vs associative array (JSON object)
-        if ($data === [] || array_keys($data) === range(0, count($data) - 1)) {
-            throw new InvalidArgumentException('Response body is not a JSON object');
-        }
-
-        return $data;
-    }
 }

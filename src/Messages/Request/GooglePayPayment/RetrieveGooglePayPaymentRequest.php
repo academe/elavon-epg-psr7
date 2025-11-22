@@ -14,7 +14,6 @@ class RetrieveGooglePayPaymentRequest
     public function __construct(
         private readonly string $googlePayPaymentId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->googlePayPaymentId)) {
             throw new InvalidArgumentException('Google Pay payment ID cannot be empty');
@@ -26,8 +25,7 @@ class RetrieveGooglePayPaymentRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/google-pay-payments/' . $this->googlePayPaymentId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/google-pay-payments/' . $this->googlePayPaymentId);
     }
 
     public function getGooglePayPaymentId(): string

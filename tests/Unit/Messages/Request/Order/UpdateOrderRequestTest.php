@@ -58,8 +58,6 @@ class UpdateOrderRequestTest extends TestCase
 
         $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/orders/ord789', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
     }
 
     public function test_build_includesOrderDataInBody(): void
@@ -79,16 +77,5 @@ class UpdateOrderRequestTest extends TestCase
         $this->assertSame('99.99', $data['total']['amount']);
         $this->assertSame('Modified order', $data['description']);
         $this->assertSame('REF-999', $data['customReference']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $order = new Order(total: ['amount' => '25.00', 'currencyCode' => 'USD']);
-        $customUri = 'https://custom.api.example.com';
-
-        $request = new UpdateOrderRequest('ord222', $order, baseUri: $customUri);
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
     }
 }

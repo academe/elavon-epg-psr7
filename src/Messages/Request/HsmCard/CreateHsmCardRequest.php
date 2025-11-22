@@ -24,7 +24,6 @@ class CreateHsmCardRequest
         HsmCard|array $hsmCard,
         private readonly ?RequestFactoryInterface $requestFactory = null,
         private readonly ?StreamFactoryInterface $streamFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         $this->hsmCard = match (true) {
             $hsmCard instanceof HsmCard => $hsmCard,
@@ -43,9 +42,7 @@ class CreateHsmCardRequest
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         return $requestFactory
-            ->createRequest('POST', $this->baseUri . '/hsm-cards')
-            ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Accept', 'application/json')
+            ->createRequest('POST', '/hsm-cards')
             ->withBody($streamFactory->createStream($json));
     }
 

@@ -111,9 +111,7 @@ class CreateStoredCardRequestTest extends TestCase
 
         // Assert
         $this->assertSame('POST', $psrRequest->getMethod());
-        $this->assertSame('https://api.eu.elavonpayments.com/stored-cards', (string) $psrRequest->getUri());
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Content-Type'));
-        $this->assertSame(['application/json'], $psrRequest->getHeader('Accept'));
+        $this->assertSame('/stored-cards', (string) $psrRequest->getUri());
 
         // Verify body content
         $body = (string) $psrRequest->getBody();
@@ -122,25 +120,6 @@ class CreateStoredCardRequestTest extends TestCase
         $this->assertSame('https://api.example.com/shoppers/s123', $decoded['shopper']);
         $this->assertSame('https://api.example.com/hosted-cards/hc456', $decoded['hostedCard']);
         $this->assertSame('customer-789', $decoded['customReference']);
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $storedCard = new StoredCard(
-            shopper: 'https://api.example.com/shoppers/s123',
-            hostedCard: 'https://api.example.com/hosted-cards/hc123',
-        );
-        $request = new CreateStoredCardRequest(
-            storedCard: $storedCard,
-            baseUri: 'https://custom.api.example.com',
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/stored-cards', (string) $psrRequest->getUri());
     }
 
     public function test_build_canBeCalledMultipleTimes(): void

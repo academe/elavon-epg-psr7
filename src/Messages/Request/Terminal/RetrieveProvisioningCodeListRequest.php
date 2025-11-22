@@ -28,7 +28,6 @@ class RetrieveProvisioningCodeListRequest
      * @param string $terminalId Terminal ID to retrieve provisioning codes for
      * @param array<string, mixed> $queryParams Query parameters for pagination/filtering
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When terminal ID is empty
      */
@@ -36,7 +35,6 @@ class RetrieveProvisioningCodeListRequest
         private readonly string $terminalId,
         private readonly array $queryParams = [],
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->terminalId)) {
             throw new InvalidArgumentException('Terminal ID cannot be empty');
@@ -54,15 +52,14 @@ class RetrieveProvisioningCodeListRequest
         $requestFactory = $this->requestFactory ?? new Psr17Factory();
 
         // Build URI with query parameters
-        $uri = $this->baseUri . '/terminals/' . $this->terminalId . '/provisioning-codes';
+        $uri = '/terminals/' . $this->terminalId . '/provisioning-codes';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     /**

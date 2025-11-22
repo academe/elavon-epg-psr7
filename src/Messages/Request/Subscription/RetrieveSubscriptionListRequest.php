@@ -48,7 +48,6 @@ class RetrieveSubscriptionListRequest
      * @param string|null $pageToken Page token for pagination
      * @param int|null $limit Maximum number of items to return (default varies by endpoint)
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When validation fails
      */
@@ -56,7 +55,6 @@ class RetrieveSubscriptionListRequest
         private readonly ?string $pageToken = null,
         private readonly ?int $limit = null,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if ($this->limit !== null && $this->limit < 1) {
             throw new InvalidArgumentException('Limit must be at least 1');
@@ -82,15 +80,14 @@ class RetrieveSubscriptionListRequest
             $queryParams['limit'] = (string) $this->limit;
         }
 
-        $uri = $this->baseUri . '/subscriptions';
+        $uri = '/subscriptions';
         if (!empty($queryParams)) {
             $uri .= '?' . http_build_query($queryParams);
         }
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $uri)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', $uri);
     }
 
     /**

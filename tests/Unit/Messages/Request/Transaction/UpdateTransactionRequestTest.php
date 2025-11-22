@@ -47,8 +47,6 @@ class UpdateTransactionRequestTest extends TestCase
         // Assert
         $this->assertSame('PATCH', $psrRequest->getMethod());
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Content-Type'));
-        $this->assertSame('application/json', $psrRequest->getHeaderLine('Accept'));
     }
 
     public function test_build_withTransactionArray_createsPatchRequest(): void
@@ -66,23 +64,6 @@ class UpdateTransactionRequestTest extends TestCase
         // Assert
         $this->assertSame('PATCH', $psrRequest->getMethod());
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        // Arrange
-        $updates = new Transaction();
-        $request = new UpdateTransactionRequest(
-            transactionId: 'txn123',
-            updates: $updates,
-            baseUri: 'https://custom.api.example.com'
-        );
-
-        // Act
-        $psrRequest = $request->build();
-
-        // Assert
-        $this->assertSame('https://custom.api.example.com/transactions/txn123', (string) $psrRequest->getUri());
     }
 
     public function test_build_serializesOnlyNonNullFields(): void

@@ -42,14 +42,12 @@ class DeletePlanRequest
     /**
      * @param string $planId Plan ID to delete
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When plan ID is empty
      */
     public function __construct(
         private readonly string $planId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
@@ -68,8 +66,7 @@ class DeletePlanRequest
 
         // Build PSR-7 DELETE request
         return $requestFactory
-            ->createRequest('DELETE', $this->baseUri . '/plans/' . $this->planId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('DELETE', '/plans/' . $this->planId);
     }
 
     /**

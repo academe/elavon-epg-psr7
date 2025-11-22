@@ -32,17 +32,6 @@ class RetrievePaymentSessionRequestTest extends TestCase
 
         $this->assertSame('GET', $psr7Request->getMethod());
         $this->assertStringContainsString('/payment-sessions/ps123', (string) $psr7Request->getUri());
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('Accept'));
-    }
-
-    public function test_build_withCustomBaseUri_usesCustomUri(): void
-    {
-        $customUri = 'https://custom.api.example.com';
-        $request = new RetrievePaymentSessionRequest('ps456', baseUri: $customUri);
-        $psr7Request = $request->build();
-
-        $this->assertStringStartsWith($customUri, (string) $psr7Request->getUri());
-        $this->assertStringContainsString('/payment-sessions/ps456', (string) $psr7Request->getUri());
     }
 
     public function test_build_hasNoBody(): void

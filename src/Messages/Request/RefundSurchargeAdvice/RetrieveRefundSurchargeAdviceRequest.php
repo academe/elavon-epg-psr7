@@ -42,14 +42,12 @@ class RetrieveRefundSurchargeAdviceRequest
     /**
      * @param string $refundSurchargeAdviceId Refund surcharge advice ID to retrieve
      * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param string $baseUri Base URI for the API (e.g., "https://api.eu.elavonpayments.com")
      *
      * @throws InvalidArgumentException When refund surcharge advice ID is empty
      */
     public function __construct(
         private readonly string $refundSurchargeAdviceId,
         private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly string $baseUri = 'https://api.eu.elavonpayments.com',
     ) {
         if (empty($this->refundSurchargeAdviceId)) {
             throw new InvalidArgumentException('Refund surcharge advice ID cannot be empty');
@@ -68,8 +66,7 @@ class RetrieveRefundSurchargeAdviceRequest
 
         // Build PSR-7 GET request
         return $requestFactory
-            ->createRequest('GET', $this->baseUri . '/refund-surcharge-advices/' . $this->refundSurchargeAdviceId)
-            ->withHeader('Accept', 'application/json');
+            ->createRequest('GET', '/refund-surcharge-advices/' . $this->refundSurchargeAdviceId);
     }
 
     /**
