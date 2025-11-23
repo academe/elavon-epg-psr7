@@ -24,7 +24,8 @@ class OpayoIntegrationTest extends TestCase
     private Client $httpClient;
     private string $merchantAlias;
     private string $apiSecret;
-    private string $baseUri;
+    private string $region;
+    private string $environment;
 
     protected function setUp(): void
     {
@@ -38,7 +39,8 @@ class OpayoIntegrationTest extends TestCase
         // The public API key (pk_...) is only for client-side hosted card operations
         $this->merchantAlias = getenv('ELAVON_MERCHANT_ALIAS') ?: '';
         $this->apiSecret = getenv('ELAVON_API_SECRET') ?: '';
-        $this->baseUri = getenv('ELAVON_BASE_URI') ?: 'https://uat.api.converge.eu.elavonaws.com';
+        $this->region = getenv('ELAVON_REGION') ?: 'eu';
+        $this->environment = getenv('ELAVON_ENVIRONMENT') ?: 'sandbox';
 
         // Skip test if credentials are not configured
         if (empty($this->merchantAlias) || empty($this->apiSecret)) {
@@ -47,9 +49,8 @@ class OpayoIntegrationTest extends TestCase
             );
         }
 
-        // Create HTTP client without auth (we'll use ElavonApiRequest decorator)
+        // Create HTTP client (base URI is handled by ElavonApiFactory)
         $this->httpClient = new Client([
-            'base_uri' => $this->baseUri,
             'timeout' => 30,
             'http_errors' => false, // Don't throw exceptions on HTTP errors
         ]);
@@ -89,7 +90,8 @@ class OpayoIntegrationTest extends TestCase
         $psr7Request = $request->build();
         
         $factory = ElavonApiFactory::configure()
-            ->withBaseUri($this->baseUri)
+            ->withRegion($this->region)
+            ->withEnvironment($this->environment)
             ->withAuthentication($this->merchantAlias, $this->apiSecret);
 
         $decoratedRequest = $factory->apply($psr7Request);
@@ -199,7 +201,8 @@ class OpayoIntegrationTest extends TestCase
         // Act - Build request, add Elavon API headers and authentication, then send
         $psr7Request = $request->build();
         $decoratedRequest = ElavonApiFactory::configure()
-            ->withBaseUri($this->baseUri)
+            ->withRegion($this->region)
+            ->withEnvironment($this->environment)
             ->withAuthentication($this->merchantAlias, $this->apiSecret)
             ->apply($psr7Request);
         $psr7Response = $this->httpClient->send($decoratedRequest);
