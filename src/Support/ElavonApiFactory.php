@@ -66,11 +66,8 @@ class ElavonApiFactory
      */
     private const ENVIRONMENT_ALIASES = [
         'live' => self::ENV_PRODUCTION,
-        'prod' => self::ENV_PRODUCTION,
-        'production' => self::ENV_PRODUCTION,
         'sandbox' => self::ENV_UAT,
         'test' => self::ENV_UAT,
-        'uat' => self::ENV_UAT,
     ];
 
     private const DEFAULT_API_VERSION = '1';
@@ -160,11 +157,11 @@ class ElavonApiFactory
     }
 
     /**
-     * Sets the API environment (production, uat, sandbox, live, test).
+     * Sets the API environment (live, sandbox, test).
      *
      * Aliases:
-     * - 'live', 'prod', 'production' → production
-     * - 'sandbox', 'test', 'uat' → UAT
+     * - 'live' → production
+     * - 'sandbox', 'test' → UAT
      *
      * @param string $environment Environment name
      * @throws InvalidArgumentException When environment is unknown
