@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Support;
 
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 
 /**
  * Elavon API Request Factory.
  *
- * A simpler alternative to ElavonApiRequest that doesn't implement RequestInterface.
  * Configure once, apply to multiple requests via apply().
  *
  * Adds the following headers automatically:
@@ -20,45 +20,18 @@ use Psr\Http\Message\RequestInterface;
  *
  * Basic usage:
  * ```php
+ * $factory = ElavonApiFactory::configure()
+ *     ->withRegion('eu')
+ *     ->withEnvironment('sandbox')
+ *     ->withAuthentication($merchantAlias, $apiSecret);
+ *
  * $request = (new CreateTransactionRequest($transaction))->build();
- * $apiRequest = ElavonApiFactory::configure()
- *     ->withEuSandbox()
- *     ->withAuthentication($merchantAlias, $apiSecret)
- *     ->apply($request);
+ * $apiRequest = $factory->apply($request);
  * $client->sendRequest($apiRequest);
  * ```
  *
- * Reusing configuration for multiple requests:
+ * Custom base URI (overrides region/environment):
  * ```php
- * // Configure once
- * $factory = ElavonApiFactory::configure()
- *     ->withEuSandbox()
- *     ->withAuthentication($merchantAlias, $apiSecret);
- *
- * // Apply to multiple requests - returns plain PSR-7 RequestInterface
- * $request1 = $factory->apply($firstRequest);
- * $request2 = $factory->apply($secondRequest);
- * $request3 = $factory->apply($thirdRequest);
- * ```
- *
- * Environment shortcuts:
- * ```php
- * // EU environments (default for withSandbox/withProduction)
- * $factory = ElavonApiFactory::configure()
- *     ->withEuSandbox()  // or withSandbox()
- *     ->withAuthentication($merchant, $apiKey);
- *
- * // US environments
- * $factory = ElavonApiFactory::configure()
- *     ->withUsSandbox()
- *     ->withAuthentication($merchant, $apiKey);
- *
- * // Using aliases with withBaseUri()
- * $factory = ElavonApiFactory::configure()
- *     ->withBaseUri('eu-sandbox')  // alias
- *     ->withAuthentication($merchant, $apiKey);
- *
- * // Custom base URI (full URL)
  * $factory = ElavonApiFactory::configure()
  *     ->withBaseUri('https://custom.api.example.com')
  *     ->withAuthentication($merchant, $apiKey);
@@ -66,40 +39,46 @@ use Psr\Http\Message\RequestInterface;
  */
 class ElavonApiFactory
 {
-    // EU environments
-    public const EU_PRODUCTION = 'https://api.eu.convergepay.com';
-    public const EU_UAT = 'https://uat.api.converge.eu.elavonaws.com';
-    public const EU_SANDBOX = self::EU_UAT;
+    // Region constants
+    public const REGION_EU = 'eu';
+    public const REGION_US = 'us';
 
-    // US environments
-    public const US_PRODUCTION = 'https://api.convergepay.com';
-    public const US_UAT = 'https://uat.api.convergepay.com';
-    public const US_SANDBOX = self::US_UAT;
+    // Environment constants
+    public const ENV_PRODUCTION = 'production';
+    public const ENV_UAT = 'uat';
 
     /**
-     * Environment aliases for use with withBaseUri().
+     * Base URLs indexed by region and environment.
+     */
+    private const BASE_URLS = [
+        self::REGION_EU => [
+            self::ENV_PRODUCTION => 'https://api.eu.convergepay.com',
+            self::ENV_UAT => 'https://uat.api.converge.eu.elavonaws.com',
+        ],
+        self::REGION_US => [
+            self::ENV_PRODUCTION => 'https://api.convergepay.com',
+            self::ENV_UAT => 'https://uat.api.convergepay.com',
+        ],
+    ];
+
+    /**
+     * Environment aliases for normalization.
      */
     private const ENVIRONMENT_ALIASES = [
-        'eu-production' => self::EU_PRODUCTION,
-        'eu-live' => self::EU_PRODUCTION,
-        'eu-prod' => self::EU_PRODUCTION,
-        'eu-uat' => self::EU_UAT,
-        'eu-sandbox' => self::EU_SANDBOX,
-        'eu-test' => self::EU_UAT,
-        'us-production' => self::US_PRODUCTION,
-        'us-live' => self::US_PRODUCTION,
-        'us-prod' => self::US_PRODUCTION,
-        'us-uat' => self::US_UAT,
-        'us-sandbox' => self::US_SANDBOX,
-        'us-test' => self::US_UAT,
-        'eu' => self::EU_PRODUCTION,
-        'us' => self::US_PRODUCTION,
+        'live' => self::ENV_PRODUCTION,
+        'prod' => self::ENV_PRODUCTION,
+        'production' => self::ENV_PRODUCTION,
+        'sandbox' => self::ENV_UAT,
+        'test' => self::ENV_UAT,
+        'uat' => self::ENV_UAT,
     ];
 
     private const DEFAULT_API_VERSION = '1';
     private const DEFAULT_ACCEPT = 'application/json;charset=UTF-8';
 
     private string $apiVersion;
+    private ?string $region = null;
+    private ?string $environment = null;
     private ?string $baseUri = null;
     private ?string $username = null;
     private ?string $password = null;
@@ -147,13 +126,77 @@ class ElavonApiFactory
         }
 
         // Replace base URI if configured
-        if ($this->baseUri !== null) {
+        $baseUri = $this->getBaseUri();
+        if ($baseUri !== null) {
             $currentUri = $request->getUri();
-            $newUri = $this->replaceBaseUri($currentUri, $this->baseUri);
+            $newUri = $this->replaceBaseUri($currentUri, $baseUri);
             $request = $request->withUri($newUri);
         }
 
         return $request;
+    }
+
+    /**
+     * Sets the API region (eu, us).
+     *
+     * @param string $region Region code: 'eu' or 'us'
+     * @throws InvalidArgumentException When region is unknown
+     */
+    public function withRegion(string $region): static
+    {
+        $region = strtolower($region);
+
+        if (!isset(self::BASE_URLS[$region])) {
+            $validRegions = implode(', ', array_keys(self::BASE_URLS));
+            throw new InvalidArgumentException(
+                "Unknown region '{$region}'. Valid regions: {$validRegions}"
+            );
+        }
+
+        $new = clone $this;
+        $new->region = $region;
+        $new->baseUri = null; // region/environment takes precedence over raw URL
+        return $new;
+    }
+
+    /**
+     * Sets the API environment (production, uat, sandbox, live, test).
+     *
+     * Aliases:
+     * - 'live', 'prod', 'production' → production
+     * - 'sandbox', 'test', 'uat' → UAT
+     *
+     * @param string $environment Environment name
+     * @throws InvalidArgumentException When environment is unknown
+     */
+    public function withEnvironment(string $environment): static
+    {
+        $environment = strtolower($environment);
+        $normalized = self::ENVIRONMENT_ALIASES[$environment] ?? null;
+
+        if ($normalized === null) {
+            $validEnvs = implode(', ', array_keys(self::ENVIRONMENT_ALIASES));
+            throw new InvalidArgumentException(
+                "Unknown environment '{$environment}'. Valid environments: {$validEnvs}"
+            );
+        }
+
+        $new = clone $this;
+        $new->environment = $normalized;
+        $new->baseUri = null; // region/environment takes precedence over raw URL
+        return $new;
+    }
+
+    /**
+     * Sets a custom base URI, overriding region/environment.
+     *
+     * @param string $baseUri Full base URL
+     */
+    public function withBaseUri(string $baseUri): static
+    {
+        $new = clone $this;
+        $new->baseUri = $baseUri;
+        return $new;
     }
 
     public function withApiVersion(string $version): static
@@ -178,67 +221,47 @@ class ElavonApiFactory
         return $new;
     }
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function withSandbox(): static
-    {
-        return $this->withBaseUri(self::EU_SANDBOX);
-    }
-
-    public function withProduction(): static
-    {
-        return $this->withBaseUri(self::EU_PRODUCTION);
-    }
-
-    public function withEuProduction(): static
-    {
-        return $this->withBaseUri(self::EU_PRODUCTION);
-    }
-
-    public function withEuSandbox(): static
-    {
-        return $this->withBaseUri(self::EU_SANDBOX);
-    }
-
-    public function withUsProduction(): static
-    {
-        return $this->withBaseUri(self::US_PRODUCTION);
-    }
-
-    public function withUsSandbox(): static
-    {
-        return $this->withBaseUri(self::US_SANDBOX);
-    }
-
     /**
-     * Sets the base URI using either a URL or an alias.
+     * Gets the calculated base URI.
      *
-     * Available aliases:
-     * - eu-production, eu-live, eu-prod, eu → EU Production
-     * - eu-sandbox, eu-uat, eu-test → EU UAT/Sandbox
-     * - us-production, us-live, us-prod, us → US Production
-     * - us-sandbox, us-uat, us-test → US UAT/Sandbox
+     * Priority:
+     * 1. Raw baseUri (if set via withBaseUri)
+     * 2. Calculated from region + environment
+     * 3. null if neither is configured
      */
-    public function withBaseUri(string $baseUriOrAlias): static
-    {
-        $baseUri = self::ENVIRONMENT_ALIASES[strtolower($baseUriOrAlias)] ?? $baseUriOrAlias;
-
-        $new = clone $this;
-        $new->baseUri = $baseUri;
-        return $new;
-    }
-
     public function getBaseUri(): ?string
     {
-        return $this->baseUri;
+        // Raw URL takes precedence
+        if ($this->baseUri !== null) {
+            return $this->baseUri;
+        }
+
+        // Calculate from region + environment
+        if ($this->region !== null && $this->environment !== null) {
+            return self::BASE_URLS[$this->region][$this->environment];
+        }
+
+        return null;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->region;
+    }
+
+    public function getEnvironment(): ?string
+    {
+        return $this->environment;
     }
 
     public function getApiVersion(): string
     {
         return $this->apiVersion;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
     }
 
     /**
