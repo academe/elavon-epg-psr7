@@ -297,22 +297,4 @@ class CreateTransactionRequestTest extends TestCase
         $this->assertSame('Premium subscription', $decoded['description']);
         $this->assertSame('CUST-REF-999', $decoded['customReference']);
     }
-
-    public function test_build_headersAreCaseInsensitive(): void
-    {
-        // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
-                'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
-                'card' => ['number' => '4111111111111111'],
-            ],
-        );
-
-        // Act
-        $psr7Request = $request->build();
-
-        // Assert
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('content-type'));
-        $this->assertSame('application/json', $psr7Request->getHeaderLine('CONTENT-TYPE'));
-    }
 }

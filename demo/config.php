@@ -44,7 +44,13 @@ $demoUrl = "{$scheme}://{$host}{$basePath}";
 return [
     'merchant_alias' => getenv('ELAVON_MERCHANT_ALIAS') ?: die('ELAVON_MERCHANT_ALIAS not set'),
     'api_secret' => getenv('ELAVON_API_SECRET') ?: die('ELAVON_API_SECRET not set'),
-    'base_uri' => getenv('ELAVON_BASE_URI') ?: 'https://uat.api.converge.eu.elavonaws.com',
+
+    // Region and environment (preferred method)
+    'region' => getenv('ELAVON_REGION') ?: 'eu',
+    'environment' => getenv('ELAVON_ENVIRONMENT') ?: 'sandbox',
+
+    // Alternative: Direct base URI (set in .env to override region/environment)
+    'base_uri' => getenv('ELAVON_BASE_URI') ?: null,
 
     // Auto-detected from request (e.g., http://elavon-ept-psr7.test/demo)
     'demo_url' => $demoUrl,

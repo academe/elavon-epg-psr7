@@ -58,7 +58,9 @@ if ($sessionId) {
         try {
             $httpClient = new Client(['http_errors' => false]);
             $apiFactory = ElavonApiFactory::configure()
-                ->withBaseUri($config['base_uri'])
+                ->withRegion($config['region'])
+                ->withEnvironment($config['environment'])
+                // Alternative: use ->withBaseUri($config['base_uri']) to set a custom base URI
                 ->withAuthentication($config['merchant_alias'], $config['api_secret']);
 
             // Fetch the payment session from the API
