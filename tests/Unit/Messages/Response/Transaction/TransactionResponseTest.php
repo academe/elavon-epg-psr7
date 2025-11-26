@@ -6,7 +6,6 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Response\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
@@ -83,8 +82,8 @@ class TransactionResponseTest extends TestCase
         $this->assertInstanceOf(Transaction::class, $transaction);
         $this->assertSame('txn_123', $transaction->id);
         $this->assertSame(TransactionState::AUTHORIZED, $transaction->state);
-        $this->assertSame('99.99', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('9999', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
         $this->assertSame('1111', $transaction->card->last4);
         $this->assertSame('411111', $transaction->card->bin);
         $this->assertSame(CardScheme::VISA, $transaction->card->scheme);
@@ -295,8 +294,8 @@ class TransactionResponseTest extends TestCase
         // Assert
         $this->assertSame(TransactionState::CAPTURED, $transaction->state);
         $this->assertSame('txn_789', $transaction->id);
-        $this->assertSame('150.00', $transaction->total->amount);
-        $this->assertSame(Currency::GBP, $transaction->total->currency);
+        $this->assertSame('15000', $transaction->total->getAmount());
+        $this->assertSame('GBP', $transaction->total->getCurrency()->getCode());
         $this->assertSame('4444', $transaction->card->last4);
         $this->assertSame('555555', $transaction->card->bin);
         $this->assertSame(CardScheme::MASTERCARD, $transaction->card->scheme);
@@ -319,8 +318,8 @@ class TransactionResponseTest extends TestCase
         $transaction = $response->getTransaction();
 
         // Assert
-        $this->assertSame('1.00', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('100', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
         $this->assertNull($transaction->id);
         $this->assertNull($transaction->state);
         $this->assertNull($transaction->card);

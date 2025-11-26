@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Plan;
 use Academe\Elavon\Epg\Psr7\Dtos\Plan;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Plan\CreatePlanRequest;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,7 +21,7 @@ class CreatePlanRequestTest extends TestCase
         $plan = new Plan(
             name: 'Monthly License',
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '29.99', 'currencyCode' => 'USD']
+            total: Money::USD(2999)
         );
 
         // Act
@@ -53,7 +54,7 @@ class CreatePlanRequestTest extends TestCase
         // Arrange
         $plan = new Plan(
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '29.99', 'currencyCode' => 'USD']
+            total: Money::USD(2999)
         );
 
         // Assert
@@ -69,7 +70,7 @@ class CreatePlanRequestTest extends TestCase
         // Arrange
         $plan = new Plan(
             name: 'Test Plan',
-            total: ['amount' => '29.99', 'currencyCode' => 'USD']
+            total: Money::USD(2999)
         );
 
         // Assert
@@ -103,7 +104,7 @@ class CreatePlanRequestTest extends TestCase
             name: 'Weekly Plan',
             description: 'Billed weekly',
             billingInterval: ['timeUnit' => 'week', 'count' => 1],
-            total: ['amount' => '9.99', 'currencyCode' => 'GBP']
+            total: Money::GBP(999)
         );
         $createRequest = new CreatePlanRequest($plan);
 

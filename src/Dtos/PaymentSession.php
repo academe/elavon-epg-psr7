@@ -11,7 +11,7 @@ use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * PaymentSession data transfer object.
@@ -32,8 +32,6 @@ class PaymentSession implements DataTransferObject
     use SerializesData;
 
     // Normalized properties (objects)
-    public readonly ?Money $salesTax;
-    public readonly ?Money $tip;
     public readonly ?Contact $billTo;
     public readonly ?Contact $shipTo;
     public readonly ?Blik $blik;
@@ -59,7 +57,8 @@ class PaymentSession implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['salesTax', 'tip', 'billTo', 'shipTo', 'blik', 'debtorAccount', 'threeDSecure', 'hppType', 'shopperInteraction'],
+            'money' => ['salesTax', 'tip'],
+            'object' => ['billTo', 'shipTo', 'blik', 'debtorAccount', 'threeDSecure', 'hppType', 'shopperInteraction'],
             'array' => ['allowedPaymentMethods', 'allowedPaymentMethodOrigins', 'previousTransactions', 'customFields'],
             'string' => [
                 'href', 'id', 'createdAt', 'modifiedAt', 'expiresAt', 'merchant', 'account', 'url',
@@ -86,8 +85,8 @@ class PaymentSession implements DataTransferObject
      * @param array<string>|null $allowedPaymentMethods [Response] Payment methods allowed to be shown in the hosted payments page
      * @param array<string>|null $allowedPaymentMethodOrigins [Response] Allowed origins of the payment methods listed in allowedPaymentMethods
      * @param string|null $paymentLink PaymentLink Resource URL
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales Tax
-     * @param Money|array{amount: string, currencyCode: string}|null $tip [Response] Tip
+     * @param Money|null $salesTax Sales Tax
+     * @param Money|null $tip [Response] Tip
      * @param string|null $forexAdvice ForexAdvice Resource URL
      * @param string|null $surchargeAdvice SurchargeAdvice Resource URL
      * @param string|null $transaction Transaction Resource URL
@@ -138,8 +137,8 @@ class PaymentSession implements DataTransferObject
         public readonly ?string $account = null,
         public readonly ?string $order = null,
         public readonly ?string $paymentLink = null,
-        Money|array|null $salesTax = null,
-        Money|array|null $tip = null,
+        public readonly ?Money $salesTax = null,
+        public readonly ?Money $tip = null,
         public readonly ?string $forexAdvice = null,
         public readonly ?string $surchargeAdvice = null,
         public readonly ?string $transaction = null,
@@ -176,19 +175,6 @@ class PaymentSession implements DataTransferObject
         ?array $allowedPaymentMethods = null,
         ?array $allowedPaymentMethodOrigins = null,
     ) {
-        // Normalize Money objects
-        $this->salesTax = match (true) {
-            $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromData($salesTax),
-            default => null,
-        };
-
-        $this->tip = match (true) {
-            $tip instanceof Money => $tip,
-            is_array($tip) => Money::fromData($tip),
-            default => null,
-        };
-
         // Normalize Contact objects
         $this->billTo = match (true) {
             $billTo instanceof Contact => $billTo,

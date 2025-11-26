@@ -7,10 +7,9 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Contact;
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\OrderItem;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\OrderItemType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,13 +21,13 @@ class OrderTest extends TestCase
     {
         // Arrange & Act
         $order = new Order(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD']
+            total: Money::USD(10000)
         );
 
         // Assert
         $this->assertInstanceOf(Money::class, $order->total);
-        $this->assertSame('100.00', $order->total->amount);
-        $this->assertSame(Currency::USD, $order->total->currency);
+        $this->assertSame('10000', $order->total->getAmount());
+        $this->assertSame('USD', $order->total->getCurrency()->getCode());
         $this->assertNull($order->id);
         $this->assertNull($order->description);
         $this->assertNull($order->items);
@@ -44,7 +43,7 @@ class OrderTest extends TestCase
             createdAt: '2025-11-19T10:00:00Z',
             modifiedAt: '2025-11-19T11:00:00Z',
             merchant: 'https://api.example.com/merchants/m123',
-            total: ['amount' => '250.00', 'currencyCode' => 'USD'],
+            total: Money::USD(25000),
             description: 'March 2025 Rent',
             items: [
                 ['total' => ['amount' => '250.00', 'currencyCode' => 'USD'], 'description' => 'Rent'],
@@ -63,7 +62,7 @@ class OrderTest extends TestCase
         $this->assertSame('2025-11-19T10:00:00Z', $order->createdAt);
         $this->assertSame('2025-11-19T11:00:00Z', $order->modifiedAt);
         $this->assertSame('https://api.example.com/merchants/m123', $order->merchant);
-        $this->assertSame('250.00', $order->total->amount);
+        $this->assertSame('25000', $order->total->getAmount());
         $this->assertSame('March 2025 Rent', $order->description);
         $this->assertIsArray($order->items);
         $this->assertCount(1, $order->items);
@@ -79,7 +78,7 @@ class OrderTest extends TestCase
     public function test_construct_withMoneyObject_createsInstance(): void
     {
         // Arrange
-        $money = new Money('150.00', Currency::EUR);
+        $money = Money::EUR(15000); // 150.00 EUR
 
         // Act
         $order = new Order(total: $money);
@@ -98,7 +97,7 @@ class OrderTest extends TestCase
 
         // Act
         $order = new Order(
-            total: ['amount' => '75.00', 'currencyCode' => 'USD'],
+            total: Money::USD(7500),
             shipTo: $contact,
         );
 
@@ -110,13 +109,13 @@ class OrderTest extends TestCase
     {
         // Arrange
         $item = new OrderItem(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD'],
+            total: Money::USD(5000),
             description: 'Service item',
         );
 
         // Act
         $order = new Order(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD'],
+            total: Money::USD(5000),
             items: [$item],
         );
 
@@ -136,7 +135,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             description: $longDescription,
         );
     }
@@ -152,7 +151,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             shopperEmailAddress: $longEmail,
         );
     }
@@ -168,7 +167,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             shopperReference: $longRef,
         );
     }
@@ -184,7 +183,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             orderReference: $longRef,
         );
     }
@@ -200,7 +199,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             customReference: $longRef,
         );
     }
@@ -219,7 +218,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             items: $items,
         );
     }
@@ -235,7 +234,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             customFields: [$longKey => 'value'],
         );
     }
@@ -251,7 +250,7 @@ class OrderTest extends TestCase
 
         // Act
         new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             customFields: ['field1' => $longValue],
         );
     }
@@ -267,7 +266,7 @@ class OrderTest extends TestCase
         $order = Order::fromData($data);
 
         // Assert
-        $this->assertSame('99.99', $order->total->amount);
+        $this->assertSame('9999', $order->total->getAmount());
         $this->assertNull($order->id);
         $this->assertNull($order->description);
     }
@@ -312,7 +311,7 @@ class OrderTest extends TestCase
 
         // Assert
         $this->assertSame('o123', $order->id);
-        $this->assertSame('500.00', $order->total->amount);
+        $this->assertSame('50000', $order->total->getAmount());
         $this->assertSame('Q1 Services', $order->description);
         $this->assertCount(2, $order->items);
         $this->assertInstanceOf(OrderItem::class, $order->items[0]);
@@ -328,7 +327,7 @@ class OrderTest extends TestCase
     {
         // Arrange
         $order = new Order(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD']
+            total: Money::USD(5000)
         );
 
         // Act
@@ -347,7 +346,7 @@ class OrderTest extends TestCase
     {
         // Arrange
         $order = new Order(
-            total: ['amount' => '300.00', 'currencyCode' => 'EUR'],
+            total: Money::EUR(30000),
             description: 'Annual subscription',
             items: [
                 [
@@ -377,7 +376,7 @@ class OrderTest extends TestCase
     {
         // Arrange
         $order = new Order(
-            total: ['amount' => '25.00', 'currencyCode' => 'USD'],
+            total: Money::USD(2500),
             description: 'Test order',
         );
 
@@ -425,7 +424,7 @@ class OrderTest extends TestCase
     {
         // Arrange
         $order = new Order(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD']
+            total: Money::USD(1000)
         );
 
         // Act & Assert

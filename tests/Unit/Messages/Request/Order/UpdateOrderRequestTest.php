@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\UpdateOrderRequest;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 class UpdateOrderRequestTest extends TestCase
@@ -14,7 +15,7 @@ class UpdateOrderRequestTest extends TestCase
     public function test_construct_withValidIdAndOrder_createsInstance(): void
     {
         $order = new Order(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD'],
+            total: Money::USD(10000),
         );
 
         $request = new UpdateOrderRequest('ord123', $order);
@@ -33,12 +34,12 @@ class UpdateOrderRequestTest extends TestCase
         $request = new UpdateOrderRequest('ord456', $data);
 
         $this->assertInstanceOf(Order::class, $request->getOrder());
-        $this->assertSame('200.00', $request->getOrder()->total->amount);
+        $this->assertSame('20000', $request->getOrder()->total->getAmount());
     }
 
     public function test_construct_withEmptyId_throwsException(): void
     {
-        $order = new Order(total: ['amount' => '50.00', 'currencyCode' => 'USD']);
+        $order = new Order(total: Money::USD(5000));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Order ID cannot be empty');
@@ -49,7 +50,7 @@ class UpdateOrderRequestTest extends TestCase
     public function test_build_createsValidPsr7Request(): void
     {
         $order = new Order(
-            total: ['amount' => '150.00', 'currencyCode' => 'GBP'],
+            total: Money::GBP(15000),
             description: 'Updated description',
         );
         $request = new UpdateOrderRequest('ord789', $order);
@@ -63,7 +64,7 @@ class UpdateOrderRequestTest extends TestCase
     public function test_build_includesOrderDataInBody(): void
     {
         $order = new Order(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             description: 'Modified order',
             customReference: 'REF-999',
         );

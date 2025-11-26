@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\PaymentSession;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentSession\CreatePaymentSessionRequest;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 class CreatePaymentSessionRequestTest extends TestCase
@@ -115,7 +116,7 @@ class CreatePaymentSessionRequestTest extends TestCase
     {
         $paymentSession = new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
-            salesTax: ['amount' => '10.50', 'currencyCode' => 'USD'],
+            salesTax: Money::USD(1050),
         );
 
         $request = new CreatePaymentSessionRequest($paymentSession);

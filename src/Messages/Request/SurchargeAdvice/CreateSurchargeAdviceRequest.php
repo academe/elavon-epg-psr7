@@ -21,7 +21,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  * use Academe\Elavon\Epg\Psr7\Messages\Request\CreateSurchargeAdviceRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
  * use Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice;
- * use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+ * use Money\Money;
  *
  * // Build the surcharge advice request
  * $surchargeAdvice = new SurchargeAdvice(

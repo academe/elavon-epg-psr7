@@ -33,7 +33,7 @@ class PaymentLinkResponseTest extends TestCase
         $this->assertNull($paymentLinkResponse->getError());
         $this->assertInstanceOf(PaymentLink::class, $paymentLinkResponse->getPaymentLink());
         $this->assertSame('pl123', $paymentLinkResponse->getPaymentLink()->id);
-        $this->assertSame('100.00', $paymentLinkResponse->getPaymentLink()->total->amount);
+        $this->assertSame('10000', $paymentLinkResponse->getPaymentLink()->total->getAmount());
         $this->assertSame('Test payment link', $paymentLinkResponse->getPaymentLink()->description);
     }
 

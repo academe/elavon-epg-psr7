@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\CountAndTotal;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,20 +28,20 @@ class CountAndTotalTest extends TestCase
         // Arrange & Act
         $countAndTotal = new CountAndTotal(
             count: 5,
-            total: ['amount' => '100.00', 'currencyCode' => 'USD']
+            total: Money::USD(10000)
         );
 
         // Assert
         $this->assertSame(5, $countAndTotal->count);
         $this->assertInstanceOf(Money::class, $countAndTotal->total);
-        $this->assertSame('100.00', $countAndTotal->total->amount);
-        $this->assertSame(Currency::USD, $countAndTotal->total->currency);
+        $this->assertSame('10000', $countAndTotal->total->getAmount());
+        $this->assertSame('USD', $countAndTotal->total->getCurrency()->getCode());
     }
 
     public function test_construct_withMoneyObject_createsInstance(): void
     {
         // Arrange
-        $money = new Money('250.00', Currency::EUR);
+        $money = Money::EUR(25000); // 250.00 EUR
 
         // Act
         $countAndTotal = new CountAndTotal(
@@ -60,12 +59,12 @@ class CountAndTotalTest extends TestCase
         // Arrange & Act
         $countAndTotal = new CountAndTotal(
             count: 0,
-            total: ['amount' => '0.00', 'currencyCode' => 'USD']
+            total: Money::USD(0)
         );
 
         // Assert
         $this->assertSame(0, $countAndTotal->count);
-        $this->assertSame('0.00', $countAndTotal->total->amount);
+        $this->assertSame('0', $countAndTotal->total->getAmount());
     }
 
     public function test_fromData_withMinimalData_createsInstance(): void
@@ -98,8 +97,8 @@ class CountAndTotalTest extends TestCase
         // Assert
         $this->assertSame(3, $countAndTotal->count);
         $this->assertInstanceOf(Money::class, $countAndTotal->total);
-        $this->assertSame('22.00', $countAndTotal->total->amount);
-        $this->assertSame(Currency::EUR, $countAndTotal->total->currency);
+        $this->assertSame('2200', $countAndTotal->total->getAmount());
+        $this->assertSame('EUR', $countAndTotal->total->getCurrency()->getCode());
     }
 
     public function test_fromData_withCountOnly_createsInstance(): void
@@ -131,8 +130,8 @@ class CountAndTotalTest extends TestCase
         // Assert
         $this->assertNull($countAndTotal->count);
         $this->assertInstanceOf(Money::class, $countAndTotal->total);
-        $this->assertSame('99.99', $countAndTotal->total->amount);
-        $this->assertSame(Currency::GBP, $countAndTotal->total->currency);
+        $this->assertSame('9999', $countAndTotal->total->getAmount());
+        $this->assertSame('GBP', $countAndTotal->total->getCurrency()->getCode());
     }
 
     public function test_toData_withMinimalData_returnsArray(): void
@@ -152,7 +151,7 @@ class CountAndTotalTest extends TestCase
         // Arrange
         $countAndTotal = new CountAndTotal(
             count: 15,
-            total: ['amount' => '500.00', 'currencyCode' => 'USD']
+            total: Money::USD(50000)
         );
 
         // Act
@@ -221,11 +220,11 @@ class CountAndTotalTest extends TestCase
         // Arrange & Act (negative count allowed for refunds/reversals)
         $countAndTotal = new CountAndTotal(
             count: -5,
-            total: ['amount' => '-100.00', 'currencyCode' => 'USD']
+            total: Money::USD(-10000)
         );
 
         // Assert
         $this->assertSame(-5, $countAndTotal->count);
-        $this->assertSame('-100.00', $countAndTotal->total->amount);
+        $this->assertSame('-10000', $countAndTotal->total->getAmount());
     }
 }

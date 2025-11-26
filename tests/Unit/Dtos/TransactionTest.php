@@ -7,13 +7,12 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\CardScheme;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,7 +23,7 @@ class TransactionTest extends TestCase
     public function test_construct_withMoneyObject_createsInstance(): void
     {
         // Arrange
-        $money = new Money('99.99', Currency::USD);
+        $money = Money::USD(9999); // 99.99 in cents
 
         // Act
         $transaction = new Transaction(total: $money);
@@ -43,13 +42,13 @@ class TransactionTest extends TestCase
     {
         // Arrange & Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD']
+            total: Money::USD(9999)
         );
 
         // Assert
         $this->assertInstanceOf(Money::class, $transaction->total);
-        $this->assertSame('99.99', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('9999', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
     }
 
     public function test_construct_withCardObject_createsInstance(): void
@@ -64,7 +63,7 @@ class TransactionTest extends TestCase
 
         // Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: $card,
         );
 
@@ -76,7 +75,7 @@ class TransactionTest extends TestCase
     {
         // Arrange & Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
@@ -94,7 +93,7 @@ class TransactionTest extends TestCase
     {
         // Arrange & Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: ['number' => '4111111111111111', 'securityCode' => '123', 'expirationMonth' => 12, 'expirationYear' => 2025],
             id: 'txn_123',
             state: TransactionState::AUTHORIZED,
@@ -104,8 +103,8 @@ class TransactionTest extends TestCase
         );
 
         // Assert
-        $this->assertSame('99.99', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('9999', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
         $this->assertInstanceOf(Card::class, $transaction->card);
         $this->assertSame('txn_123', $transaction->id);
         $this->assertSame(TransactionState::AUTHORIZED, $transaction->state);
@@ -122,7 +121,7 @@ class TransactionTest extends TestCase
 
         // Act
         new Transaction(
-            total: ['amount' => '-10.00', 'currencyCode' => 'USD']
+            total: Money::USD(-1000)
         );
     }
 
@@ -134,7 +133,7 @@ class TransactionTest extends TestCase
 
         // Act
         new Transaction(
-            total: ['amount' => '0.00', 'currencyCode' => 'USD']
+            total: Money::USD(0)
         );
     }
 
@@ -149,8 +148,8 @@ class TransactionTest extends TestCase
         $transaction = Transaction::fromData($data);
 
         // Assert
-        $this->assertSame('99.99', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('9999', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
         $this->assertNull($transaction->card);
         $this->assertNull($transaction->id);
         $this->assertNull($transaction->state);
@@ -179,7 +178,7 @@ class TransactionTest extends TestCase
         $transaction = Transaction::fromData($data);
 
         // Assert
-        $this->assertSame('99.99', $transaction->total->amount);
+        $this->assertSame('9999', $transaction->total->getAmount());
         $this->assertSame('4111111111111111', $transaction->card->number);
         $this->assertSame('txn_123', $transaction->id);
         $this->assertSame(TransactionState::AUTHORIZED, $transaction->state);
@@ -224,7 +223,7 @@ class TransactionTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD']
+            total: Money::USD(9999)
         );
 
         // Act
@@ -243,7 +242,7 @@ class TransactionTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
@@ -286,7 +285,7 @@ class TransactionTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             description: 'Test',
         );
 
@@ -329,7 +328,7 @@ class TransactionTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD']
+            total: Money::USD(9999)
         );
 
         // Act & Assert
@@ -340,7 +339,7 @@ class TransactionTest extends TestCase
     public function test_mixedConstruction_moneyObjectAndCardArray(): void
     {
         // Arrange
-        $money = new Money('99.99', Currency::USD);
+        $money = Money::USD(9999); // 99.99 in cents
 
         // Act
         $transaction = new Transaction(
@@ -371,7 +370,7 @@ class TransactionTest extends TestCase
 
         // Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: $card,
         );
 
@@ -384,7 +383,7 @@ class TransactionTest extends TestCase
     {
         // Arrange & Act
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: [
                 'last4' => '1111',
                 'bin' => '411111',
@@ -407,7 +406,7 @@ class TransactionTest extends TestCase
     {
         // Arrange & Act
         $transaction = new Transaction(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD'],
+            total: Money::USD(5000),
             shopperIpAddress: '192.168.1.100',
             shopperLanguageTag: 'en-US',
             shopperTimeZone: 'America/New_York',
@@ -433,7 +432,7 @@ class TransactionTest extends TestCase
 
         // Act
         $transaction = new Transaction(
-            total: ['amount' => '100.00', 'currencyCode' => 'EUR'],
+            total: Money::EUR(10000),
             shopperIpAddress: $ipAddress,
             shopperLanguageTag: $languageTag,
             shopperTimeZone: $timeZone,
@@ -449,7 +448,7 @@ class TransactionTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '75.00', 'currencyCode' => 'GBP'],
+            total: Money::GBP(7500),
             shopperIpAddress: '2001:db8::1',
             shopperLanguageTag: 'en-GB',
             shopperTimeZone: 'Europe/London',

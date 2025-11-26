@@ -30,7 +30,7 @@ class OrderResponseTest extends TestCase
         $this->assertNull($orderResponse->getError());
         $this->assertInstanceOf(Order::class, $orderResponse->getOrder());
         $this->assertSame('ord123', $orderResponse->getOrder()->id);
-        $this->assertSame('100.00', $orderResponse->getOrder()->total->amount);
+        $this->assertSame('10000', $orderResponse->getOrder()->total->getAmount());
         $this->assertSame('Test order', $orderResponse->getOrder()->description);
     }
 

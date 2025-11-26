@@ -7,7 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * Plan data transfer object.
@@ -25,10 +25,6 @@ class Plan implements DataTransferObject
     use SerializesData;
 
     // Normalized properties (objects)
-    public readonly ?Money $total;
-    public readonly ?Money $salesTax;
-    public readonly ?Money $initialTotal;
-    public readonly ?Money $initialSalesTax;
     public readonly ?BillingInterval $billingInterval;
     public readonly ?ShopperStatement $shopperStatement;
 
@@ -40,7 +36,8 @@ class Plan implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['total', 'salesTax', 'initialTotal', 'initialSalesTax', 'billingInterval', 'shopperStatement'],
+            'money' => ['total', 'salesTax', 'initialTotal', 'initialSalesTax'],
+            'object' => ['billingInterval', 'shopperStatement'],
             'array' => ['customFields'],
             'string' => [
                 'href', 'id', 'createdAt', 'modifiedAt', 'deletedAt', 'merchant',
@@ -62,11 +59,11 @@ class Plan implements DataTransferObject
      * @param string|null $name Name (max 255 chars, required for creation)
      * @param string|null $description Description (max 255 chars)
      * @param BillingInterval|array<string, mixed>|null $billingInterval Time period between bills (required for creation)
-     * @param Money|array{amount: string, currencyCode: string}|null $total Total for each bill, except for any initial ones which might be different (required for creation)
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales Tax
+     * @param Money|null $total Total for each bill, except for any initial ones which might be different (required for creation)
+     * @param Money|null $salesTax Sales Tax
      * @param int|null $billCount The total number of bills, if applicable (minimum 1)
-     * @param Money|array{amount: string, currencyCode: string}|null $initialTotal Optional total override for initial bills to allow for trials, one-time initiation fees, etc.
-     * @param Money|array{amount: string, currencyCode: string}|null $initialSalesTax Optional sales tax override for initial bills
+     * @param Money|null $initialTotal Optional total override for initial bills to allow for trials, one-time initiation fees, etc.
+     * @param Money|null $initialSalesTax Optional sales tax override for initial bills
      * @param int|null $initialTotalBillCount The number of initial bills where initialTotal will be applied (minimum 0)
      * @param ShopperStatement|array<string, mixed>|null $shopperStatement Dynamic overrides of what might appear on a shopper's statement
      * @param bool|null $isSubscribable Can shoppers be subscribed to this plan? Defaults to true
@@ -89,11 +86,11 @@ class Plan implements DataTransferObject
         public readonly ?string $name = null,
         public readonly ?string $description = null,
         BillingInterval|array|null $billingInterval = null,
-        Money|array|null $total = null,
-        Money|array|null $salesTax = null,
+        public readonly ?Money $total = null,
+        public readonly ?Money $salesTax = null,
         public readonly ?int $billCount = null,
-        Money|array|null $initialTotal = null,
-        Money|array|null $initialSalesTax = null,
+        public readonly ?Money $initialTotal = null,
+        public readonly ?Money $initialSalesTax = null,
         public readonly ?int $initialTotalBillCount = null,
         ShopperStatement|array|null $shopperStatement = null,
         public readonly ?bool $isSubscribable = null,
@@ -104,31 +101,6 @@ class Plan implements DataTransferObject
         $this->billingInterval = match (true) {
             $billingInterval instanceof BillingInterval => $billingInterval,
             is_array($billingInterval) => BillingInterval::fromData($billingInterval),
-            default => null,
-        };
-
-        // Normalize Money objects
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
-        $this->salesTax = match (true) {
-            $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromData($salesTax),
-            default => null,
-        };
-
-        $this->initialTotal = match (true) {
-            $initialTotal instanceof Money => $initialTotal,
-            is_array($initialTotal) => Money::fromData($initialTotal),
-            default => null,
-        };
-
-        $this->initialSalesTax = match (true) {
-            $initialSalesTax instanceof Money => $initialSalesTax,
-            is_array($initialSalesTax) => Money::fromData($initialSalesTax),
             default => null,
         };
 

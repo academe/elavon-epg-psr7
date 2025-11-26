@@ -21,7 +21,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  * use Academe\Elavon\Epg\Psr7\Messages\Request\CreateForexAdviceRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
  * use Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice;
- * use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+ * use Money\Money;
  *
  * // Build the forex advice request
  * $forexAdvice = new ForexAdvice(

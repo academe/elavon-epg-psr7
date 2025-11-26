@@ -8,7 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * Forex Advice data transfer object.
@@ -19,10 +19,6 @@ use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 class ForexAdvice implements DataTransferObject
 {
     use SerializesData;
-
-    // Normalized Money properties
-    public readonly ?Money $total;
-    public readonly ?Money $issuerTotal;
 
     // Normalized enum properties
     public readonly ?MarkupRateAnnotation $markupRateAnnotation;
@@ -36,7 +32,7 @@ class ForexAdvice implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['total', 'issuerTotal'],
+            'money' => ['total', 'issuerTotal'],
             'string' => [
                 'href', 'id', 'createdAt', 'expiresAt', 'merchant', 'processorAccount',
                 'account', 'storedCard', 'hostedCard', 'hsmCard', 'cardNumber',
@@ -65,8 +61,8 @@ class ForexAdvice implements DataTransferObject
      * @param string|null $last4 Last 4 digits of card
      * @param string|null $bin Bank identification number
      * @param string|null $panFingerprint PAN fingerprint
-     * @param Money|array{amount: string, currencyCode: string}|null $total Transaction total in merchant currency
-     * @param Money|array{amount: string, currencyCode: string}|null $issuerTotal Transaction total in card issuer currency
+     * @param Money|null $total Transaction total in merchant currency
+     * @param Money|null $issuerTotal Transaction total in card issuer currency
      * @param string|null $conversionRate Conversion rate between currencies
      * @param string|null $markupRate Markup rate applied
      * @param MarkupRateAnnotation|string|null $markupRateAnnotation Markup rate annotation
@@ -92,8 +88,8 @@ class ForexAdvice implements DataTransferObject
         public readonly ?string $last4 = null,
         public readonly ?string $bin = null,
         public readonly ?string $panFingerprint = null,
-        Money|array|null $total = null,
-        Money|array|null $issuerTotal = null,
+        public readonly ?Money $total = null,
+        public readonly ?Money $issuerTotal = null,
         public readonly ?string $conversionRate = null,
         public readonly ?string $markupRate = null,
         MarkupRateAnnotation|string|null $markupRateAnnotation = null,
@@ -102,19 +98,6 @@ class ForexAdvice implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Money objects
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
-        $this->issuerTotal = match (true) {
-            $issuerTotal instanceof Money => $issuerTotal,
-            is_array($issuerTotal) => Money::fromData($issuerTotal),
-            default => null,
-        };
-
         // Normalize enum objects
         $this->markupRateAnnotation = match (true) {
             $markupRateAnnotation instanceof MarkupRateAnnotation => $markupRateAnnotation,

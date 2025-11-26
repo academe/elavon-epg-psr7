@@ -56,24 +56,4 @@ class Merchant implements DataTransferObject
         // Normalize Region array
         $this->regions = $this->normalizeEnumArray($regions, Region::class);
     }
-
-    /**
-     * Normalize an array of enum values.
-     *
-     * @template T of \BackedEnum
-     * @param array<T|string>|null $items
-     * @param class-string<T> $enumClass
-     * @return array<T>|null
-     */
-    private function normalizeEnumArray(?array $items, string $enumClass): ?array
-    {
-        if ($items === null) {
-            return null;
-        }
-
-        return array_map(
-            fn ($item) => $item instanceof $enumClass ? $item : $enumClass::from($item),
-            $items
-        );
-    }
 }

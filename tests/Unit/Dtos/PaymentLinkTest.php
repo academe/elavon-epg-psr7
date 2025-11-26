@@ -6,9 +6,8 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,14 +19,14 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange & Act
         $paymentLink = new PaymentLink(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD'],
+            total: Money::USD(10000),
             expiresAt: '2025-12-31T23:59:59Z',
         );
 
         // Assert
         $this->assertInstanceOf(Money::class, $paymentLink->total);
-        $this->assertSame('100.00', $paymentLink->total->amount);
-        $this->assertSame(Currency::USD, $paymentLink->total->currency);
+        $this->assertSame('10000', $paymentLink->total->getAmount());
+        $this->assertSame('USD', $paymentLink->total->getCurrency()->getCode());
         $this->assertSame('2025-12-31T23:59:59Z', $paymentLink->expiresAt);
         $this->assertNull($paymentLink->id);
         $this->assertNull($paymentLink->description);
@@ -54,8 +53,8 @@ class PaymentLinkTest extends TestCase
             conversionCount: 5,
             conversionLimit: 10,
             description: 'Payment for Invoice #12345',
-            total: ['amount' => '250.00', 'currencyCode' => 'USD'],
-            salesTax: ['amount' => '25.00', 'currencyCode' => 'USD'],
+            total: Money::USD(25000),
+            salesTax: Money::USD(2500),
             debtorAccount: ['lastName' => 'Smith', 'postalCode' => 'SW1A 1AA'],
             orderReference: 'ORD-67890',
             shopperEmailAddress: 'shopper@example.com',
@@ -82,7 +81,7 @@ class PaymentLinkTest extends TestCase
         $this->assertSame(5, $paymentLink->conversionCount);
         $this->assertSame(10, $paymentLink->conversionLimit);
         $this->assertSame('Payment for Invoice #12345', $paymentLink->description);
-        $this->assertSame('250.00', $paymentLink->total->amount);
+        $this->assertSame('25000', $paymentLink->total->getAmount());
         $this->assertInstanceOf(Money::class, $paymentLink->salesTax);
         $this->assertInstanceOf(DebtorAccount::class, $paymentLink->debtorAccount);
         $this->assertSame('ORD-67890', $paymentLink->orderReference);
@@ -97,7 +96,7 @@ class PaymentLinkTest extends TestCase
     public function test_construct_withMoneyObject_createsInstance(): void
     {
         // Arrange
-        $money = new Money('150.00', Currency::EUR);
+        $money = Money::EUR(15000); // 150.00 EUR
 
         // Act
         $paymentLink = new PaymentLink(
@@ -119,7 +118,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         $paymentLink = new PaymentLink(
-            total: ['amount' => '75.00', 'currencyCode' => 'USD'],
+            total: Money::USD(7500),
             expiresAt: '2025-12-31T23:59:59Z',
             debtorAccount: $debtorAccount,
         );
@@ -139,7 +138,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         new PaymentLink(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             expiresAt: '2025-12-31T23:59:59Z',
             returnUrl: $longUrl,
         );
@@ -153,7 +152,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         new PaymentLink(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             expiresAt: '2025-12-31T23:59:59Z',
             returnUrl: 'ftp://invalid.com',
         );
@@ -170,7 +169,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         new PaymentLink(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             expiresAt: '2025-12-31T23:59:59Z',
             description: $longDescription,
         );
@@ -187,7 +186,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         new PaymentLink(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             expiresAt: '2025-12-31T23:59:59Z',
             shopperEmailAddress: $longEmail,
         );
@@ -201,7 +200,7 @@ class PaymentLinkTest extends TestCase
 
         // Act
         new PaymentLink(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             expiresAt: '2025-12-31T23:59:59Z',
             status: ['invalid_status'],
         );
@@ -219,7 +218,7 @@ class PaymentLinkTest extends TestCase
         $paymentLink = PaymentLink::fromData($data);
 
         // Assert
-        $this->assertSame('99.99', $paymentLink->total->amount);
+        $this->assertSame('9999', $paymentLink->total->getAmount());
         $this->assertSame('2025-12-31T23:59:59Z', $paymentLink->expiresAt);
         $this->assertNull($paymentLink->id);
     }
@@ -247,7 +246,7 @@ class PaymentLinkTest extends TestCase
 
         // Assert
         $this->assertSame('pl123', $paymentLink->id);
-        $this->assertSame('500.00', $paymentLink->total->amount);
+        $this->assertSame('50000', $paymentLink->total->getAmount());
         $this->assertSame('Payment Link for Invoice', $paymentLink->description);
         $this->assertSame('alice@example.com', $paymentLink->shopperEmailAddress);
         $this->assertSame(['active', 'completed'], $paymentLink->status);
@@ -257,7 +256,7 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $paymentLink = new PaymentLink(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD'],
+            total: Money::USD(5000),
             expiresAt: '2025-12-31T23:59:59Z',
         );
 
@@ -278,7 +277,7 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $paymentLink = new PaymentLink(
-            total: ['amount' => '25.00', 'currencyCode' => 'USD'],
+            total: Money::USD(2500),
             expiresAt: '2025-12-31T23:59:59Z',
             description: 'Test payment link',
         );

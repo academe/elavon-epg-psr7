@@ -7,7 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * Order data transfer object.
@@ -25,7 +25,6 @@ class Order implements DataTransferObject
     use SerializesData;
 
     // Normalized properties (objects)
-    public readonly ?Money $total;
     public readonly ?Contact $shipTo;
 
     /** @var array<OrderItem>|null */
@@ -39,7 +38,8 @@ class Order implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['total', 'shipTo'],
+            'money' => ['total'],
+            'object' => ['shipTo'],
             'array' => ['items', 'customFields'],
             'string' => [
                 'href', 'id', 'createdAt', 'modifiedAt', 'merchant',
@@ -55,7 +55,7 @@ class Order implements DataTransferObject
      * @param string|null $createdAt [Response] Creation timestamp
      * @param string|null $modifiedAt [Response] Modification timestamp
      * @param string|null $merchant [Response] Merchant Resource URL
-     * @param Money|array{amount: string, currencyCode: string}|null $total Total for all items (required for creation)
+     * @param Money|null $total Total for all items (required for creation)
      * @param string|null $description Description, which appears on the dashboard and might appear on receipts (max 255 chars)
      * @param array<array<string, mixed>>|null $items Line items, 64 max
      * @param Contact|array<string, mixed>|null $shipTo Shipping contact details
@@ -76,7 +76,7 @@ class Order implements DataTransferObject
         public readonly ?string $merchant = null,
 
         // Request/Response fields
-        Money|array|null $total = null,
+        public readonly ?Money $total = null,
         public readonly ?string $description = null,
         ?array $items = null,
         Contact|array|null $shipTo = null,
@@ -86,13 +86,6 @@ class Order implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Money object
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
         // Normalize Contact object
         $this->shipTo = match (true) {
             $shipTo instanceof Contact => $shipTo,

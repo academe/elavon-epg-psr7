@@ -28,34 +28,33 @@ This project follows:
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\ValueObjects;
+namespace Academe\Elavon\Epg\Psr7\Dtos;
 
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Enums\TransactionType;
+use Money\Money;
 
 /**
- * Represents a monetary value with currency.
+ * Represents a transaction in the EPG API.
  *
- * Uses individual readonly properties for PHP 8.1 compatibility.
- * (Class-level readonly was introduced in PHP 8.2)
+ * Uses the moneyphp/money package for monetary values.
  */
-final class Money
+final class Transaction
 {
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function __construct(
-        public readonly string $amount,
-        public readonly Currency $currency,
-    ) {
-        if (!$this->isValidAmount($amount)) {
-            throw new InvalidArgumentException('Invalid amount format');
-        }
-    }
+    use SerializesData;
 
-    private function isValidAmount(string $amount): bool
+    public function __construct(
+        public readonly ?string $id = null,
+        public readonly ?Money $total = null,
+        public readonly ?TransactionType $type = null,
+    ) {}
+
+    public static function getPropertyTypes(): array
     {
-        return (bool) preg_match('/^\d+(\.\d{1,2})?$/', $amount);
+        return [
+            'money' => ['total'],
+            'enum' => ['type' => TransactionType::class],
+        ];
     }
 }
 ```
@@ -81,9 +80,9 @@ final class Money
 #### Classes
 ```php
 // Value Objects - Singular, descriptive nouns
-class Money {}
 class CardNumber {}
 class EmailAddress {}
+class ExpiryDate {}
 
 // DTOs - Match API resource names
 class Transaction {}
@@ -158,7 +157,7 @@ public const API_VERSION = '2025-10-01';
 ```php
 // ✓ Always type properties
 public string $id;
-public Money $total;
+public \Money\Money $total;
 public ?Card $card;
 
 // ✗ Avoid untyped properties
@@ -170,7 +169,7 @@ public $total;
 
 ```php
 // ✓ Explicit types
-public function calculateTotal(Money $amount, Money $tax): Money
+public function calculateTotal(\Money\Money $amount, \Money\Money $tax): \Money\Money
 {
     // ...
 }
@@ -254,31 +253,27 @@ final class CreateTransactionRequest implements RequestInterface
 
 ```php
 // ✓ Immutable with readonly
-final readonly class Money
+final readonly class CardNumber
 {
     public function __construct(
-        public string $amount,
-        public Currency $currency,
+        public string $value,
     ) {}
 
-    public function add(Money $other): self
+    public function mask(): string
     {
-        // Return new instance, don't modify
-        return new self(
-            bcadd($this->amount, $other->amount, 2),
-            $this->currency,
-        );
+        // Return new value, don't modify
+        return str_repeat('*', strlen($this->value) - 4) . substr($this->value, -4);
     }
 }
 
 // ✗ Mutable
-class Money
+class CardNumber
 {
-    public string $amount;
+    public string $value;
 
-    public function setAmount(string $amount): void
+    public function setValue(string $value): void
     {
-        $this->amount = $amount; // Mutation!
+        $this->value = $value; // Mutation!
     }
 }
 ```
@@ -291,7 +286,7 @@ final readonly class Transaction
 {
     public function __construct(
         public string $id,
-        public Money $total,
+        public \Money\Money $total,
         public TransactionState $state,
     ) {}
 }
@@ -301,6 +296,76 @@ $captured = new Transaction(
     ...$transaction->toArray(),
     state: TransactionState::CAPTURED,
 );
+```
+
+### Money Values
+
+This project uses the `moneyphp/money` package for all monetary values:
+
+```php
+use Money\Money;
+use Money\Currency;
+
+// ✓ Use Money\Money for monetary values
+final class Order
+{
+    public function __construct(
+        public readonly ?Money $total = null,
+        public readonly ?Money $salesTax = null,
+    ) {}
+}
+
+// Creating Money objects - use factory methods
+$total = Money::USD(9999);  // $99.99 in minor units
+$tax = Money::EUR(1050);    // €10.50 in minor units
+
+// Or with Currency object
+$amount = new Money('5000', new Currency('GBP'));  // £50.00
+
+// ✓ Money is immutable - operations return new instances
+$newTotal = $total->add($tax);
+$doubled = $total->multiply(2);
+
+// ✓ Get amount (returns string of minor units)
+$minorUnits = $total->getAmount();  // "9999"
+
+// ✓ Get currency
+$code = $total->getCurrency()->getCode();  // "USD"
+```
+
+### Money Serialization in DTOs
+
+The `SerializesData` trait handles Money serialization automatically:
+
+```php
+final class Order
+{
+    use SerializesData;
+
+    public function __construct(
+        public readonly ?Money $total = null,
+    ) {
+        // Use normalizeMoney() for constructor normalization
+        $this->total = $this->normalizeMoney($total);
+    }
+
+    public static function getPropertyTypes(): array
+    {
+        return [
+            'money' => ['total'],  // Mark as money type
+        ];
+    }
+}
+
+// fromData() parses API format to Money\Money
+$order = Order::fromData([
+    'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+]);
+// $order->total is Money\Money with amount "9999" (minor units)
+
+// toData() serializes Money\Money to API format
+$data = $order->toData();
+// $data['total'] = ['amount' => '99.99', 'currencyCode' => 'USD']
 ```
 
 ## Error Handling
@@ -355,15 +420,15 @@ public function test_toArray_withAllFields_returnsCompleteArray(): void {}
 public function test_add_withSameCurrency_returnsNewMoney(): void
 {
     // Arrange
-    $money1 = new Money('10.00', Currency::USD);
-    $money2 = new Money('5.50', Currency::USD);
+    $money1 = Money::USD(1000);  // $10.00
+    $money2 = Money::USD(550);   // $5.50
 
     // Act
     $result = $money1->add($money2);
 
     // Assert
-    $this->assertEquals('15.50', $result->amount);
-    $this->assertSame(Currency::USD, $result->currency);
+    $this->assertSame('1550', $result->getAmount());
+    $this->assertSame('USD', $result->getCurrency()->getCode());
 }
 ```
 

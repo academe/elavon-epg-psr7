@@ -6,7 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * Count and Total data transfer object.
@@ -20,9 +20,6 @@ class CountAndTotal implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Money $total;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -31,24 +28,18 @@ class CountAndTotal implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['total'],
+            'money' => ['total'],
             'int' => ['count'],
         ];
     }
 
     /**
      * @param int|null $count Count of items
-     * @param Money|array{amount: string, currencyCode: string}|null $total Total monetary amount
+     * @param Money|null $total Total monetary amount
      */
     public function __construct(
         public readonly ?int $count = null,
-        Money|array|null $total = null,
+        public readonly ?Money $total = null,
     ) {
-        // Normalize Money object
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
     }
 }

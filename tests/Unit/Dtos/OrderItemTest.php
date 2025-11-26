@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\OrderItem;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\OrderItemType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,13 +19,13 @@ class OrderItemTest extends TestCase
     {
         // Arrange & Act
         $item = new OrderItem(
-            total: ['amount' => '50.00', 'currencyCode' => 'USD']
+            total: Money::USD(5000)
         );
 
         // Assert
         $this->assertInstanceOf(Money::class, $item->total);
-        $this->assertSame('50.00', $item->total->amount);
-        $this->assertSame(Currency::USD, $item->total->currency);
+        $this->assertSame('5000', $item->total->getAmount());
+        $this->assertSame('USD', $item->total->getCurrency()->getCode());
         $this->assertNull($item->description);
         $this->assertNull($item->unitPrice);
         $this->assertNull($item->quantity);
@@ -38,19 +37,19 @@ class OrderItemTest extends TestCase
     {
         // Arrange & Act
         $item = new OrderItem(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD'],
+            total: Money::USD(10000),
             description: 'Oil change service',
-            unitPrice: ['amount' => '25.00', 'currencyCode' => 'USD'],
+            unitPrice: Money::USD(2500),
             quantity: 4,
             customReference: 'SERVICE-123',
             type: OrderItemType::SERVICE,
         );
 
         // Assert
-        $this->assertSame('100.00', $item->total->amount);
+        $this->assertSame('10000', $item->total->getAmount());
         $this->assertSame('Oil change service', $item->description);
         $this->assertInstanceOf(Money::class, $item->unitPrice);
-        $this->assertSame('25.00', $item->unitPrice->amount);
+        $this->assertSame('2500', $item->unitPrice->getAmount());
         $this->assertSame(4, $item->quantity);
         $this->assertSame('SERVICE-123', $item->customReference);
         $this->assertSame(OrderItemType::SERVICE, $item->type);
@@ -59,8 +58,8 @@ class OrderItemTest extends TestCase
     public function test_construct_withMoneyObjects_createsInstance(): void
     {
         // Arrange
-        $total = new Money('75.00', Currency::EUR);
-        $unitPrice = new Money('25.00', Currency::EUR);
+        $total = Money::EUR(7500); // 75.00 EUR
+        $unitPrice = Money::EUR(2500); // 25.00 EUR
 
         // Act
         $item = new OrderItem(
@@ -77,7 +76,7 @@ class OrderItemTest extends TestCase
     {
         // Arrange & Act
         $item = new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             type: 'goods',
         );
 
@@ -93,7 +92,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             type: 'invalid_type',
         );
     }
@@ -106,7 +105,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             description: '',
         );
     }
@@ -122,7 +121,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             description: $longDescription,
         );
     }
@@ -138,7 +137,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             customReference: $longRef,
         );
     }
@@ -151,7 +150,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             quantity: 0,
         );
     }
@@ -164,7 +163,7 @@ class OrderItemTest extends TestCase
 
         // Act
         new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             quantity: -1,
         );
     }
@@ -180,8 +179,8 @@ class OrderItemTest extends TestCase
         $item = OrderItem::fromData($data);
 
         // Assert
-        $this->assertSame('99.99', $item->total->amount);
-        $this->assertSame(Currency::GBP, $item->total->currency);
+        $this->assertSame('9999', $item->total->getAmount());
+        $this->assertSame('GBP', $item->total->getCurrency()->getCode());
         $this->assertNull($item->description);
     }
 
@@ -201,9 +200,9 @@ class OrderItemTest extends TestCase
         $item = OrderItem::fromData($data);
 
         // Assert
-        $this->assertSame('200.00', $item->total->amount);
+        $this->assertSame('20000', $item->total->getAmount());
         $this->assertSame('Premium service', $item->description);
-        $this->assertSame('50.00', $item->unitPrice->amount);
+        $this->assertSame('5000', $item->unitPrice->getAmount());
         $this->assertSame(4, $item->quantity);
         $this->assertSame('REF-456', $item->customReference);
         $this->assertSame(OrderItemType::SERVICE, $item->type);
@@ -213,7 +212,7 @@ class OrderItemTest extends TestCase
     {
         // Arrange
         $item = new OrderItem(
-            total: ['amount' => '30.00', 'currencyCode' => 'USD']
+            total: Money::USD(3000)
         );
 
         // Act
@@ -232,9 +231,9 @@ class OrderItemTest extends TestCase
     {
         // Arrange
         $item = new OrderItem(
-            total: ['amount' => '120.00', 'currencyCode' => 'EUR'],
+            total: Money::EUR(12000),
             description: 'Consulting services',
-            unitPrice: ['amount' => '60.00', 'currencyCode' => 'EUR'],
+            unitPrice: Money::EUR(6000),
             quantity: 2,
             customReference: 'CONSULT-789',
             type: OrderItemType::SERVICE,
@@ -264,7 +263,7 @@ class OrderItemTest extends TestCase
     {
         // Arrange
         $item = new OrderItem(
-            total: ['amount' => '15.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1500),
             description: 'Test item',
         );
 
@@ -310,7 +309,7 @@ class OrderItemTest extends TestCase
     {
         // Arrange
         $item = new OrderItem(
-            total: ['amount' => '10.00', 'currencyCode' => 'USD']
+            total: Money::USD(1000)
         );
 
         // Act & Assert

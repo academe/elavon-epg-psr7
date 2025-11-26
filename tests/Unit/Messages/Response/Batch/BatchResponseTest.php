@@ -81,13 +81,13 @@ class BatchResponseTest extends TestCase
         $batch = $batchResponse->getBatch();
         $this->assertNotNull($batch->credits);
         $this->assertSame(0, $batch->credits->count);
-        $this->assertSame('0.00', $batch->credits->total->amount);
+        $this->assertSame('0', $batch->credits->total->getAmount());
         $this->assertNotNull($batch->debits);
         $this->assertSame(3, $batch->debits->count);
-        $this->assertSame('22.00', $batch->debits->total->amount);
+        $this->assertSame('2200', $batch->debits->total->getAmount());
         $this->assertNotNull($batch->net);
         $this->assertSame(3, $batch->net->count);
-        $this->assertSame('22.00', $batch->net->total->amount);
+        $this->assertSame('2200', $batch->net->total->getAmount());
     }
 
     public function test_construct_withErrorResponse_parsesError(): void

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Surcharge;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -17,9 +16,9 @@ class SurchargeTest extends TestCase
     public function test_construct_withMoneyObjects_createsInstance(): void
     {
         // Arrange
-        $unadjustedTotal = new Money('100.00', Currency::USD);
-        $unadjustedRefundableTotal = new Money('100.00', Currency::USD);
-        $surchargeTotal = new Money('3.50', Currency::USD);
+        $unadjustedTotal = Money::USD(10000); // 100.00 USD
+        $unadjustedRefundableTotal = Money::USD(10000);
+        $surchargeTotal = Money::USD(350); // 3.50 USD
 
         // Act
         $surcharge = new Surcharge(
@@ -40,22 +39,22 @@ class SurchargeTest extends TestCase
     {
         // Arrange & Act
         $surcharge = new Surcharge(
-            unadjustedTotal: ['amount' => '50.00', 'currencyCode' => 'GBP'],
-            unadjustedRefundableTotal: ['amount' => '50.00', 'currencyCode' => 'GBP'],
-            surchargeTotal: ['amount' => '1.75', 'currencyCode' => 'GBP'],
+            unadjustedTotal: Money::GBP(5000),
+            unadjustedRefundableTotal: Money::GBP(5000),
+            surchargeTotal: Money::GBP(175),
             rate: '0.035'
         );
 
         // Assert
         $this->assertInstanceOf(Money::class, $surcharge->unadjustedTotal);
-        $this->assertSame('50.00', $surcharge->unadjustedTotal->amount);
-        $this->assertSame(Currency::GBP, $surcharge->unadjustedTotal->currency);
+        $this->assertSame('5000', $surcharge->unadjustedTotal->getAmount());
+        $this->assertSame('GBP', $surcharge->unadjustedTotal->getCurrency()->getCode());
 
         $this->assertInstanceOf(Money::class, $surcharge->unadjustedRefundableTotal);
-        $this->assertSame('50.00', $surcharge->unadjustedRefundableTotal->amount);
+        $this->assertSame('5000', $surcharge->unadjustedRefundableTotal->getAmount());
 
         $this->assertInstanceOf(Money::class, $surcharge->surchargeTotal);
-        $this->assertSame('1.75', $surcharge->surchargeTotal->amount);
+        $this->assertSame('175', $surcharge->surchargeTotal->getAmount());
 
         $this->assertSame('0.035', $surcharge->rate);
     }
@@ -87,14 +86,14 @@ class SurchargeTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Money::class, $surcharge->unadjustedTotal);
-        $this->assertSame('200.00', $surcharge->unadjustedTotal->amount);
-        $this->assertSame(Currency::EUR, $surcharge->unadjustedTotal->currency);
+        $this->assertSame('20000', $surcharge->unadjustedTotal->getAmount());
+        $this->assertSame('EUR', $surcharge->unadjustedTotal->getCurrency()->getCode());
 
         $this->assertInstanceOf(Money::class, $surcharge->unadjustedRefundableTotal);
-        $this->assertSame('200.00', $surcharge->unadjustedRefundableTotal->amount);
+        $this->assertSame('20000', $surcharge->unadjustedRefundableTotal->getAmount());
 
         $this->assertInstanceOf(Money::class, $surcharge->surchargeTotal);
-        $this->assertSame('7.00', $surcharge->surchargeTotal->amount);
+        $this->assertSame('700', $surcharge->surchargeTotal->getAmount());
 
         $this->assertSame('0.035', $surcharge->rate);
     }
@@ -120,9 +119,9 @@ class SurchargeTest extends TestCase
     {
         // Arrange
         $surcharge = new Surcharge(
-            unadjustedTotal: ['amount' => '150.00', 'currencyCode' => 'USD'],
-            unadjustedRefundableTotal: ['amount' => '150.00', 'currencyCode' => 'USD'],
-            surchargeTotal: ['amount' => '5.25', 'currencyCode' => 'USD'],
+            unadjustedTotal: Money::USD(15000),
+            unadjustedRefundableTotal: Money::USD(15000),
+            surchargeTotal: Money::USD(525),
             rate: '0.035'
         );
 
@@ -142,7 +141,7 @@ class SurchargeTest extends TestCase
     {
         // Arrange
         $surcharge = new Surcharge(
-            unadjustedTotal: ['amount' => '100.00', 'currencyCode' => 'GBP'],
+            unadjustedTotal: Money::GBP(10000),
             rate: '0.03'
         );
 

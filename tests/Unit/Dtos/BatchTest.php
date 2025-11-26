@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Batch;
 use Academe\Elavon\Epg\Psr7\Dtos\CountAndTotal;
 use Academe\Elavon\Epg\Psr7\Enums\BatchState;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -99,15 +100,15 @@ class BatchTest extends TestCase
         // Arrange
         $credits = new CountAndTotal(
             count: 2,
-            total: ['amount' => '50.00', 'currencyCode' => 'USD']
+            total: Money::USD(5000)
         );
         $debits = new CountAndTotal(
             count: 1,
-            total: ['amount' => '25.00', 'currencyCode' => 'USD']
+            total: Money::USD(2500)
         );
         $net = new CountAndTotal(
             count: 3,
-            total: ['amount' => '25.00', 'currencyCode' => 'USD']
+            total: Money::USD(2500)
         );
 
         // Act
@@ -183,13 +184,13 @@ class BatchTest extends TestCase
         $this->assertSame(BatchState::SETTLED, $batch->state);
         $this->assertInstanceOf(CountAndTotal::class, $batch->credits);
         $this->assertSame(1, $batch->credits->count);
-        $this->assertSame('100.00', $batch->credits->total->amount);
+        $this->assertSame('10000', $batch->credits->total->getAmount());
         $this->assertInstanceOf(CountAndTotal::class, $batch->debits);
         $this->assertSame(5, $batch->debits->count);
-        $this->assertSame('318.00', $batch->debits->total->amount);
+        $this->assertSame('31800', $batch->debits->total->getAmount());
         $this->assertInstanceOf(CountAndTotal::class, $batch->net);
         $this->assertSame(6, $batch->net->count);
-        $this->assertSame('218.00', $batch->net->total->amount);
+        $this->assertSame('21800', $batch->net->total->getAmount());
     }
 
     public function test_fromData_withAllBatchStates_createsInstances(): void

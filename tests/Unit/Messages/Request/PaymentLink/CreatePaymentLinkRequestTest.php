@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink\CreatePaymentLinkRequest;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 class CreatePaymentLinkRequestTest extends TestCase
@@ -14,7 +15,7 @@ class CreatePaymentLinkRequestTest extends TestCase
     public function test_construct_withPaymentLinkObject_createsInstance(): void
     {
         $paymentLink = new PaymentLink(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD'],
+            total: Money::USD(10000),
             expiresAt: '2025-12-31T23:59:59Z',
         );
 
@@ -34,7 +35,7 @@ class CreatePaymentLinkRequestTest extends TestCase
         $request = new CreatePaymentLinkRequest($data);
 
         $this->assertInstanceOf(PaymentLink::class, $request->getPaymentLink());
-        $this->assertSame('150.00', $request->getPaymentLink()->total->amount);
+        $this->assertSame('15000', $request->getPaymentLink()->total->getAmount());
     }
 
     public function test_construct_withoutTotal_throwsException(): void
@@ -62,7 +63,7 @@ class CreatePaymentLinkRequestTest extends TestCase
     public function test_build_createsValidPsr7Request(): void
     {
         $paymentLink = new PaymentLink(
-            total: ['amount' => '200.00', 'currencyCode' => 'GBP'],
+            total: Money::GBP(20000),
             expiresAt: '2025-12-31T23:59:59Z',
         );
         $request = new CreatePaymentLinkRequest($paymentLink);
@@ -76,7 +77,7 @@ class CreatePaymentLinkRequestTest extends TestCase
     public function test_build_includesPaymentLinkDataInBody(): void
     {
         $paymentLink = new PaymentLink(
-            total: ['amount' => '75.50', 'currencyCode' => 'USD'],
+            total: Money::USD(7550),
             expiresAt: '2025-12-31T23:59:59Z',
             description: 'Premium service payment',
             returnUrl: 'https://merchant.com/return',
@@ -100,7 +101,7 @@ class CreatePaymentLinkRequestTest extends TestCase
     public function test_build_withCustomFields_includesCustomFieldsInBody(): void
     {
         $paymentLink = new PaymentLink(
-            total: ['amount' => '300.00', 'currencyCode' => 'USD'],
+            total: Money::USD(30000),
             expiresAt: '2025-12-31T23:59:59Z',
             customFields: ['invoiceNumber' => 'INV-12345', 'project' => 'Alpha'],
         );

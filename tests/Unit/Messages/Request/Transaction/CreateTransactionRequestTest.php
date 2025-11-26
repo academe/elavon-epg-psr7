@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -42,7 +41,7 @@ class CreateTransactionRequestTest extends TestCase
     {
         // Arrange
         $transaction = new Transaction(
-            total: ['amount' => '99.99', 'currencyCode' => 'USD'],
+            total: Money::USD(9999),
             card: [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
@@ -159,8 +158,8 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Transaction::class, $transaction);
-        $this->assertSame('99.99', $transaction->total->amount);
-        $this->assertSame(Currency::USD, $transaction->total->currency);
+        $this->assertSame('9999', $transaction->total->getAmount());
+        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
         $this->assertSame('4111111111111111', $transaction->card->number);
     }
 
@@ -168,7 +167,7 @@ class CreateTransactionRequestTest extends TestCase
     {
         // Arrange
         $originalTransaction = new Transaction(
-            total: new Money('99.99', Currency::USD),
+            total: Money::USD(9999), // 99.99 in cents
             card: ['number' => '4111111111111111'],
         );
 

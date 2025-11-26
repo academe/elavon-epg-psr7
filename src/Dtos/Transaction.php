@@ -24,8 +24,8 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
+use Money\Money;
 
 /**
  * Transaction data transfer object.
@@ -50,8 +50,10 @@ class Transaction implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => [
+            'money' => [
                 'total', 'totalRefunded', 'issuerTotal', 'tip', 'salesTax',
+            ],
+            'object' => [
                 'card', 'shopperStatement', 'shipTo', 'billTo', 'surcharge',
                 'shopperEmailAddress', 'shopperIpAddress', 'shopperLanguageTag', 'shopperTimeZone',
             ],
@@ -83,11 +85,6 @@ class Transaction implements DataTransferObject
     }
 
     // Normalized properties (objects)
-    public readonly ?Money $total;
-    public readonly ?Money $totalRefunded;
-    public readonly ?Money $issuerTotal;
-    public readonly ?Money $tip;
-    public readonly ?Money $salesTax;
     public readonly ?Card $card;
     public readonly ?ShopperStatement $shopperStatement;
     public readonly ?Contact $shipTo;
@@ -113,11 +110,11 @@ class Transaction implements DataTransferObject
     public readonly ?MarkupRateAnnotation $markupRateAnnotation;
 
     /**
-     * @param Money|array{amount: string, currencyCode: string}|null $total Transaction total
-     * @param Money|array{amount: string, currencyCode: string}|null $totalRefunded [Response] Sum of all refunds
-     * @param Money|array{amount: string, currencyCode: string}|null $issuerTotal [Response] Total in target currency
-     * @param Money|array{amount: string, currencyCode: string}|null $tip [Response] Tip amount
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales tax amount
+     * @param Money|null $total Transaction total (Money\Money)
+     * @param Money|null $totalRefunded [Response] Sum of all refunds (Money\Money)
+     * @param Money|null $issuerTotal [Response] Total in target currency (Money\Money)
+     * @param Money|null $tip [Response] Tip amount (Money\Money)
+     * @param Money|null $salesTax Sales tax amount (Money\Money)
      * @param Card|array<string, mixed>|null $card Card details
      * @param ShopperStatement|array<string, mixed>|null $shopperStatement [Request] Dynamic statement overrides
      * @param Contact|array<string, mixed>|null $shipTo [Request] Shipping address
@@ -185,11 +182,11 @@ class Transaction implements DataTransferObject
      */
     public function __construct(
         // Primary transaction data
-        Money|array|null $total = null,
-        Money|array|null $totalRefunded = null,
-        Money|array|null $issuerTotal = null,
-        Money|array|null $tip = null,
-        Money|array|null $salesTax = null,
+        public readonly ?Money $total = null,
+        public readonly ?Money $totalRefunded = null,
+        public readonly ?Money $issuerTotal = null,
+        public readonly ?Money $tip = null,
+        public readonly ?Money $salesTax = null,
         Card|array|null $card = null,
         ShopperStatement|array|null $shopperStatement = null,
         Contact|array|null $shipTo = null,
@@ -277,37 +274,6 @@ class Transaction implements DataTransferObject
         public readonly ?bool $isSettled = null,
         public readonly ?bool $isPartiallyRefunded = null,
     ) {
-        // Normalize Money objects (accept both Money object or array)
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
-        $this->totalRefunded = match (true) {
-            $totalRefunded instanceof Money => $totalRefunded,
-            is_array($totalRefunded) => Money::fromData($totalRefunded),
-            default => null,
-        };
-
-        $this->issuerTotal = match (true) {
-            $issuerTotal instanceof Money => $issuerTotal,
-            is_array($issuerTotal) => Money::fromData($issuerTotal),
-            default => null,
-        };
-
-        $this->tip = match (true) {
-            $tip instanceof Money => $tip,
-            is_array($tip) => Money::fromData($tip),
-            default => null,
-        };
-
-        $this->salesTax = match (true) {
-            $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromData($salesTax),
-            default => null,
-        };
-
         // Normalize Card (accept Card object, array, or null)
         $this->card = match (true) {
             $card instanceof Card => $card,
@@ -383,51 +349,18 @@ class Transaction implements DataTransferObject
         }
 
         // Normalize enum properties (accept both enum objects or string values)
-        $this->state = $this->normalizeEnum($state, TransactionState::class, 'state');
-        $this->type = $this->normalizeEnum($type, TransactionType::class, 'type');
-        $this->processorDirective = $this->normalizeEnum($processorDirective, ProcessorDirective::class, 'processorDirective');
-        $this->source = $this->normalizeEnum($source, Source::class, 'source');
-        $this->paymentMethod = $this->normalizeEnum($paymentMethod, PaymentMethod::class, 'paymentMethod');
-        $this->paymentMethodOrigin = $this->normalizeEnum($paymentMethodOrigin, PaymentMethodOrigin::class, 'paymentMethodOrigin');
-        $this->paymentMethodQualifier = $this->normalizeEnum($paymentMethodQualifier, PaymentMethodQualifier::class, 'paymentMethodQualifier');
-        $this->marketSegment = $this->normalizeEnum($marketSegment, MarketSegment::class, 'marketSegment');
-        $this->shopperInteraction = $this->normalizeEnum($shopperInteraction, ShopperInteraction::class, 'shopperInteraction');
-        $this->markupRateAnnotation = $this->normalizeEnum($markupRateAnnotation, MarkupRateAnnotation::class, 'markupRateAnnotation');
+        $this->state = $this->normalizeEnum($state, 'state');
+        $this->type = $this->normalizeEnum($type, 'type');
+        $this->processorDirective = $this->normalizeEnum($processorDirective, 'processorDirective');
+        $this->source = $this->normalizeEnum($source, 'source');
+        $this->paymentMethod = $this->normalizeEnum($paymentMethod, 'paymentMethod');
+        $this->paymentMethodOrigin = $this->normalizeEnum($paymentMethodOrigin, 'paymentMethodOrigin');
+        $this->paymentMethodQualifier = $this->normalizeEnum($paymentMethodQualifier, 'paymentMethodQualifier');
+        $this->marketSegment = $this->normalizeEnum($marketSegment, 'marketSegment');
+        $this->shopperInteraction = $this->normalizeEnum($shopperInteraction, 'shopperInteraction');
+        $this->markupRateAnnotation = $this->normalizeEnum($markupRateAnnotation, 'markupRateAnnotation');
 
         $this->validate();
-    }
-
-    /**
-     * Normalizes an enum value from either enum object or string.
-     *
-     * @template T of \BackedEnum
-     * @param T|string|null $value
-     * @param class-string<T> $enumClass
-     * @param string $fieldName
-     * @return T|null
-     * @throws InvalidArgumentException When string value is invalid
-     */
-    private function normalizeEnum(mixed $value, string $enumClass, string $fieldName): mixed
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        if ($value instanceof $enumClass) {
-            return $value;
-        }
-
-        if (is_string($value)) {
-            $enum = $enumClass::tryFrom($value);
-            if ($enum === null) {
-                throw new InvalidArgumentException("Invalid {$fieldName}: {$value}");
-            }
-            return $enum;
-        }
-
-        throw new InvalidArgumentException(
-            "Field {$fieldName} must be a {$enumClass} enum or string, " . get_debug_type($value) . " given"
-        );
     }
 
     /**

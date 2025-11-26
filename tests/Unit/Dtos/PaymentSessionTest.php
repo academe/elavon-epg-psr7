@@ -9,13 +9,12 @@ use Academe\Elavon\Epg\Psr7\Dtos\Contact;
 use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentSession;
 use Academe\Elavon\Epg\Psr7\Dtos\ThreeDSecure;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Enums\HppType;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -54,8 +53,8 @@ class PaymentSessionTest extends TestCase
             allowedPaymentMethods: ['Card', 'BLIK'],
             allowedPaymentMethodOrigins: ['Card', 'Apple Pay'],
             paymentLink: 'https://api.example.com/payment-links/pl123',
-            salesTax: ['amount' => '10.00', 'currencyCode' => 'USD'],
-            tip: ['amount' => '5.00', 'currencyCode' => 'USD'],
+            salesTax: Money::USD(1000),
+            tip: Money::USD(500),
             shopperEmailAddress: 'shopper@example.com',
             billTo: ['fullName' => 'John Doe', 'street1' => '123 Main St'],
             shipTo: ['fullName' => 'Jane Doe', 'street1' => '456 Oak Ave'],
@@ -73,7 +72,7 @@ class PaymentSessionTest extends TestCase
         $this->assertSame('ps123', $paymentSession->id);
         $this->assertSame('https://api.example.com/orders/ord123', $paymentSession->order);
         $this->assertInstanceOf(Money::class, $paymentSession->salesTax);
-        $this->assertSame('10.00', $paymentSession->salesTax->amount);
+        $this->assertSame('1000', $paymentSession->salesTax->getAmount());
         $this->assertInstanceOf(Contact::class, $paymentSession->billTo);
         $this->assertSame('John Doe', $paymentSession->billTo->fullName);
         $this->assertInstanceOf(Contact::class, $paymentSession->shipTo);
@@ -95,8 +94,8 @@ class PaymentSessionTest extends TestCase
     public function test_construct_withMoneyObjects_createsInstance(): void
     {
         // Arrange
-        $salesTax = new Money('15.00', Currency::EUR);
-        $tip = new Money('7.50', Currency::EUR);
+        $salesTax = Money::EUR(1500); // 15.00 EUR
+        $tip = Money::EUR(750); // 7.50 EUR
 
         // Act
         $paymentSession = new PaymentSession(
@@ -365,7 +364,7 @@ class PaymentSessionTest extends TestCase
         // Assert
         $this->assertSame('ps123', $paymentSession->id);
         $this->assertInstanceOf(Money::class, $paymentSession->salesTax);
-        $this->assertSame('20.00', $paymentSession->salesTax->amount);
+        $this->assertSame('2000', $paymentSession->salesTax->getAmount());
         $this->assertInstanceOf(Contact::class, $paymentSession->billTo);
         $this->assertSame('Carol White', $paymentSession->billTo->fullName);
         $this->assertSame(HppType::LIGHTBOX, $paymentSession->hppType);
@@ -397,7 +396,7 @@ class PaymentSessionTest extends TestCase
         // Arrange
         $paymentSession = new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
-            salesTax: ['amount' => '12.50', 'currencyCode' => 'EUR'],
+            salesTax: Money::EUR(1250),
             shopperEmailAddress: 'test@example.com',
             returnUrl: 'https://merchant.com/return',
             customReference: 'TEST-REF',

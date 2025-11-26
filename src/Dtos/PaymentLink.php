@@ -7,7 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * PaymentLink data transfer object.
@@ -25,8 +25,6 @@ class PaymentLink implements DataTransferObject
     use SerializesData;
 
     // Normalized properties (objects)
-    public readonly ?Money $total;
-    public readonly ?Money $salesTax;
     public readonly ?DebtorAccount $debtorAccount;
 
     /** @var array<string>|null */
@@ -40,7 +38,8 @@ class PaymentLink implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => ['total', 'salesTax', 'debtorAccount'],
+            'money' => ['total', 'salesTax'],
+            'object' => ['debtorAccount'],
             'array' => ['status', 'customFields'],
             'string' => [
                 'href', 'id', 'merchant', 'account', 'url', 'returnUrl',
@@ -71,8 +70,8 @@ class PaymentLink implements DataTransferObject
      * @param int|null $conversionCount [Response] Number of authorized transactions created from this PaymentLink
      * @param int|null $conversionLimit Number of times the PaymentLink may be used to complete a Transaction
      * @param string|null $description Descriptive text indicating the purpose of the PaymentLink (max 255 chars)
-     * @param Money|array{amount: string, currencyCode: string}|null $total Total payment amount (required for creation)
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTax Sales tax
+     * @param Money|null $total Total payment amount (required for creation)
+     * @param Money|null $salesTax Sales tax
      * @param DebtorAccount|array<string, mixed>|null $debtorAccount Account information required for MCC 6012/6050/6051 merchants
      * @param string|null $orderReference Optional order reference displayed in merchant dashboard (max 255 chars)
      * @param string|null $shopperEmailAddress Shopper's email address (max 254 chars)
@@ -106,8 +105,8 @@ class PaymentLink implements DataTransferObject
         public readonly ?bool $doCapture = null,
         public readonly ?int $conversionLimit = null,
         public readonly ?string $description = null,
-        Money|array|null $total = null,
-        Money|array|null $salesTax = null,
+        public readonly ?Money $total = null,
+        public readonly ?Money $salesTax = null,
         DebtorAccount|array|null $debtorAccount = null,
         public readonly ?string $orderReference = null,
         public readonly ?string $shopperEmailAddress = null,
@@ -116,19 +115,6 @@ class PaymentLink implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Money objects
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
-        $this->salesTax = match (true) {
-            $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromData($salesTax),
-            default => null,
-        };
-
         // Normalize DebtorAccount object
         $this->debtorAccount = match (true) {
             $debtorAccount instanceof DebtorAccount => $debtorAccount,

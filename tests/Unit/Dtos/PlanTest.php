@@ -7,9 +7,8 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\BillingInterval;
 use Academe\Elavon\Epg\Psr7\Dtos\Plan;
 use Academe\Elavon\Epg\Psr7\Dtos\ShopperStatement;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,14 +22,14 @@ class PlanTest extends TestCase
         $plan = new Plan(
             name: 'Monthly License',
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '29.99', 'currencyCode' => 'USD']
+            total: Money::USD(2999)
         );
 
         // Assert
         $this->assertSame('Monthly License', $plan->name);
         $this->assertInstanceOf(BillingInterval::class, $plan->billingInterval);
         $this->assertInstanceOf(Money::class, $plan->total);
-        $this->assertSame('29.99', $plan->total->amount);
+        $this->assertSame('2999', $plan->total->getAmount());
         $this->assertNull($plan->id);
         $this->assertNull($plan->description);
     }
@@ -48,11 +47,11 @@ class PlanTest extends TestCase
             name: 'Annual Subscription',
             description: 'Yearly billing plan',
             billingInterval: ['timeUnit' => 'year', 'count' => 1],
-            total: ['amount' => '299.99', 'currencyCode' => 'USD'],
-            salesTax: ['amount' => '30.00', 'currencyCode' => 'USD'],
+            total: Money::USD(29999),
+            salesTax: Money::USD(3000),
             billCount: 12,
-            initialTotal: ['amount' => '0.00', 'currencyCode' => 'USD'],
-            initialSalesTax: ['amount' => '0.00', 'currencyCode' => 'USD'],
+            initialTotal: Money::USD(0),
+            initialSalesTax: Money::USD(0),
             initialTotalBillCount: 1,
             shopperStatement: ['name' => 'ACME Corp'],
             isSubscribable: true,
@@ -74,8 +73,8 @@ class PlanTest extends TestCase
     public function test_construct_withMoneyObjects_createsInstance(): void
     {
         // Arrange
-        $total = new Money('49.99', Currency::EUR);
-        $salesTax = new Money('5.00', Currency::EUR);
+        $total = Money::EUR(4999); // 49.99 EUR
+        $salesTax = Money::EUR(500); // 5.00 EUR
 
         // Act
         $plan = new Plan(
@@ -99,7 +98,7 @@ class PlanTest extends TestCase
         $plan = new Plan(
             name: 'Bi-weekly Plan',
             billingInterval: $interval,
-            total: ['amount' => '10.00', 'currencyCode' => 'USD']
+            total: Money::USD(1000)
         );
 
         // Assert
@@ -119,7 +118,7 @@ class PlanTest extends TestCase
         new Plan(
             name: $longName,
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '10.00', 'currencyCode' => 'USD']
+            total: Money::USD(1000)
         );
     }
 
@@ -137,7 +136,7 @@ class PlanTest extends TestCase
             name: 'Test',
             description: $longDescription,
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '10.00', 'currencyCode' => 'USD']
+            total: Money::USD(1000)
         );
     }
 
@@ -151,7 +150,7 @@ class PlanTest extends TestCase
         new Plan(
             name: 'Test',
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             billCount: 0
         );
     }
@@ -166,7 +165,7 @@ class PlanTest extends TestCase
         new Plan(
             name: 'Test',
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '10.00', 'currencyCode' => 'USD'],
+            total: Money::USD(1000),
             initialTotalBillCount: -1
         );
     }
@@ -185,8 +184,8 @@ class PlanTest extends TestCase
 
         // Assert
         $this->assertSame('Test Plan', $plan->name);
-        $this->assertSame('19.99', $plan->total->amount);
-        $this->assertSame(Currency::GBP, $plan->total->currency);
+        $this->assertSame('1999', $plan->total->getAmount());
+        $this->assertSame('GBP', $plan->total->getCurrency()->getCode());
     }
 
     public function test_toData_returnsArrayWithoutNullValues(): void
@@ -196,7 +195,7 @@ class PlanTest extends TestCase
             name: 'Basic Plan',
             description: 'A basic plan',
             billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: ['amount' => '9.99', 'currencyCode' => 'USD']
+            total: Money::USD(999)
         );
 
         // Act

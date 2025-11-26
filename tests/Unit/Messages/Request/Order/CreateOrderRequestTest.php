@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\CreateOrderRequest;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 class CreateOrderRequestTest extends TestCase
@@ -14,7 +15,7 @@ class CreateOrderRequestTest extends TestCase
     public function test_construct_withOrderObject_createsInstance(): void
     {
         $order = new Order(
-            total: ['amount' => '100.00', 'currencyCode' => 'USD'],
+            total: Money::USD(10000),
             description: 'Test order',
         );
 
@@ -33,7 +34,7 @@ class CreateOrderRequestTest extends TestCase
         $request = new CreateOrderRequest($data);
 
         $this->assertInstanceOf(Order::class, $request->getOrder());
-        $this->assertSame('150.00', $request->getOrder()->total->amount);
+        $this->assertSame('15000', $request->getOrder()->total->getAmount());
     }
 
     public function test_construct_withoutTotal_throwsException(): void
@@ -47,7 +48,7 @@ class CreateOrderRequestTest extends TestCase
     public function test_build_createsValidPsr7Request(): void
     {
         $order = new Order(
-            total: ['amount' => '200.00', 'currencyCode' => 'GBP'],
+            total: Money::GBP(20000),
         );
         $request = new CreateOrderRequest($order);
 
@@ -60,7 +61,7 @@ class CreateOrderRequestTest extends TestCase
     public function test_build_includesOrderDataInBody(): void
     {
         $order = new Order(
-            total: ['amount' => '75.50', 'currencyCode' => 'USD'],
+            total: Money::USD(7550),
             description: 'Premium service',
             shopperEmailAddress: 'customer@example.com',
         );
@@ -80,7 +81,7 @@ class CreateOrderRequestTest extends TestCase
     public function test_build_withItems_includesItemsInBody(): void
     {
         $order = new Order(
-            total: ['amount' => '300.00', 'currencyCode' => 'USD'],
+            total: Money::USD(30000),
             items: [
                 [
                     'total' => ['amount' => '150.00', 'currencyCode' => 'USD'],

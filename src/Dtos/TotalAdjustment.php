@@ -6,7 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 
 /**
  * TotalAdjustment data transfer object.
@@ -20,14 +20,6 @@ class TotalAdjustment implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized Money properties
-    public readonly ?Money $total;
-    public readonly ?Money $totalAdjustment;
-    public readonly ?Money $salesTax;
-    public readonly ?Money $salesTaxAdjustment;
-    public readonly ?Money $tip;
-    public readonly ?Money $tipAdjustment;
-
     /** @var array<Failure>|null */
     public readonly ?array $failures;
 
@@ -39,7 +31,7 @@ class TotalAdjustment implements DataTransferObject
     public static function getPropertyTypes(): array
     {
         return [
-            'object' => [
+            'money' => [
                 'total', 'totalAdjustment', 'salesTax', 'salesTaxAdjustment',
                 'tip', 'tipAdjustment',
             ],
@@ -58,12 +50,12 @@ class TotalAdjustment implements DataTransferObject
      * @param string|null $id TotalAdjustment Resource ID assigned by server
      * @param string|null $transaction Transaction Resource URL (suppressed when public API key is used)
      * @param string|null $createdAt Creation timestamp
-     * @param Money|array{amount: string, currencyCode: string}|null $total The cumulative new total amount
-     * @param Money|array{amount: string, currencyCode: string}|null $totalAdjustment The positive or negative adjustment to the prior authorized amount
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTax The cumulative new sales tax
-     * @param Money|array{amount: string, currencyCode: string}|null $salesTaxAdjustment The positive or negative adjustment to the prior salesTax amount
-     * @param Money|array{amount: string, currencyCode: string}|null $tip Tip amount
-     * @param Money|array{amount: string, currencyCode: string}|null $tipAdjustment The positive or negative adjustment to the prior tip amount
+     * @param Money|null $total The cumulative new total amount
+     * @param Money|null $totalAdjustment The positive or negative adjustment to the prior authorized amount
+     * @param Money|null $salesTax The cumulative new sales tax
+     * @param Money|null $salesTaxAdjustment The positive or negative adjustment to the prior salesTax amount
+     * @param Money|null $tip Tip amount
+     * @param Money|null $tipAdjustment The positive or negative adjustment to the prior tip amount
      * @param string|null $processorReference Reference assigned by the processor
      * @param string|null $issuerReference Reference assigned by the issuer
      * @param bool|null $doCapture If false, authorize only; if true (default), authorize and capture funds for settlement
@@ -80,12 +72,12 @@ class TotalAdjustment implements DataTransferObject
         public readonly ?string $id = null,
         public readonly ?string $transaction = null,
         public readonly ?string $createdAt = null,
-        Money|array|null $total = null,
-        Money|array|null $totalAdjustment = null,
-        Money|array|null $salesTax = null,
-        Money|array|null $salesTaxAdjustment = null,
-        Money|array|null $tip = null,
-        Money|array|null $tipAdjustment = null,
+        public readonly ?Money $total = null,
+        public readonly ?Money $totalAdjustment = null,
+        public readonly ?Money $salesTax = null,
+        public readonly ?Money $salesTaxAdjustment = null,
+        public readonly ?Money $tip = null,
+        public readonly ?Money $tipAdjustment = null,
         public readonly ?string $processorReference = null,
         public readonly ?string $issuerReference = null,
         public readonly ?bool $doCapture = null,
@@ -97,43 +89,6 @@ class TotalAdjustment implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Money objects
-        $this->total = match (true) {
-            $total instanceof Money => $total,
-            is_array($total) => Money::fromData($total),
-            default => null,
-        };
-
-        $this->totalAdjustment = match (true) {
-            $totalAdjustment instanceof Money => $totalAdjustment,
-            is_array($totalAdjustment) => Money::fromData($totalAdjustment),
-            default => null,
-        };
-
-        $this->salesTax = match (true) {
-            $salesTax instanceof Money => $salesTax,
-            is_array($salesTax) => Money::fromData($salesTax),
-            default => null,
-        };
-
-        $this->salesTaxAdjustment = match (true) {
-            $salesTaxAdjustment instanceof Money => $salesTaxAdjustment,
-            is_array($salesTaxAdjustment) => Money::fromData($salesTaxAdjustment),
-            default => null,
-        };
-
-        $this->tip = match (true) {
-            $tip instanceof Money => $tip,
-            is_array($tip) => Money::fromData($tip),
-            default => null,
-        };
-
-        $this->tipAdjustment = match (true) {
-            $tipAdjustment instanceof Money => $tipAdjustment,
-            is_array($tipAdjustment) => Money::fromData($tipAdjustment),
-            default => null,
-        };
-
         // Normalize Failure array
         $this->failures = $this->normalizeFailures($failures);
     }

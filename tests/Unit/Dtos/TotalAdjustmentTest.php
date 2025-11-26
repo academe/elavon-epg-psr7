@@ -6,8 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Failure;
 use Academe\Elavon\Epg\Psr7\Dtos\TotalAdjustment;
-use Academe\Elavon\Epg\Psr7\Enums\Currency;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,30 +27,30 @@ class TotalAdjustmentTest extends TestCase
 
     public function test_construct_withMoneyObjects_createsInstance(): void
     {
-        $total = new Money('150.00', Currency::EUR);
-        $totalAdjustment = new Money('50.00', Currency::EUR);
+        $total = Money::EUR(15000); // 150.00 EUR
+        $totalAdjustmentMoney = Money::EUR(5000); // 50.00 EUR
 
         $adjustment = new TotalAdjustment(
             total: $total,
-            totalAdjustment: $totalAdjustment
+            totalAdjustment: $totalAdjustmentMoney
         );
 
         $this->assertSame($total, $adjustment->total);
-        $this->assertSame($totalAdjustment, $adjustment->totalAdjustment);
+        $this->assertSame($totalAdjustmentMoney, $adjustment->totalAdjustment);
     }
 
     public function test_construct_withMoneyArrays_createsMoneyObjects(): void
     {
         $adjustment = new TotalAdjustment(
-            total: ['amount' => '100.00', 'currencyCode' => 'EUR'],
-            tip: ['amount' => '10.00', 'currencyCode' => 'EUR']
+            total: Money::EUR(10000),
+            tip: Money::EUR(1000)
         );
 
         $this->assertInstanceOf(Money::class, $adjustment->total);
-        $this->assertSame('100.00', $adjustment->total->amount);
-        $this->assertSame(Currency::EUR, $adjustment->total->currency);
+        $this->assertSame('10000', $adjustment->total->getAmount());
+        $this->assertSame('EUR', $adjustment->total->getCurrency()->getCode());
         $this->assertInstanceOf(Money::class, $adjustment->tip);
-        $this->assertSame('10.00', $adjustment->tip->amount);
+        $this->assertSame('1000', $adjustment->tip->getAmount());
     }
 
     public function test_construct_withFailures_createsFailureObjects(): void
@@ -88,9 +87,9 @@ class TotalAdjustmentTest extends TestCase
 
         $this->assertSame('adj123', $adjustment->id);
         $this->assertInstanceOf(Money::class, $adjustment->total);
-        $this->assertSame('150.00', $adjustment->total->amount);
+        $this->assertSame('15000', $adjustment->total->getAmount());
         $this->assertInstanceOf(Money::class, $adjustment->totalAdjustment);
-        $this->assertSame('50.00', $adjustment->totalAdjustment->amount);
+        $this->assertSame('5000', $adjustment->totalAdjustment->getAmount());
         $this->assertTrue($adjustment->doCapture);
         $this->assertTrue($adjustment->isAuthorized);
         $this->assertSame('AUTH123', $adjustment->authorizationCode);
@@ -100,8 +99,8 @@ class TotalAdjustmentTest extends TestCase
     {
         $adjustment = new TotalAdjustment(
             id: 'adj-999',
-            total: new Money('200.00', Currency::USD),
-            tip: new Money('20.00', Currency::USD),
+            total: Money::USD(20000), // 200.00 USD
+            tip: Money::USD(2000), // 20.00 USD
             isAuthorized: true
         );
 

@@ -69,7 +69,7 @@ class PaymentSessionResponseTest extends TestCase
         $this->assertNotNull($paymentSession->shipTo);
         $this->assertSame('Jane Smith', $paymentSession->shipTo->fullName);
         $this->assertNotNull($paymentSession->salesTax);
-        $this->assertSame('10.50', $paymentSession->salesTax->amount);
+        $this->assertSame('1050', $paymentSession->salesTax->getAmount());
     }
 
     public function test_construct_withSuccessResponseAndPaymentMethods_parsesPaymentSession(): void
