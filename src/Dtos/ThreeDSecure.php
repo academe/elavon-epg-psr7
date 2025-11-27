@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 
 /**
  * 3-D Secure v2 data transfer object.
@@ -18,6 +19,8 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  */
 class ThreeDSecure implements DataTransferObject
 {
+    use SerializesData;
+
     /**
      * Get property type definitions for this DTO.
      *

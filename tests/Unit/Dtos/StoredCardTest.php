@@ -40,7 +40,7 @@ class StoredCardTest extends TestCase
         ];
 
         // Act
-        $storedCard = new StoredCard(card: $cardData);
+        $storedCard = StoredCard::fromData(['card' => $cardData]);
 
         // Assert
         $this->assertInstanceOf(Card::class, $storedCard->card);

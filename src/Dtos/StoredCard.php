@@ -23,12 +23,7 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  */
 class StoredCard implements DataTransferObject
 {
-    use SerializesData {
-        fromData as private fromDataTrait;
-    }
-
-    // Normalized properties (objects)
-    public readonly ?Card $card;
+    use SerializesData;
 
     /**
      * Get property type definitions for this DTO.
@@ -51,52 +46,6 @@ class StoredCard implements DataTransferObject
     }
 
     /**
-     * Creates a StoredCard instance from JSON-compatible data.
-     *
-     * @param mixed $data Array with stored card data
-     * @return static
-     * @throws InvalidArgumentException When data is invalid
-     */
-    public static function fromData(mixed $data): static
-    {
-        // Parse shopperInteraction enum if present
-        $shopperInteraction = null;
-        if (isset($data['shopperInteraction'])) {
-            $shopperInteraction = ShopperInteraction::tryFrom($data['shopperInteraction']);
-            if ($shopperInteraction === null) {
-                throw new InvalidArgumentException("Invalid shopper interaction: {$data['shopperInteraction']}");
-            }
-        }
-
-        // Parse credentialOnFileType enum if present
-        $credentialOnFileType = null;
-        if (isset($data['credentialOnFileType'])) {
-            $credentialOnFileType = CredentialOnFileType::tryFrom($data['credentialOnFileType']);
-            if ($credentialOnFileType === null) {
-                throw new InvalidArgumentException("Invalid credential on file type: {$data['credentialOnFileType']}");
-            }
-        }
-
-        return new self(
-            card: $data['card'] ?? null,
-            shopper: isset($data['shopper']) ? (string) $data['shopper'] : null,
-            hostedCard: isset($data['hostedCard']) ? (string) $data['hostedCard'] : null,
-            href: isset($data['href']) ? (string) $data['href'] : null,
-            id: isset($data['id']) ? (string) $data['id'] : null,
-            createdAt: isset($data['createdAt']) ? (string) $data['createdAt'] : null,
-            modifiedAt: isset($data['modifiedAt']) ? (string) $data['modifiedAt'] : null,
-            deletedAt: isset($data['deletedAt']) ? (string) $data['deletedAt'] : null,
-            merchant: isset($data['merchant']) ? (string) $data['merchant'] : null,
-            shopperInteraction: $shopperInteraction,
-            credentialOnFileType: $credentialOnFileType,
-            paymentMethodLink: isset($data['paymentMethodLink']) ? (string) $data['paymentMethodLink'] : null,
-            paymentMethodSession: isset($data['paymentMethodSession']) ? (string) $data['paymentMethodSession'] : null,
-            customReference: isset($data['customReference']) ? (string) $data['customReference'] : null,
-            customFields: $data['customFields'] ?? null,
-        );
-    }
-
-    /**
      * @param Card|array<string, mixed>|null $card [Response] Card details
      * @param string|null $shopper [Request/Response] Shopper resource URL (required for creation)
      * @param string|null $hostedCard [Request] HostedCard resource URL (for initialization)
@@ -116,7 +65,7 @@ class StoredCard implements DataTransferObject
      * @throws InvalidArgumentException When validation fails
      */
     public function __construct(
-        Card|array|null $card = null,
+        public readonly ?Card $card = null,
         public readonly ?string $shopper = null,
         public readonly ?string $hostedCard = null,
         public readonly ?string $href = null,
@@ -132,13 +81,6 @@ class StoredCard implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Card
-        $this->card = match (true) {
-            $card instanceof Card => $card,
-            is_array($card) => Card::fromData($card),
-            default => null,
-        };
-
         $this->validate();
     }
 

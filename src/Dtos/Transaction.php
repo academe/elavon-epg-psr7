@@ -85,29 +85,17 @@ class Transaction implements DataTransferObject
     }
 
     // Normalized properties (objects)
-    public readonly ?Card $card;
-    public readonly ?ShopperStatement $shopperStatement;
-    public readonly ?Contact $shipTo;
-    public readonly ?Contact $billTo;
-    public readonly ?Surcharge $surcharge;
+    // public readonly ?Card $card;
+    // public readonly ?ShopperStatement $shopperStatement;
+    // public readonly ?Contact $shipTo;
+    // public readonly ?Contact $billTo;
+    // public readonly ?Surcharge $surcharge;
     public readonly ?EmailAddress $shopperEmailAddress;
-    public readonly ?IpAddress $shopperIpAddress;
+    // public readonly ?IpAddress $shopperIpAddress;
     public readonly ?LanguageTag $shopperLanguageTag;
     public readonly ?TimeZone $shopperTimeZone;
     /** @var array<Failure>|null */
     public readonly ?array $failures;
-
-    // Enum properties (normalized from strings in constructor)
-    public readonly ?TransactionState $state;
-    public readonly ?TransactionType $type;
-    public readonly ?ProcessorDirective $processorDirective;
-    public readonly ?Source $source;
-    public readonly ?PaymentMethod $paymentMethod;
-    public readonly ?PaymentMethodOrigin $paymentMethodOrigin;
-    public readonly ?PaymentMethodQualifier $paymentMethodQualifier;
-    public readonly ?MarketSegment $marketSegment;
-    public readonly ?ShopperInteraction $shopperInteraction;
-    public readonly ?MarkupRateAnnotation $markupRateAnnotation;
 
     /**
      * @param Money|null $total Transaction total (Money\Money)
@@ -187,17 +175,17 @@ class Transaction implements DataTransferObject
         public readonly ?Money $issuerTotal = null,
         public readonly ?Money $tip = null,
         public readonly ?Money $salesTax = null,
-        Card|array|null $card = null,
-        ShopperStatement|array|null $shopperStatement = null,
-        Contact|array|null $shipTo = null,
-        Contact|array|null $billTo = null,
-        Surcharge|array|null $surcharge = null,
+        public readonly ?Card $card = null,
+        public readonly ?ShopperStatement $shopperStatement = null,
+        public readonly ?Contact $shipTo = null,
+        public readonly ?Contact $billTo = null,
+        public readonly ?Surcharge $surcharge = null,
         ?array $failures = null,
 
         // Identity and state
         public readonly ?string $id = null,
-        TransactionState|string|null $state = null,
-        TransactionType|string|null $type = null,
+        public readonly ?TransactionState $state = null,
+        public readonly ?TransactionType $type = null,
 
         // Descriptive fields
         public readonly ?string $description = null,
@@ -231,7 +219,7 @@ class Transaction implements DataTransferObject
 
         // Shopper information
         EmailAddress|string|null $shopperEmailAddress = null,
-        IpAddress|string|null $shopperIpAddress = null,
+        public readonly ?IpAddress $shopperIpAddress = null,
         LanguageTag|string|null $shopperLanguageTag = null,
         TimeZone|string|null $shopperTimeZone = null,
 
@@ -255,17 +243,17 @@ class Transaction implements DataTransferObject
         // Financial rates
         public readonly ?string $conversionRate = null,
         public readonly ?string $markupRate = null,
-        MarkupRateAnnotation|string|null $markupRateAnnotation = null,
+        public readonly ?MarkupRateAnnotation $markupRateAnnotation = null,
         public readonly ?string $rateProviderName = null,
 
         // Processing details
-        ProcessorDirective|string|null $processorDirective = null,
-        Source|string|null $source = null,
-        PaymentMethod|string|null $paymentMethod = null,
-        PaymentMethodOrigin|string|null $paymentMethodOrigin = null,
-        PaymentMethodQualifier|string|null $paymentMethodQualifier = null,
-        MarketSegment|string|null $marketSegment = null,
-        ShopperInteraction|string|null $shopperInteraction = null,
+        public readonly ?ProcessorDirective $processorDirective = null,
+        public readonly ?Source $source = null,
+        public readonly ?PaymentMethod $paymentMethod = null,
+        public readonly ?PaymentMethodOrigin $paymentMethodOrigin = null,
+        public readonly ?PaymentMethodQualifier $paymentMethodQualifier = null,
+        public readonly ?MarketSegment $marketSegment = null,
+        public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?bool $isAuthorized = null,
         public readonly ?bool $isVoided = null,
         public readonly ?bool $isRefunded = null,
@@ -275,38 +263,38 @@ class Transaction implements DataTransferObject
         public readonly ?bool $isPartiallyRefunded = null,
     ) {
         // Normalize Card (accept Card object, array, or null)
-        $this->card = match (true) {
-            $card instanceof Card => $card,
-            is_array($card) => Card::fromData($card),
-            default => null,
-        };
+        // $this->card = match (true) {
+        //     $card instanceof Card => $card,
+        //     is_array($card) => Card::fromData($card),
+        //     default => null,
+        // };
 
         // Normalize ShopperStatement
-        $this->shopperStatement = match (true) {
-            $shopperStatement instanceof ShopperStatement => $shopperStatement,
-            is_array($shopperStatement) => ShopperStatement::fromData($shopperStatement),
-            default => null,
-        };
+        // $this->shopperStatement = match (true) {
+        //     $shopperStatement instanceof ShopperStatement => $shopperStatement,
+        //     is_array($shopperStatement) => ShopperStatement::fromData($shopperStatement),
+        //     default => null,
+        // };
 
         // Normalize Contact objects
-        $this->shipTo = match (true) {
-            $shipTo instanceof Contact => $shipTo,
-            is_array($shipTo) => Contact::fromData($shipTo),
-            default => null,
-        };
+        // $this->shipTo = match (true) {
+        //     $shipTo instanceof Contact => $shipTo,
+        //     is_array($shipTo) => Contact::fromData($shipTo),
+        //     default => null,
+        // };
 
-        $this->billTo = match (true) {
-            $billTo instanceof Contact => $billTo,
-            is_array($billTo) => Contact::fromData($billTo),
-            default => null,
-        };
+        // $this->billTo = match (true) {
+        //     $billTo instanceof Contact => $billTo,
+        //     is_array($billTo) => Contact::fromData($billTo),
+        //     default => null,
+        // };
 
         // Normalize Surcharge
-        $this->surcharge = match (true) {
-            $surcharge instanceof Surcharge => $surcharge,
-            is_array($surcharge) => Surcharge::fromData($surcharge),
-            default => null,
-        };
+        // $this->surcharge = match (true) {
+        //     $surcharge instanceof Surcharge => $surcharge,
+        //     is_array($surcharge) => Surcharge::fromData($surcharge),
+        //     default => null,
+        // };
 
         // Normalize EmailAddress
         $this->shopperEmailAddress = match (true) {
@@ -316,11 +304,11 @@ class Transaction implements DataTransferObject
         };
 
         // Normalize IpAddress
-        $this->shopperIpAddress = match (true) {
-            $shopperIpAddress instanceof IpAddress => $shopperIpAddress,
-            is_string($shopperIpAddress) => IpAddress::fromData($shopperIpAddress),
-            default => null,
-        };
+        // $this->shopperIpAddress = match (true) {
+        //     $shopperIpAddress instanceof IpAddress => $shopperIpAddress,
+        //     is_string($shopperIpAddress) => IpAddress::fromData($shopperIpAddress),
+        //     default => null,
+        // };
 
         // Normalize LanguageTag
         $this->shopperLanguageTag = match (true) {
@@ -347,18 +335,6 @@ class Transaction implements DataTransferObject
         } else {
             $this->failures = null;
         }
-
-        // Normalize enum properties (accept both enum objects or string values)
-        $this->state = $this->normalizeEnum($state, 'state');
-        $this->type = $this->normalizeEnum($type, 'type');
-        $this->processorDirective = $this->normalizeEnum($processorDirective, 'processorDirective');
-        $this->source = $this->normalizeEnum($source, 'source');
-        $this->paymentMethod = $this->normalizeEnum($paymentMethod, 'paymentMethod');
-        $this->paymentMethodOrigin = $this->normalizeEnum($paymentMethodOrigin, 'paymentMethodOrigin');
-        $this->paymentMethodQualifier = $this->normalizeEnum($paymentMethodQualifier, 'paymentMethodQualifier');
-        $this->marketSegment = $this->normalizeEnum($marketSegment, 'marketSegment');
-        $this->shopperInteraction = $this->normalizeEnum($shopperInteraction, 'shopperInteraction');
-        $this->markupRateAnnotation = $this->normalizeEnum($markupRateAnnotation, 'markupRateAnnotation');
 
         $this->validate();
     }

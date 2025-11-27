@@ -74,15 +74,15 @@ class TransactionTest extends TestCase
     public function test_construct_withCardArray_createsInstance(): void
     {
         // Arrange & Act
-        $transaction = new Transaction(
-            total: Money::USD(9999),
-            card: [
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
                 'expirationMonth' => 12,
                 'expirationYear' => 2025,
             ],
-        );
+        ]);
 
         // Assert
         $this->assertInstanceOf(Card::class, $transaction->card);
@@ -92,15 +92,17 @@ class TransactionTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $transaction = new Transaction(
-            total: Money::USD(9999),
-            card: ['number' => '4111111111111111', 'securityCode' => '123', 'expirationMonth' => 12, 'expirationYear' => 2025],
-            id: 'txn_123',
-            state: TransactionState::AUTHORIZED,
-            description: 'Order #12345',
-            customReference: 'REF-12345',
-            createdAt: '2025-11-13T10:00:00Z',
-        );
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => ['number' => '4111111111111111', 'securityCode' => '123', 'expirationMonth' => 12, 'expirationYear' => 2025],
+            'id' => 'txn_123',
+            'state' => TransactionState::AUTHORIZED,
+            'description' => 'Order #12345',
+            'customReference' => 'REF-12345',
+            'createdAt' => '2025-11-13T10:00:00Z',
+        ]);
+
+        // var_dump($transaction);
 
         // Assert
         $this->assertSame('9999', $transaction->total->getAmount());
@@ -241,21 +243,21 @@ class TransactionTest extends TestCase
     public function test_toArray_withFullData_returnsArray(): void
     {
         // Arrange
-        $transaction = new Transaction(
-            total: Money::USD(9999),
-            card: [
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
                 'expirationMonth' => 12,
                 'expirationYear' => 2025,
                 'holderName' => 'John Doe',
             ],
-            id: 'txn_123',
-            state: TransactionState::AUTHORIZED,
-            description: 'Order #12345',
-            customReference: 'REF-12345',
-            createdAt: '2025-11-13T10:00:00Z',
-        );
+            'id' => 'txn_123',
+            'state' => TransactionState::AUTHORIZED,
+            'description' => 'Order #12345',
+            'customReference' => 'REF-12345',
+            'createdAt' => '2025-11-13T10:00:00Z',
+        ]);
 
         // Act
         $array = $transaction->toData();
@@ -342,15 +344,15 @@ class TransactionTest extends TestCase
         $money = Money::USD(9999); // 99.99 in cents
 
         // Act
-        $transaction = new Transaction(
-            total: $money,
-            card: [
+        $transaction = Transaction::fromData([
+            'total' => $money,
+            'card' => Card::fromData([
                 'number' => '4111111111111111',
                 'securityCode' => '123',
                 'expirationMonth' => 12,
                 'expirationYear' => 2025,
-            ],
-        );
+            ]),
+        ]);
 
         // Assert
         $this->assertSame($money, $transaction->total);
@@ -361,12 +363,12 @@ class TransactionTest extends TestCase
     public function test_mixedConstruction_totalArrayAndCardObject(): void
     {
         // Arrange
-        $card = new Card(
-            number: '4111111111111111',
-            securityCode: '123',
-            expirationMonth: 12,
-            expirationYear: 2025,
-        );
+        $card = Card::fromData([
+            'number' => '4111111111111111',
+            'securityCode' => '123',
+            'expirationMonth' => 12,
+            'expirationYear' => 2025,
+        ]);
 
         // Act
         $transaction = new Transaction(
@@ -382,17 +384,17 @@ class TransactionTest extends TestCase
     public function test_construct_withResponseData_createsInstance(): void
     {
         // Arrange & Act
-        $transaction = new Transaction(
-            total: Money::USD(9999),
-            card: [
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => [
                 'last4' => '1111',
                 'bin' => '411111',
                 'scheme' => 'Visa',
             ],
-            id: 'txn_123',
-            state: TransactionState::CAPTURED,
-            createdAt: '2025-11-13T10:00:00Z',
-        );
+            'id' => 'txn_123',
+            'state' => TransactionState::CAPTURED,
+            'createdAt' => '2025-11-13T10:00:00Z',
+        ]);
 
         // Assert
         $this->assertSame('txn_123', $transaction->id);
@@ -405,12 +407,12 @@ class TransactionTest extends TestCase
     public function test_construct_withShopperValueObjectsAsStrings_createsInstances(): void
     {
         // Arrange & Act
-        $transaction = new Transaction(
-            total: Money::USD(5000),
-            shopperIpAddress: '192.168.1.100',
-            shopperLanguageTag: 'en-US',
-            shopperTimeZone: 'America/New_York',
-        );
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(5000),
+            'shopperIpAddress' => '192.168.1.100',
+            'shopperLanguageTag' => 'en-US',
+            'shopperTimeZone' => 'America/New_York',
+        ]);
 
         // Assert
         $this->assertInstanceOf(IpAddress::class, $transaction->shopperIpAddress);
@@ -431,12 +433,12 @@ class TransactionTest extends TestCase
         $timeZone = new TimeZone('Europe/Paris');
 
         // Act
-        $transaction = new Transaction(
-            total: Money::EUR(10000),
-            shopperIpAddress: $ipAddress,
-            shopperLanguageTag: $languageTag,
-            shopperTimeZone: $timeZone,
-        );
+        $transaction = Transaction::fromData([
+            'total' => Money::EUR(10000),
+            'shopperIpAddress' => $ipAddress,
+            'shopperLanguageTag' => $languageTag,
+            'shopperTimeZone' => $timeZone,
+        ]);
 
         // Assert
         $this->assertSame($ipAddress, $transaction->shopperIpAddress);
@@ -447,12 +449,12 @@ class TransactionTest extends TestCase
     public function test_toData_withShopperValueObjects_serializesToStrings(): void
     {
         // Arrange
-        $transaction = new Transaction(
-            total: Money::GBP(7500),
-            shopperIpAddress: '2001:db8::1',
-            shopperLanguageTag: 'en-GB',
-            shopperTimeZone: 'Europe/London',
-        );
+        $transaction = Transaction::fromData([
+            'total' => Money::GBP(7500),
+            'shopperIpAddress' => '2001:db8::1',
+            'shopperLanguageTag' => 'en-GB',
+            'shopperTimeZone' => 'Europe/London',
+        ]);
 
         // Act
         $data = $transaction->toData();
@@ -501,6 +503,8 @@ class TransactionTest extends TestCase
         // Act
         $transaction = Transaction::fromData($originalData);
         $restoredData = $transaction->toData();
+
+        // var_dump($transaction);
 
         // Assert
         $this->assertSame($originalData['shopperIpAddress'], $restoredData['shopperIpAddress']);

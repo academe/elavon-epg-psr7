@@ -35,7 +35,7 @@ class StoredCardResponse
 {
     use HandlesErrors;
 
-    private readonly ?StoredCard $storedCard;
+    public readonly ?StoredCard $storedCard;
 
     /**
      * @param ResponseInterface $response PSR-7 HTTP response
@@ -104,5 +104,4 @@ class StoredCardResponse
         $data = $this->parseJsonBody();
         return StoredCard::fromData($data);
     }
-
 }

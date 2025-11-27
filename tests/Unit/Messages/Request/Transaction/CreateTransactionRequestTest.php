@@ -40,15 +40,15 @@ class CreateTransactionRequestTest extends TestCase
     public function test_construct_withTransactionObject_createsInstance(): void
     {
         // Arrange
-        $transaction = new Transaction(
-            total: Money::USD(9999),
-            card: [
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => [
                 'number' => '4111111111111111',
                 'securityCode' => '123',
                 'expirationMonth' => 12,
                 'expirationYear' => 2025,
             ],
-        );
+        ]);
 
         // Act
         $request = new CreateTransactionRequest(transaction: $transaction);
@@ -166,10 +166,10 @@ class CreateTransactionRequestTest extends TestCase
     public function test_getTransaction_withTransactionObject_returnsSameObject(): void
     {
         // Arrange
-        $originalTransaction = new Transaction(
-            total: Money::USD(9999), // 99.99 in cents
-            card: ['number' => '4111111111111111'],
-        );
+        $originalTransaction = Transaction::fromData([
+            'total' => Money::USD(9999), // 99.99 in cents
+            'card' => ['number' => '4111111111111111'],
+        ]);
 
         $request = new CreateTransactionRequest(transaction: $originalTransaction);
 

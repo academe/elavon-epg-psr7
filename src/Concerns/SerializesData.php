@@ -35,17 +35,49 @@ trait SerializesData
         // Build constructor arguments dynamically using property type definitions
         $args = [];
 
-        // Object and Array properties - pass raw data, constructor handles conversion
-        $objectProperties = array_merge(
-            $propertyTypes['object'] ?? [],
-            $propertyTypes['array'] ?? []
-        );
+        // Object properties - todo label the dtos as specificly dtos.
+        foreach ($propertyTypes['object'] ?? [] as $prop) {
+            if (isset($data[$prop]) && (is_array($data[$prop]) || is_scalar($data[$prop]))) {
+                /** @var class-string<DataTransferObject> $dtoClass */
+                $dtoClass = null;
 
-        foreach ($objectProperties as $prop) {
+                $type = static::getConstructorArg($prop)?->getType();
+
+                if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                    $dtoClass = $type->getName();
+                } elseif ($type instanceof \ReflectionUnionType) {
+                    // Handle union types like MyDtoClass|string|null
+                    foreach ($type->getTypes() as $unionType) {
+                        if ($unionType instanceof \ReflectionNamedType && !$unionType->isBuiltin()) {
+                            $typeName = $unionType->getName();
+                            if (class_exists($typeName)) {
+                                $dtoClass = $typeName;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Could be a DTO or VO - anything with a fromData() method.
+                if ($dtoClass === null /*|| !is_subclass_of($dtoClass, DataTransferObject::class)*/) {
+                    throw new InvalidArgumentException("Cannot determine DTO class for property {$prop}");
+                }
+
+                $args[$prop] = $dtoClass::fromData($data[$prop]);
+            } elseif (isset($data[$prop]) && is_object($data[$prop])) {
+                $args[$prop] = $data[$prop];
+            } else {
+                $args[$prop] = null;
+            }
+        }
+
+        // Arrays as they are (will need comversion of items though)
+        foreach ($propertyTypes['array'] ?? [] as $prop) {
             $args[$prop] = $data[$prop] ?? null;
         }
 
-        // Money properties - parse decimal amount with currency into Money\Money object
+        // Money properties - parse decimal amount with currency into Money\Money object.
+        // Expects data in format: ['amount' => '10.00', 'currencyCode' => 'USD']
         foreach ($propertyTypes['money'] ?? [] as $prop) {
             if (isset($data[$prop]) && is_array($data[$prop])) {
                 $moneyData = $data[$prop];
@@ -54,11 +86,15 @@ trait SerializesData
                     $parser = new DecimalMoneyParser($currencies);
                     $args[$prop] = $parser->parse(
                         (string) $moneyData['amount'],
-                        new Currency($moneyData['currencyCode'])
+                        $moneyData['currencyCode'] instanceof Currency
+                            ? $moneyData['currencyCode']
+                            : new Currency($moneyData['currencyCode'])
                     );
                 } else {
                     $args[$prop] = null;
                 }
+            } elseif (isset($data[$prop]) && $data[$prop] instanceof Money) {
+                $args[$prop] = $data[$prop];
             } else {
                 $args[$prop] = null;
             }
@@ -86,6 +122,20 @@ trait SerializesData
 
         // Unpack arguments array as named parameters
         return new static(...$args);
+    }
+
+    // Reflection helper to get constructor by name.
+    protected static function getConstructorArg(string $property): mixed
+    {
+        $constructor = (new \ReflectionClass(static::class))->getConstructor();
+
+        foreach ($constructor->getParameters() as $param) {
+            if ($param->getName() === $property) {
+                return $param;
+            }
+        }
+
+        return null;
     }
 
     /**

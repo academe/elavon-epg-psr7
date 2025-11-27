@@ -37,8 +37,8 @@ class PaymentSession implements DataTransferObject
     public readonly ?Blik $blik;
     public readonly ?DebtorAccount $debtorAccount;
     public readonly ?ThreeDSecure $threeDSecure;
-    public readonly ?HppType $hppType;
-    public readonly ?ShopperInteraction $shopperInteraction;
+    // public readonly ?HppType $hppType;
+    // public readonly ?ShopperInteraction $shopperInteraction;
 
     /** @var array<PaymentMethod>|null */
     public readonly ?array $allowedPaymentMethods;
@@ -58,7 +58,7 @@ class PaymentSession implements DataTransferObject
     {
         return [
             'money' => ['salesTax', 'tip'],
-            'object' => ['billTo', 'shipTo', 'blik', 'debtorAccount', 'threeDSecure', 'hppType', 'shopperInteraction'],
+            'object' => ['billTo', 'shipTo', 'blik', 'debtorAccount', 'threeDSecure'],
             'array' => ['allowedPaymentMethods', 'allowedPaymentMethodOrigins', 'previousTransactions', 'customFields'],
             'string' => [
                 'href', 'id', 'createdAt', 'modifiedAt', 'expiresAt', 'merchant', 'account', 'url',
@@ -68,6 +68,7 @@ class PaymentSession implements DataTransferObject
                 'shopperEmailAddress', 'returnUrl', 'cancelUrl', 'originUrl',
                 'defaultLanguageTag', 'shopperLanguageTag', 'createdBy', 'customReference',
             ],
+            'enum' => ['hppType', 'shopperInteraction'],
             'boolean' => ['doCreateTransaction', 'doCapture', 'doThreeDSecure', 'doReset', 'useStoredPaymentMethod'],
         ];
     }
@@ -156,13 +157,13 @@ class PaymentSession implements DataTransferObject
         public readonly ?string $shopperEmailAddress = null,
         Contact|array|null $billTo = null,
         Contact|array|null $shipTo = null,
-        HppType|string|null $hppType = null,
+        public readonly ?HppType $hppType = null,
         public readonly ?string $returnUrl = null,
         public readonly ?string $cancelUrl = null,
         public readonly ?string $originUrl = null,
         public readonly ?string $defaultLanguageTag = null,
         public readonly ?string $shopperLanguageTag = null,
-        ShopperInteraction|string|null $shopperInteraction = null,
+        public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?bool $doCreateTransaction = null,
         public readonly ?bool $doCapture = null,
         public readonly ?bool $doThreeDSecure = null,
@@ -209,19 +210,19 @@ class PaymentSession implements DataTransferObject
             default => null,
         };
 
-        // Normalize HppType enum
-        $this->hppType = match (true) {
-            $hppType instanceof HppType => $hppType,
-            is_string($hppType) => HppType::from($hppType),
-            default => null,
-        };
+        // // Normalize HppType enum
+        // $this->hppType = match (true) {
+        //     $hppType instanceof HppType => $hppType,
+        //     is_string($hppType) => HppType::from($hppType),
+        //     default => null,
+        // };
 
-        // Normalize ShopperInteraction enum
-        $this->shopperInteraction = match (true) {
-            $shopperInteraction instanceof ShopperInteraction => $shopperInteraction,
-            is_string($shopperInteraction) => ShopperInteraction::from($shopperInteraction),
-            default => null,
-        };
+        // // Normalize ShopperInteraction enum
+        // $this->shopperInteraction = match (true) {
+        //     $shopperInteraction instanceof ShopperInteraction => $shopperInteraction,
+        //     is_string($shopperInteraction) => ShopperInteraction::from($shopperInteraction),
+        //     default => null,
+        // };
 
         // Normalize allowedPaymentMethods array
         if ($allowedPaymentMethods !== null) {

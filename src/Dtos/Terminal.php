@@ -20,9 +20,6 @@ class Terminal implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized enum properties
-    public readonly ?TerminalType $terminalType;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -54,16 +51,10 @@ class Terminal implements DataTransferObject
         public readonly ?string $merchant = null,
         public readonly ?string $processorAccount = null,
         public readonly ?string $processorReference = null,
-        TerminalType|string|null $terminalType = null,
+        public readonly ?TerminalType $terminalType = null,
         public readonly ?string $hostLastUpdatedEmvKeysAt = null,
         public readonly ?string $provisionedAt = null,
         public readonly ?string $transactedAt = null,
     ) {
-        // Normalize TerminalType enum
-        $this->terminalType = match (true) {
-            $terminalType instanceof TerminalType => $terminalType,
-            is_string($terminalType) => TerminalType::from($terminalType),
-            default => null,
-        };
     }
 }

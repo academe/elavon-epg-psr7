@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Integration;
 
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
@@ -69,7 +70,7 @@ class OpayoIntegrationTest extends TestCase
 
         // Arrange - Create a transaction request with test card
         $request = new CreateTransactionRequest(
-            transaction: [
+            transaction: Transaction::fromData([
                 'total' => [
                     'amount' => '10.00',
                     'currencyCode' => 'USD',
@@ -83,7 +84,7 @@ class OpayoIntegrationTest extends TestCase
                 ],
                 'description' => 'Integration test transaction',
                 'customReference' => 'TEST-' . bin2hex(random_bytes(8)),
-            ],
+            ]),
         );
 
         // Act - Build request, add Elavon API headers and authentication, then send
@@ -181,7 +182,7 @@ class OpayoIntegrationTest extends TestCase
 
         // Arrange - Create a transaction request with test declined card
         $request = new CreateTransactionRequest(
-            transaction: [
+            transaction: Transaction::fromData([
                 'total' => [
                     'amount' => '10.00',
                     'currencyCode' => 'USD',
@@ -195,7 +196,7 @@ class OpayoIntegrationTest extends TestCase
                 ],
                 'description' => 'Integration test - declined transaction',
                 'customReference' => 'TEST-DECLINED-' . bin2hex(random_bytes(8)),
-            ],
+            ]),
         );
 
         // Act - Build request, add Elavon API headers and authentication, then send

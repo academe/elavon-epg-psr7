@@ -36,8 +36,6 @@ class Contact implements DataTransferObject
             ],
         ];
     }
-    // Normalized properties (objects)
-    public readonly ?EmailAddress $email;
 
     /**
      * @param EmailAddress|string|null $email Email address
@@ -54,7 +52,7 @@ class Contact implements DataTransferObject
      * @param string|null $fax Fax number (max 255 chars)
      */
     public function __construct(
-        EmailAddress|string|null $email = null,
+        public readonly ?EmailAddress $email = null,
         public readonly ?string $fullName = null,
         public readonly ?string $company = null,
         public readonly ?string $street1 = null,
@@ -67,13 +65,6 @@ class Contact implements DataTransferObject
         public readonly ?string $alternatePhone = null,
         public readonly ?string $fax = null,
     ) {
-        // Normalize EmailAddress
-        $this->email = match (true) {
-            $email instanceof EmailAddress => $email,
-            is_string($email) => EmailAddress::fromData($email),
-            default => null,
-        };
-
         $this->validate();
     }
 

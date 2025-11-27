@@ -40,9 +40,9 @@ class StoredCardListResponse
 {
     use HandlesErrors;
 
-    private readonly ?array $storedCards;
-    private readonly ?string $nextPage;
-    private readonly ?string $firstPage;
+    public readonly ?array $storedCards;
+    public readonly ?string $nextPage;
+    public readonly ?string $firstPage;
 
     /**
      * @param ResponseInterface $response PSR-7 HTTP response

@@ -17,20 +17,20 @@ class ContactTest extends TestCase
     public function test_construct_withAllProperties_createsInstance(): void
     {
         // Arrange & Act
-        $contact = new Contact(
-            fullName: 'John Doe',
-            company: 'Acme Corp',
-            street1: '221 Baker St',
-            street2: 'Suite B',
-            city: 'London',
-            region: 'England',
-            postalCode: 'NW1 6XE',
-            countryCode: 'GBR',
-            primaryPhone: '+44 020 7946 0123',
-            alternatePhone: '+44 020 7946 0124',
-            fax: '+44 020 7946 0125',
-            email: 'john@email.com'
-        );
+        $contact = Contact::fromData([
+            'fullName' => 'John Doe',
+            'company' => 'Acme Corp',
+            'street1' => '221 Baker St',
+            'street2' => 'Suite B',
+            'city' => 'London',
+            'region' => 'England',
+            'postalCode' => 'NW1 6XE',
+            'countryCode' => 'GBR',
+            'primaryPhone' => '+44 020 7946 0123',
+            'alternatePhone' => '+44 020 7946 0124',
+            'fax' => '+44 020 7946 0125',
+            'email' => 'john@email.com'
+        ]);
 
         // Assert
         $this->assertSame('John Doe', $contact->fullName);
@@ -88,7 +88,7 @@ class ContactTest extends TestCase
         $this->expectExceptionMessage('Email address cannot exceed 254 characters');
 
         // Act
-        new Contact(email: $longEmail);
+        Contact::fromData(['email' => $longEmail]);
     }
 
     public function test_construct_withTooLongFullName_throwsException(): void
@@ -164,14 +164,14 @@ class ContactTest extends TestCase
     public function test_toArray_withAllProperties_returnsCompleteArray(): void
     {
         // Arrange
-        $contact = new Contact(
-            fullName: 'Test User',
-            company: 'Test Co',
-            street1: '1 Test St',
-            city: 'Test City',
-            countryCode: 'TST',
-            email: 'test@test.com'
-        );
+        $contact = Contact::fromData([
+            'fullName' => 'Test User',
+            'company' => 'Test Co',
+            'street1' => '1 Test St',
+            'city' => 'Test City',
+            'countryCode' => 'TST',
+            'email' => 'test@test.com'
+        ]);
 
         // Act
         $result = $contact->toData();
@@ -190,10 +190,10 @@ class ContactTest extends TestCase
     public function test_toArray_withNullProperties_excludesNullValues(): void
     {
         // Arrange
-        $contact = new Contact(
-            fullName: 'User',
-            email: 'user@example.com'
-        );
+        $contact = Contact::fromData([
+            'fullName' => 'User',
+            'email' => 'user@example.com'
+        ]);
 
         // Act
         $result = $contact->toData();
