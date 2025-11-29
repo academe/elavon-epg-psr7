@@ -36,15 +36,7 @@ class ApplePayPaymentSession implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $merchant [Response] Merchant Resource URL (suppressed when a public API key is used)
-     * @param string|null $account Account Resource URL
-     * @param string|null $displayName [Response] DBA name of the store
-     * @param string|null $initiativeContext Fully qualified domain name that has been registered with Apple (required for creation, does not include protocol)
-     * @param string|null $paymentSession [Response] Apple Pay payment session object
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+    // initiativeContext: FQDN registered with Apple (no protocol)
     public function __construct(
         // Response-only fields
         public readonly ?string $merchant = null,

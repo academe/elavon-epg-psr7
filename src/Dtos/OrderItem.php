@@ -35,16 +35,6 @@ class OrderItem implements DataTransferObject
         ];
     }
 
-    /**
-     * @param Money|null $total Total for this item, accounting for quantity (required)
-     * @param string|null $description Description of the item (min 1, max 255 chars)
-     * @param Money|null $unitPrice Cost of an individual unit
-     * @param int|null $quantity The number of units being purchased (min 1, default 1)
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param OrderItemType|string|null $type Item type (optional, defaults to 'unknown')
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly ?Money $total = null,
         public readonly ?string $description = null,

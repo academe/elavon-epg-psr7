@@ -37,14 +37,6 @@ class VerificationResults implements DataTransferObject
         ];
     }
 
-    /**
-     * @param Verification|null $name Credit card holder name result
-     * @param Verification|null $securityCode Credit card security code result (CVV/CVC)
-     * @param Verification|null $addressStreet Credit card billing address street result (AVS)
-     * @param Verification|null $addressPostalCode Credit card billing address postal code result (AVS)
-     * @param Verification|null $threeDSecureV2 Credit card 3-D Secure authentication V2 result
-     * @param Verification|null $cryptogramSecurity Credit card eWallet authentication result
-     */
     public function __construct(
         public readonly ?Verification $name = null,
         public readonly ?Verification $securityCode = null,

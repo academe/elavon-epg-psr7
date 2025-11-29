@@ -44,30 +44,6 @@ class Plan implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] Plan Resource URL (self link)
-     * @param string|null $id [Response] Plan Resource ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $deletedAt [Response] Deletion timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $planList PlanList Resource URL
-     * @param string|null $name Name (max 255 chars, required for creation)
-     * @param string|null $description Description (max 255 chars)
-     * @param BillingInterval|array<string, mixed>|null $billingInterval Time period between bills (required for creation)
-     * @param Money|null $total Total for each bill, except for any initial ones which might be different (required for creation)
-     * @param Money|null $salesTax Sales Tax
-     * @param int|null $billCount The total number of bills, if applicable (minimum 1)
-     * @param Money|null $initialTotal Optional total override for initial bills to allow for trials, one-time initiation fees, etc.
-     * @param Money|null $initialSalesTax Optional sales tax override for initial bills
-     * @param int|null $initialTotalBillCount The number of initial bills where initialTotal will be applied (minimum 0)
-     * @param ShopperStatement|array<string, mixed>|null $shopperStatement Dynamic overrides of what might appear on a shopper's statement
-     * @param bool|null $isSubscribable Can shoppers be subscribed to this plan? Defaults to true
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

@@ -36,16 +36,6 @@ class Terminal implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $id Unique identifier assigned to the terminal
-     * @param string|null $merchant Merchant Resource URL (suppressed when public API key is used)
-     * @param string|null $processorAccount ProcessorAccount Resource URL
-     * @param string|null $processorReference Reference assigned by the processor
-     * @param TerminalType|string|null $terminalType Terminal type (HARDWARE or SOFTWARE)
-     * @param string|null $hostLastUpdatedEmvKeysAt Most recent date host updated their EMV keys
-     * @param string|null $provisionedAt Terminal provision timestamp
-     * @param string|null $transactedAt Terminal last transaction timestamp
-     */
     public function __construct(
         public readonly ?string $id = null,
         public readonly ?string $merchant = null,

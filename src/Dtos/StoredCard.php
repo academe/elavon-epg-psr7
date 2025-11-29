@@ -45,25 +45,6 @@ class StoredCard implements DataTransferObject
         ];
     }
 
-    /**
-     * @param Card|array<string, mixed>|null $card [Response] Card details
-     * @param string|null $shopper [Request/Response] Shopper resource URL (required for creation)
-     * @param string|null $hostedCard [Request] HostedCard resource URL (for initialization)
-     * @param string|null $href [Response] Resource URL (self link)
-     * @param string|null $id [Response] StoredCard ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp (ISO 8601)
-     * @param string|null $modifiedAt [Response] Modification timestamp (ISO 8601)
-     * @param string|null $deletedAt [Response] Deletion timestamp (ISO 8601)
-     * @param string|null $merchant [Response] Merchant resource URL
-     * @param ShopperInteraction|null $shopperInteraction [Response] Shopper interaction type
-     * @param CredentialOnFileType|null $credentialOnFileType [Response] Credential on file type
-     * @param string|null $paymentMethodLink Payment method link resource URL
-     * @param string|null $paymentMethodSession Payment method session resource URL
-     * @param string|null $customReference Optional merchant reference (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields (key-value pairs)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly ?Card $card = null,
         public readonly ?string $shopper = null,

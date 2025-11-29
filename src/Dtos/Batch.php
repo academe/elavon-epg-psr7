@@ -37,21 +37,6 @@ class Batch implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href Batch Resource URL (self link)
-     * @param string|null $id Batch Resource ID assigned by server
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $modifiedAt Modification timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $processorAccount ProcessorAccount Resource URL
-     * @param string|null $terminal Terminal Resource URL
-     * @param string|null $account Account Resource URL
-     * @param string|null $processorReference Reference assigned by the processor
-     * @param BatchState|string|null $state State of the batch
-     * @param CountAndTotal|array<string, mixed>|null $credits Credits count and total
-     * @param CountAndTotal|array<string, mixed>|null $debits Debits count and total
-     * @param CountAndTotal|array<string, mixed>|null $net Net count and total (credits minus debits)
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

@@ -30,11 +30,6 @@ class ShopperStatement implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $name Statement descriptor name (max 25 chars)
-     * @param string|null $phone Statement phone number (max 20 chars)
-     * @param string|null $url Statement URL (max 13 chars)
-     */
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $phone = null,

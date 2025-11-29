@@ -40,33 +40,6 @@ class ForexAdvice implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href ForexAdvice Resource URL (self link)
-     * @param string|null $id ForexAdvice Resource ID
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $expiresAt Expiration timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $processorAccount ProcessorAccount Resource URL
-     * @param string|null $account Account Resource URL
-     * @param string|null $storedCard StoredCard Resource URL
-     * @param string|null $hostedCard HostedCard Resource URL
-     * @param string|null $hsmCard HsmCard Resource URL
-     * @param string|null $cardNumber Personal account number (PAN)
-     * @param string|null $panToken PAN token
-     * @param string|null $maskedNumber Masked card number
-     * @param string|null $last4 Last 4 digits of card
-     * @param string|null $bin Bank identification number
-     * @param string|null $panFingerprint PAN fingerprint
-     * @param Money|null $total Transaction total in merchant currency
-     * @param Money|null $issuerTotal Transaction total in card issuer currency
-     * @param string|null $conversionRate Conversion rate between currencies
-     * @param string|null $markupRate Markup rate applied
-     * @param MarkupRateAnnotation|string|null $markupRateAnnotation Markup rate annotation
-     * @param string|null $rateProviderName Rate provider name
-     * @param ShopperInteraction|string|null $shopperInteraction Shopper interaction type
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

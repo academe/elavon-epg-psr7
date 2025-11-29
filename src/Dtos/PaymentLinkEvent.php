@@ -42,19 +42,6 @@ class PaymentLinkEvent implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] PaymentLinkEvent Resource URL (self link)
-     * @param string|null $id [Response] PaymentLinkEvent Resource ID assigned by server
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $paymentLink PaymentLink Resource URL
-     * @param PaymentLinkEventType|string|null $type Event type (payment, reminderSent, unknown)
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $createdBy Who or what created the event (max 255 chars)
-     * @param string|null $transaction [Response] Transaction Resource URL (required if type is 'payment')
-     * @param string|null $shopperEmailAddress Shopper's email address (required if type is 'reminderSent')
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

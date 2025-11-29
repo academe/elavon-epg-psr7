@@ -33,19 +33,7 @@ class Card implements DataTransferObject
             'enum' => ['scheme'],
         ];
     }
-    /**
-     * @param string|null $number Card number (PAN) - writeOnly, used in requests
-     * @param string|null $securityCode Security code (CVV/CVC) - writeOnly, used in requests
-     * @param int|null $expirationMonth Card expiration month (1-12)
-     * @param int|null $expirationYear Card expiration year (2000-2099)
-     * @param string|null $holderName Cardholder's name as it appears on the card
-     * @param string|null $last4 Last 4 digits - readOnly, from responses
-     * @param string|null $bin Bank identification number (first 6 digits) - readOnly
-     * @param CardScheme|null $scheme Card scheme/network - readOnly
-     * @param string|null $fingerprint Card fingerprint - readOnly
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+
     public function __construct(
         public readonly ?string $number = null,
         public readonly ?string $securityCode = null,

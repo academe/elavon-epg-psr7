@@ -31,12 +31,6 @@ class Surcharge implements DataTransferObject
         ];
     }
 
-    /**
-     * @param Money|null $unadjustedTotal Transaction total before adding surcharge
-     * @param Money|null $unadjustedRefundableTotal Amount of original unadjusted transaction still available for refund
-     * @param Money|null $surchargeTotal Surcharge total
-     * @param string|null $rate Merchant's surcharge rate (e.g., "0.035" = 3.5%)
-     */
     public function __construct(
         public readonly ?Money $unadjustedTotal = null,
         public readonly ?Money $unadjustedRefundableTotal = null,

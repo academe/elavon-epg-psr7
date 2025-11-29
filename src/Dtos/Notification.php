@@ -38,16 +38,6 @@ class Notification implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href Notification Resource URL (self link)
-     * @param string|null $id Notification Resource ID assigned by server
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $createdAt Creation timestamp
-     * @param EventType|string|null $eventType The type of event that triggered this notification
-     * @param ResourceType|string|null $resourceType The type of resource affected
-     * @param string|null $resource Resource URL of the affected resource
-     * @param string|null $customReference Optional reference provided by the merchant
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

@@ -34,15 +34,6 @@ class PlanList implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href PlanList Resource URL (self link)
-     * @param string|null $id PlanList Resource ID assigned by server
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $modifiedAt Modification timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $name Name
-     * @param string|null $description Optional description
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

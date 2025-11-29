@@ -87,77 +87,7 @@ class Transaction implements DataTransferObject
     /** @var array<Failure>|null */
     public readonly ?array $failures;
 
-    /**
-     * @param Money|null $total Transaction total (Money\Money)
-     * @param Money|null $totalRefunded [Response] Sum of all refunds (Money\Money)
-     * @param Money|null $issuerTotal [Response] Total in target currency (Money\Money)
-     * @param Money|null $tip [Response] Tip amount (Money\Money)
-     * @param Money|null $salesTax Sales tax amount (Money\Money)
-     * @param Card|array<string, mixed>|null $card Card details
-     * @param ShopperStatement|array<string, mixed>|null $shopperStatement [Request] Dynamic statement overrides
-     * @param Contact|array<string, mixed>|null $shipTo [Request] Shipping address
-     * @param Contact|array<string, mixed>|null $billTo [Request] Billing address
-     * @param Surcharge|array<string, mixed>|null $surcharge [Response] Surcharge information
-     * @param array<array<string, mixed>>|null $failures [Response] Transaction failures
-     * @param string|null $id [Response] Transaction ID
-     * @param TransactionState|null $state [Response] Transaction state
-     * @param TransactionType|null $type [Response] Transaction type (sale/refund/void)
-     * @param string|null $description Transaction description
-     * @param string|null $customReference [Request] Optional merchant reference
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $authorizationExpiresAt [Response] Authorization expiration
-     * @param string|null $refundableUntil [Response] Refundable until timestamp
-     * @param string|null $href [Response] Resource URL (self link)
-     * @param string|null $merchant [Response] Merchant resource URL
-     * @param string|null $processorAccount [Response] ProcessorAccount resource URL
-     * @param string|null $account [Response] Account resource URL
-     * @param string|null $terminal [Request/Response] Terminal resource URL
-     * @param string|null $forexAdvice [Response] ForexAdvice resource URL
-     * @param string|null $shopper [Response] Shopper resource URL
-     * @param string|null $order [Response] Order resource URL
-     * @param string|null $invoiceNumber [Request] Optional invoice number
-     * @param string|null $orderReference [Response] Order reference
-     * @param string|null $shopperReference [Response] Shopper reference (e.g., PO number)
-     * @param string|null $purchaserReference [Response] Purchaser identifier
-     * @param string|null $processorReference [Response] Processor-assigned reference
-     * @param string|null $issuerReference [Response] Card issuer-assigned reference
-     * @param EmailAddress|string|null $shopperEmailAddress [Response] Shopper's email
-     * @param IpAddress|string|null $shopperIpAddress [Response] Shopper's IP address
-     * @param LanguageTag|string|null $shopperLanguageTag [Response] Shopper's IETF language tag
-     * @param TimeZone|string|null $shopperTimeZone [Response] Shopper's time zone
-     * @param string|null $shippingDate [Request] Optional shipping date
-     * @param string|null $credentialOnFileData [Request/Response] Credential on file data
-     * @param string|null $parentTransaction [Response] Parent transaction URL
-     * @param string|null $hostedCard [Request] HostedCard resource URL
-     * @param string|null $hsmCard [Request] HsmCard resource URL
-     * @param string|null $storedCard [Response] StoredCard resource URL
-     * @param string|null $paymentLink [Response] PaymentLink resource URL
-     * @param string|null $paymentSession [Response] PaymentSession resource URL
-     * @param string|null $batch [Response] Batch resource URL
-     * @param string|null $manualBatch [Response] ManualBatch resource URL
-     * @param string|null $processorBatchReference [Response] Processor batch reference
-     * @param string|null $conversionRate [Response] Currency exchange rate
-     * @param string|null $markupRate [Response] Markup percent (e.g., "0.0399" = 3.99%)
-     * @param MarkupRateAnnotation|null $markupRateAnnotation [Response] Markup rate annotation
-     * @param string|null $rateProviderName [Response] Rate provider name
-     * @param ProcessorDirective|null $processorDirective [Response] Processor directive
-     * @param Source|null $source [Response] Transaction source
-     * @param PaymentMethod|null $paymentMethod [Response] Payment method type
-     * @param PaymentMethodOrigin|null $paymentMethodOrigin [Response] Payment method origin
-     * @param PaymentMethodQualifier|null $paymentMethodQualifier [Response] Payment method qualifier
-     * @param MarketSegment|null $marketSegment Market segment
-     * @param ShopperInteraction|null $shopperInteraction [Response] Shopper interaction type
-     * @param bool|null $isAuthorized [Response] Whether transaction was authorized
-     * @param bool|null $isVoided [Response] Whether transaction was voided
-     * @param bool|null $isRefunded [Response] Whether transaction was refunded
-     * @param bool|null $isReversed [Response] Whether transaction was reversed
-     * @param bool|null $isCaptured [Response] Whether transaction was captured
-     * @param bool|null $isSettled [Response] Whether transaction was settled
-     * @param bool|null $isPartiallyRefunded [Response] Whether transaction was partially refunded
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+    /** @param Failure[] $failures */
     public function __construct(
         // Primary transaction data
         public readonly ?Money $total = null,

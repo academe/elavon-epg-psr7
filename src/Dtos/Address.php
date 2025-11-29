@@ -32,14 +32,6 @@ class Address implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $street1 Street line 1
-     * @param string|null $street2 Street line 2
-     * @param string|null $city City
-     * @param string|null $stateOrProvince State or province
-     * @param string|null $postalCode Postal/ZIP code
-     * @param string|null $country Country
-     */
     public function __construct(
         public readonly ?string $street1 = null,
         public readonly ?string $street2 = null,

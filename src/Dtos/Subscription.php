@@ -47,38 +47,7 @@ class Subscription implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] Subscription Resource URL (self link)
-     * @param string|null $id [Response] Subscription Resource ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $plan Plan Resource URL (required for creation) - determines billing details and frequency
-     * @param string|null $shopper [Response] Shopper Resource URL
-     * @param string|null $account Account Resource URL (defaults to merchant)
-     * @param DebtorAccount|array<string, mixed>|null $debtorAccount Account information required for MCC 6012 merchants
-     * @param string|bool|null $doSendReceipt Send receipt to shopper's email address (true/false/"DEFAULT" - defaults to "DEFAULT")
-     * @param string|null $storedCard StoredCard Resource URL (required for creation) - must belong to the provided Shopper
-     * @param string|null $storedAchPayment StoredAchPayment Resource URL - for ACH recurring payments
-     * @param string|null $surchargeAdvice [Request] SurchargeAdvice Resource URL obtained through create surchargeAdvice API
-     * @param string|null $initialSurchargeAdvice [Request] SurchargeAdvice Resource URL for initial bills
-     * @param SubscriptionSurcharge|array<string, mixed>|null $surcharge [Response] Surcharge information if surchargeAdvice was created
-     * @param int|null $billCount Total number of bills (minimum 1) - may only be provided if not defined in plan
-     * @param string|null $timeZoneId Time zone ID for date fields (IANA Timezone Database Name, e.g., "Europe/London", required for creation)
-     * @param string|null $firstBillAt First bill date (YYYY-MM-DD format, required for creation) - anchors billing interval
-     * @param string|null $nextBillAt [Response] Next bill date as calculated from first/previous bill date
-     * @param string|null $previousBillAt [Response] Most recent bill date, regardless of payment success
-     * @param string|null $finalBillAt [Response] Date of final bill if not open-ended
-     * @param string|null $cancelRequestedAt [Response] Date when cancel was requested
-     * @param int|null $cancelAfterBillNumber The bill number after which no further billings will occur
-     * @param int|null $nextBillNumber [Response] Number of the next bill according to plan's schedule
-     * @param string|SubscriptionState|null $subscriptionState [Response] Current state of subscription
-     * @param int|null $failureCount [Response] Count of consecutive failures performing current payment
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+    // firstBillAt: YYYY-MM-DD format, timeZoneId: IANA timezone name
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

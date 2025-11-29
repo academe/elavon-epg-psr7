@@ -29,10 +29,7 @@ class AutoSettleAt implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $time Time in 24-hour format (e.g., "23:00")
-     * @param string|null $timeZoneId IANA Time Zone Database name (e.g., "Europe/Berlin")
-     */
+    // time: 24-hour format (e.g., "23:00"), timeZoneId: IANA timezone (e.g., "Europe/Berlin")
     public function __construct(
         public readonly ?string $time = null,
         public readonly ?string $timeZoneId = null,

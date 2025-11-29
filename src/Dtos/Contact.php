@@ -37,20 +37,7 @@ class Contact implements DataTransferObject
         ];
     }
 
-    /**
-     * @param EmailAddress|string|null $email Email address
-     * @param string|null $fullName Full name (max 255 chars)
-     * @param string|null $company Company name (max 255 chars)
-     * @param string|null $street1 Street line 1 (max 255 chars)
-     * @param string|null $street2 Street line 2 (max 255 chars)
-     * @param string|null $city City (max 255 chars)
-     * @param string|null $region State/Province/Region (max 255 chars)
-     * @param string|null $postalCode Zip/Postal code (max 255 chars)
-     * @param string|null $countryCode ISO 3166-1 Alpha-3 country code (3 chars)
-     * @param string|null $primaryPhone Primary phone (max 255 chars)
-     * @param string|null $alternatePhone Alternate phone (max 255 chars)
-     * @param string|null $fax Fax number (max 255 chars)
-     */
+    // countryCode: ISO 3166-1 Alpha-3 (3 chars)
     public function __construct(
         public readonly ?EmailAddress $email = null,
         public readonly ?string $fullName = null,

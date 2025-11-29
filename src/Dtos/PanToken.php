@@ -36,16 +36,6 @@ class PanToken implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $reference Arbitrary reference provided by the caller (max 255 chars, pattern: [^%<>/\[\]{}\\]*)
-     * @param string|null $number [WriteOnly] Personal account number (PAN), not returned (max 23 chars, pattern: [\w \-+:()/]*)
-     * @param string|null $panToken [Response] The tokenized PAN value
-     * @param bool|null $success [Response] true for successful conversion
-     * @param int|null $cardExpirationMonth [WriteOnly] Optional card expiration month (1-12)
-     * @param int|null $cardExpirationYear [WriteOnly] Optional card expiration year (2000-2099)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly ?string $reference = null,
         public readonly ?string $number = null,

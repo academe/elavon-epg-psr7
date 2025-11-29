@@ -44,32 +44,6 @@ class PaymentMethodSession implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] PaymentMethodSession Resource URL (self link)
-     * @param string|null $id [Response] Unique identifier assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $expiresAt An expiration timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $account Account Resource URL, defaults to merchant
-     * @param string|null $url [Response] URL that shoppers will use
-     * @param string|null $paymentMethodLink Payment Method Link Resource URL
-     * @param string|null $storedCard StoredCard Resource URL
-     * @param string|null $shopper [Response] Shopper Resource URL
-     * @param HppType|string|null $hppType [Response] Indicates the type of hosted payments page, defaults to fullPageRedirect
-     * @param string|null $returnUrl URL to redirect to after payment details are collected (max 2048 chars)
-     * @param string|null $cancelUrl URL to redirect to if shopper cancels (max 2048 chars)
-     * @param string|null $originUrl Origin where the HPP will be embedded. Required if using the lightbox (max 2048 chars)
-     * @param string|null $defaultLanguageTag Default IETF language tag (max 255 chars)
-     * @param string|null $shopperLanguageTag The IETF language tag optionally chosen by the shopper (max 255 chars)
-     * @param bool|null $doThreeDSecure Determines whether or not the HPP will perform 3-D secure validation
-     * @param ThreeDSecure|array<string, mixed>|null $threeDSecure Additional data only needed for 3-D Secure version 2 processing
-     * @param Contact|array<string, mixed>|null $billTo Billing contact details to be used by default for the hosted card
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

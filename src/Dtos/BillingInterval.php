@@ -31,12 +31,6 @@ class BillingInterval implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|TimeUnit $timeUnit Unit of time (day, week, month, year)
-     * @param int $count A count of time units (minimum 1)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly string|TimeUnit $timeUnit,
         public readonly int $count,

@@ -33,10 +33,6 @@ class CountAndTotal implements DataTransferObject
         ];
     }
 
-    /**
-     * @param int|null $count Count of items
-     * @param Money|null $total Total monetary amount
-     */
     public function __construct(
         public readonly ?int $count = null,
         public readonly ?Money $total = null,

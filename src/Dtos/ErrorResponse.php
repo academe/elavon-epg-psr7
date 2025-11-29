@@ -31,10 +31,7 @@ class ErrorResponse implements DataTransferObject
         ];
     }
 
-    /**
-     * @param int|null $status HTTP status code from the error
-     * @param ErrorDetail[]|array<array<string, mixed>>|null $failures Array of error details
-     */
+    /** @param ErrorDetail[] $failures */
     public function __construct(
         public readonly ?int $status = null,
         array|null $failures = null,

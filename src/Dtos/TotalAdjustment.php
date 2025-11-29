@@ -45,28 +45,7 @@ class TotalAdjustment implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href TotalAdjustment Resource URL (self link)
-     * @param string|null $id TotalAdjustment Resource ID assigned by server
-     * @param string|null $transaction Transaction Resource URL (suppressed when public API key is used)
-     * @param string|null $createdAt Creation timestamp
-     * @param Money|null $total The cumulative new total amount
-     * @param Money|null $totalAdjustment The positive or negative adjustment to the prior authorized amount
-     * @param Money|null $salesTax The cumulative new sales tax
-     * @param Money|null $salesTaxAdjustment The positive or negative adjustment to the prior salesTax amount
-     * @param Money|null $tip Tip amount
-     * @param Money|null $tipAdjustment The positive or negative adjustment to the prior tip amount
-     * @param string|null $processorReference Reference assigned by the processor
-     * @param string|null $issuerReference Reference assigned by the issuer
-     * @param bool|null $doCapture If false, authorize only; if true (default), authorize and capture funds for settlement
-     * @param bool|null $isAuthorized Transaction is authorized?
-     * @param string|null $authorizationCode Authorization code
-     * @param string|null $issuerResponseCode Issuer response code
-     * @param string|null $rawProcessorResponseInfo Raw response data from the processor
-     * @param array<Failure|array<string, mixed>>|null $failures Failure details if the transaction was not authorized
-     * @param string|null $customReference Optional reference provided by the merchant
-     * @param array<string, mixed>|null $customFields Custom fields containing arbitrary string values
-     */
+    /** @param Failure[] $failures */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

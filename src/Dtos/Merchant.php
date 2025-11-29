@@ -34,14 +34,7 @@ class Merchant implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href Merchant Resource URL (self link)
-     * @param string|null $id Merchant Resource ID assigned by server
-     * @param string|null $legalName Legal name under which the merchant operates
-     * @param string|null $friendlyName Friendly name assigned to the merchant
-     * @param array<Region|string>|null $regions Regions in which the merchant operates (NA/EU)
-     * @param bool|null $isDemo Is this a demo merchant for evaluation purposes only?
-     */
+    /** @param Region[] $regions */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

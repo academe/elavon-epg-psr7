@@ -38,17 +38,6 @@ class AchPayment implements DataTransferObject
         ];
     }
 
-    /**
-     * @param AchAccountType $achAccountType ACH account type (required)
-     * @param string $accountName ACH account name (required, max 255 chars)
-     * @param string|null $bankRoutingNumber Bank routing number (9 digits) - writeOnly
-     * @param string|null $bankAccountNumber Bank account number (5-16 digits) - writeOnly
-     * @param string|null $bankAccountToken Bank account number token - writeOnly
-     * @param string|null $achFingerprint ACH fingerprint - readOnly
-     * @param string|null $last4 Last 4 digits of account number - readOnly
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly AchAccountType $achAccountType,
         public readonly string $accountName,

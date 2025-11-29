@@ -38,13 +38,7 @@ class ThreeDSecure implements DataTransferObject
             ],
         ];
     }
-    /**
-     * @param string $directoryServerTransactionId UUID assigned by directory server (IETF RFC 4122 format)
-     * @param string $transactionStatus Transaction status (Y/N/U/A)
-     * @param string $protocolVersion Version from access control server (e.g., "2.1.0")
-     * @param string|null $electronicCommerceIndicator Security level indicator (0/1/2/5/6/7)
-     * @param string|null $authenticationValue Proof of authentication (28 chars, Base64 encoded)
-     */
+
     public function __construct(
         public readonly string $directoryServerTransactionId,
         public readonly string $transactionStatus,

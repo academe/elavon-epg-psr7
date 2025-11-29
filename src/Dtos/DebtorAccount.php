@@ -30,14 +30,7 @@ class DebtorAccount implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $dateOfBirth Date of birth in YYYYMMDD format
-     * @param string|null $accountNumber Account number (1-10 chars)
-     * @param string|null $postalCode Zip/Postal code (max 255 chars, required for UK merchants)
-     * @param string|null $lastName Last name (max 255 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+    // dateOfBirth: YYYYMMDD format
     public function __construct(
         public readonly ?string $dateOfBirth = null,
         public readonly ?string $accountNumber = null,

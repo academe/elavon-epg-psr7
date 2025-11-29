@@ -65,55 +65,9 @@ class PaymentSession implements DataTransferObject
     }
 
     /**
-     * @param string|null $href [Response] PaymentSession Resource URL (self link)
-     * @param string|null $id [Response] PaymentSession Resource ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $expiresAt Expiration timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $account Account Resource URL (defaults to merchant)
-     * @param string|null $url [Response] URL that shoppers will use
-     * @param string|null $order Order Resource URL for which payment is being requested (required for creation)
-     * @param array<string>|null $allowedPaymentMethods [Response] Payment methods allowed to be shown in the hosted payments page
-     * @param array<string>|null $allowedPaymentMethodOrigins [Response] Allowed origins of the payment methods listed in allowedPaymentMethods
-     * @param string|null $paymentLink PaymentLink Resource URL
-     * @param Money|null $salesTax Sales Tax
-     * @param Money|null $tip [Response] Tip
-     * @param string|null $forexAdvice ForexAdvice Resource URL
-     * @param string|null $surchargeAdvice SurchargeAdvice Resource URL
-     * @param string|null $transaction Transaction Resource URL
-     * @param string|null $hostedCard HostedCard Resource URL
-     * @param string|null $storedCard StoredCard Resource URL
-     * @param string|null $hostedAchPayment HostedAchPayment Resource URL
-     * @param string|null $storedAchPayment StoredAchPayment Resource URL
-     * @param string|null $googlePayPayment GooglePayPayment obtained through the create Google Pay payment API call
-     * @param string|null $applePayPayment ApplePayPayment obtained through the create Apple Pay payment API call
-     * @param string|null $pazePayment PazePayment obtained through the create Paze payment API call
-     * @param Blik|array<string, mixed>|null $blik BLIK payment code
-     * @param string|null $shopper Shopper Resource URL
-     * @param DebtorAccount|array<string, mixed>|null $debtorAccount Account information required for MCC 6012/6050/6051 merchants
-     * @param ThreeDSecure|array<string, mixed>|null $threeDSecure Additional data for 3-D Secure version 2 processing
-     * @param string|null $shopperEmailAddress Shopper's email address (max 254 chars)
-     * @param Contact|array<string, mixed>|null $billTo Billing contact details for the hosted card
-     * @param Contact|array<string, mixed>|null $shipTo Shipping contact details
-     * @param HppType|string|null $hppType [Response] Hosted payments page type (defaults to fullPageRedirect)
-     * @param string|null $returnUrl URL to redirect to after payment details are collected (max 2048 chars, required for hppType = fullPageRedirect)
-     * @param string|null $cancelUrl URL to redirect to if shopper cancels (max 2048 chars, required for hppType = fullPageRedirect)
-     * @param string|null $originUrl Origin where hosted payment page will be embedded (max 2048 chars, required for lightbox)
-     * @param string|null $defaultLanguageTag [Response] Default IETF language tag for HPP (max 255 chars)
-     * @param string|null $shopperLanguageTag IETF language tag chosen by shopper in HPP (max 255 chars)
-     * @param ShopperInteraction|string|null $shopperInteraction Shopper interaction type
-     * @param bool|null $doCreateTransaction [Response] Whether HPP will perform end-to-end transaction (defaults to false)
-     * @param bool|null $doCapture [Response] Whether to capture transaction (defaults to true)
-     * @param bool|null $doThreeDSecure [Response] Whether HPP will perform 3-D Secure validation
-     * @param bool|null $doReset Whether HPP will be reset
-     * @param bool|null $useStoredPaymentMethod [Response] Whether to force use of stored payment method
-     * @param string|null $createdBy Who or what created the payment session (max 255 chars)
-     * @param array<array<string, mixed>>|null $previousTransactions [Response] Previous transactions
-     * @param string|null $customReference Optional reference provided by merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
+     * @param PaymentMethod[] $allowedPaymentMethods
+     * @param PaymentMethodOrigin[] $allowedPaymentMethodOrigins
+     * @param Transaction[] $previousTransactions
      */
     public function __construct(
         // Response-only fields

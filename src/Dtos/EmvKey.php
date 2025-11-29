@@ -31,13 +31,6 @@ class EmvKey implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $rid Registered Application Provider Identifier
-     * @param string|null $index Index of the key within the RID
-     * @param string|null $modulus Modulus component of the RSA public key
-     * @param string|null $exponent Exponent component of the RSA public key
-     * @param string|null $checksum A check value calculated on all parts of the public key
-     */
     public function __construct(
         public readonly ?string $rid = null,
         public readonly ?string $index = null,

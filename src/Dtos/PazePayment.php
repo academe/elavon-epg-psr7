@@ -38,22 +38,6 @@ class PazePayment implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href PazePayment Resource URL (self link) [Response]
-     * @param string|null $id PazePayment Resource ID [Response]
-     * @param string|null $createdAt Creation timestamp [Response]
-     * @param string|null $expiresAt Expiration timestamp [Response]
-     * @param string|null $merchant Merchant Resource URL [Response]
-     * @param string|null $processorAccount ProcessorAccount Resource URL [Response]
-     * @param string|null $account Account Resource URL [Request]
-     * @param string|null $token The encrypted PAZE payment string [Request]
-     * @param Card|array<string, mixed>|null $card Card data (only Contact billTo info can be provided alongside the token)
-     * @param string|null $payloadId Alphanumeric string returned from PAZE that refers to the current token and sessionId [Request]
-     * @param string|null $sessionId Alphanumeric string returned from PAZE that refers to the current token and payloadId [Request]
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     * @param VerificationResults|array<string, mixed>|null $verificationResults Verification results [Response]
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

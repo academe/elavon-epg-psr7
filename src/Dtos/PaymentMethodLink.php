@@ -41,27 +41,6 @@ class PaymentMethodLink implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] PaymentMethodLink Resource URL (self link)
-     * @param string|null $id [Response] Unique identifier assigned by server
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $account [Response] Account Resource URL, defaults to Merchant
-     * @param string|null $url [Response] URL to send to shoppers
-     * @param string|null $returnUrl URL to redirect to after payment details are collected (max 2048 chars)
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $expiresAt An expiration timestamp (required for creation)
-     * @param string|null $cancelledAt [Response] Cancellation timestamp
-     * @param string|null $cancelledBy Who or what cancelled the payment link (max 255 chars)
-     * @param bool|null $doCancel Cancel payment link. Defaults to false
-     * @param string|null $description [Response] Description of the payment (max 255 chars)
-     * @param string|null $shopper Shopper Resource URL (required for creation)
-     * @param array<string>|null $status [Response] The status of the paymentMethodLink
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

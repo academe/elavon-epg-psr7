@@ -37,29 +37,6 @@ class SurchargeAdvice implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href SurchargeAdvice Resource URL (self link)
-     * @param string|null $id SurchargeAdvice Resource ID
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $expiresAt Expiration timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $processorAccount ProcessorAccount Resource URL
-     * @param string|null $hsmCard HsmCard Resource URL
-     * @param string|null $googlePayPayment GooglePayPayment Resource URL
-     * @param string|null $applePayPayment ApplePayPayment Resource URL
-     * @param string|null $pazePayment PazePayment Resource URL
-     * @param string|null $panToken PAN token
-     * @param string|null $maskedNumber Masked card number
-     * @param string|null $last4 Last 4 digits of card
-     * @param string|null $bin Bank identification number
-     * @param string|null $panFingerprint PAN fingerprint
-     * @param Money|null $total Transaction total before surcharge
-     * @param string|null $surchargeRate Surcharge rate (e.g., "0.035" = 3.5%)
-     * @param Money|null $surchargeTotal Surcharge amount
-     * @param Money|null $adjustedTotal Total after adding surcharge
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

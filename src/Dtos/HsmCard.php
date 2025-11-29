@@ -42,22 +42,6 @@ class HsmCard implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $id [Response] Unique identifier assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $expiresAt [Response] Expiration timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $processorAccount [Response] ProcessorAccount Resource URL
-     * @param string|null $terminal Terminal Resource URL (required for creation)
-     * @param Card|array<string, mixed>|null $card Card data
-     * @param mixed $accountEntryMode Account entry mode (required for creation)
-     * @param mixed $deviceInteraction Device interaction data
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $id = null,

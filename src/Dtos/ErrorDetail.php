@@ -27,11 +27,7 @@ class ErrorDetail implements DataTransferObject
             'string' => ['code', 'description', 'field'],
         ];
     }
-    /**
-     * @param string $code Error code (e.g., "unauthorized", "validation_error")
-     * @param string $description Human-readable error description
-     * @param string|null $field Field name that caused the error (null for general errors)
-     */
+
     public function __construct(
         public readonly string $code,
         public readonly string $description,

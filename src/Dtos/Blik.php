@@ -30,11 +30,6 @@ class Blik implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string $code Six-digit BLIK code (required)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly string $code,
     ) {

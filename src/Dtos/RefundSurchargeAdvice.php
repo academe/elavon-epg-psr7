@@ -35,21 +35,6 @@ class RefundSurchargeAdvice implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href RefundSurchargeAdvice Resource URL (self link)
-     * @param string|null $id RefundSurchargeAdvice Resource ID
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $expiresAt Expiration timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $processorAccount ProcessorAccount Resource URL
-     * @param string|null $parentTransaction Parent Transaction Resource URL
-     * @param Money|null $total Refund total before surcharge
-     * @param string|null $surchargeRate Surcharge rate (e.g., "0.035" = 3.5%)
-     * @param Money|null $surchargeTotal Surcharge amount
-     * @param Money|null $adjustedTotal Total after adding surcharge
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

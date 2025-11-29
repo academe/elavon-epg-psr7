@@ -46,26 +46,6 @@ class Account implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href Account Resource URL (self link)
-     * @param string|null $id Account Resource ID assigned by server
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $modifiedAt Modification timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param array<ProcessorAccount|array<string, mixed>>|null $processorAccounts List of processor accounts
-     * @param string|null $name Account name
-     * @param string|null $description Optional description
-     * @param string|null $tradeName Trading/DBA name
-     * @param string|null $businessAddress Business address
-     * @param string|null $businessPhone Business phone
-     * @param string|null $businessEmail Business email
-     * @param string|null $businessWebsite Business website
-     * @param string|null $planList PlanList Resource URL
-     * @param string|null $salesTaxEntry Sales tax entry
-     * @param string|null $signatureVerification Signature verification
-     * @param string|null $logoUrl Logo URL
-     * @param AutoSettleAt|array<string, mixed>|null $autoSettleAt Auto-settle configuration
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

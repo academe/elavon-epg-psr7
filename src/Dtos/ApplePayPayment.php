@@ -34,20 +34,6 @@ class ApplePayPayment implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href ApplePayPayment Resource URL (self link) [Response]
-     * @param string|null $id ApplePayPayment Resource ID [Response]
-     * @param string|null $createdAt Creation timestamp [Response]
-     * @param string|null $expiresAt Expiration timestamp calculated from the Apple Pay token signing time [Response]
-     * @param string|null $merchant Merchant Resource URL [Response]
-     * @param string|null $processorAccount ProcessorAccount Resource URL [Response]
-     * @param string|null $account Account Resource URL [Request]
-     * @param string|null $token The Apple transaction id, encrypted payment data and data elements used for decryption [Request]
-     * @param Card|array<string, mixed>|null $card Card data (only Contact billTo info can be provided alongside the token)
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     * @param VerificationResults|array<string, mixed>|null $verificationResults Verification results [Response]
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

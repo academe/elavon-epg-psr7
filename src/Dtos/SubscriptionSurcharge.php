@@ -31,13 +31,6 @@ class SubscriptionSurcharge implements DataTransferObject
         ];
     }
 
-    /**
-     * @param Money|null $total Plan total amount after adding surcharge
-     * @param Money|null $initialTotal Plan initial amount after adding surcharge
-     * @param string|null $rate The surcharge rate (e.g., "0.035" means 3.5%)
-     * @param Money|null $surchargeTotal Plan surcharge amount on total
-     * @param Money|null $surchargeInitialTotal Plan surcharge amount on initial total
-     */
     public function __construct(
         public readonly ?Money $total = null,
         public readonly ?Money $initialTotal = null,

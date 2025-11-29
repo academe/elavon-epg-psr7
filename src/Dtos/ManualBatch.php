@@ -35,17 +35,6 @@ class ManualBatch implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] Resource URL (self link)
-     * @param string|null $id [Response] ManualBatch ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp (ISO 8601)
-     * @param string|null $modifiedAt [Response] Modification timestamp (ISO 8601)
-     * @param string|null $merchant [Response] Merchant resource URL
-     * @param string|null $customReference Optional merchant reference (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields (key-value pairs)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

@@ -31,11 +31,6 @@ class ProvisioningCode implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $terminal Terminal Resource URL
-     * @param string|null $code Provisioning code
-     * @param string|null $expiresAt Expiration timestamp
-     */
     public function __construct(
         public readonly ?string $terminal = null,
         public readonly ?string $code = null,

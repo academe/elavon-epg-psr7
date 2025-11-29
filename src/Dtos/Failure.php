@@ -30,11 +30,6 @@ class Failure implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $code Failure code (e.g., "unauthorized")
-     * @param string|null $description Description of the failure (intended for developers)
-     * @param string|null $field Field, if failure is linked to a specific field
-     */
     public function __construct(
         public readonly ?string $code = null,
         public readonly ?string $description = null,

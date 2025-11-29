@@ -52,37 +52,6 @@ class PaymentLink implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] PaymentLink Resource URL (self link)
-     * @param string|null $id [Response] PaymentLink Resource ID assigned by server
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param string|null $account Account Resource URL (defaults to merchant)
-     * @param string|null $url [Response] External URL shared with the card holder
-     * @param string|null $returnUrl URL to redirect to after payment details are collected
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $createdBy [Response] Who or what created the payment link (max 255 chars)
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $expiresAt Expiration timestamp (required for creation)
-     * @param string|null $cancelledAt [Response] Cancellation timestamp
-     * @param string|null $cancelledBy [Response] Who or what cancelled the payment link (max 255 chars)
-     * @param bool|null $doCancel Cancel payment link (defaults to false)
-     * @param bool|null $doCapture Passed to any transaction created later (defaults to true)
-     * @param int|null $conversionCount [Response] Number of authorized transactions created from this PaymentLink
-     * @param int|null $conversionLimit Number of times the PaymentLink may be used to complete a Transaction
-     * @param string|null $description Descriptive text indicating the purpose of the PaymentLink (max 255 chars)
-     * @param Money|null $total Total payment amount (required for creation)
-     * @param Money|null $salesTax Sales tax
-     * @param DebtorAccount|array<string, mixed>|null $debtorAccount Account information required for MCC 6012/6050/6051 merchants
-     * @param string|null $orderReference Optional order reference displayed in merchant dashboard (max 255 chars)
-     * @param string|null $shopperEmailAddress Shopper's email address (max 254 chars)
-     * @param string|null $shopper Shopper Resource URL
-     * @param array<string>|null $status [Response] The status of the payment link (active, completed, cancelled, expired)
-     * @param bool|null $useStoredPaymentMethod Whether to use stored payment methods
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

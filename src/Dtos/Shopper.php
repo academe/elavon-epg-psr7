@@ -38,26 +38,6 @@ class Shopper implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href Shopper Resource URL (self link)
-     * @param string|null $id Shopper Resource ID
-     * @param string|null $createdAt Creation timestamp
-     * @param string|null $modifiedAt Modification timestamp
-     * @param string|null $deletedAt Deletion timestamp
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $defaultStoredCard Default StoredCard Resource URL
-     * @param string|null $defaultStoredAchPayment Default StoredAchPayment Resource URL
-     * @param string|null $fullName Shopper full name (required for creation)
-     * @param string|null $description Shopper description
-     * @param string|null $company Company name
-     * @param Contact|array<string, mixed>|null $primaryAddress Primary address
-     * @param string|null $primaryPhone Primary phone number
-     * @param string|null $alternatePhone Alternate phone number
-     * @param string|null $fax Fax number
-     * @param string|null $email Email address
-     * @param string|null $customReference Custom reference
-     * @param array<string, mixed>|null $customFields Custom fields
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

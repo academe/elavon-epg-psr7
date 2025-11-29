@@ -63,29 +63,9 @@ class ProcessorAccount implements DataTransferObject
     }
 
     /**
-     * @param string|null $href ProcessorAccount Resource URL (self link)
-     * @param string|null $id ProcessorAccount Resource ID assigned by server
-     * @param string|null $merchant Merchant Resource URL
-     * @param string|null $processorReference Reference assigned by the processor
-     * @param string|null $legalName Legal name under which the merchant operates
-     * @param string|null $friendlyName Friendly name assigned to processor account
-     * @param string|null $tradeName Trading/DBA name
-     * @param Address|array<string, mixed>|null $businessAddress Business address
-     * @param string|null $businessPhone Business phone
-     * @param string|null $businessEmail Business email
-     * @param string|null $businessWebsite Business website
-     * @param string|null $merchantCategoryCode Merchant category code (MCC)
-     * @param MarketSegment|string|null $marketSegment Market segment
-     * @param Region|string|null $region Region (e.g., NA, EU)
-     * @param string|null $settlementCurrencyCode Settlement currency (ISO 4217)
-     * @param string|null $languageTag Language tag
-     * @param array<CardBrand|string>|null $supportedCardBrands Supported card brands
-     * @param array<PaymentMethod|string>|null $supportedPaymentMethods Supported payment methods
-     * @param array<PaymentMethodOrigin|string>|null $supportedPaymentMethodOrigins Supported payment method origins
-     * @param bool|null $isDccEnabled Is DCC enabled?
-     * @param bool|null $isMccEnabled Is MCC enabled?
-     * @param bool|null $isStandaloneRefundEnabled Does this support standalone refund?
-     * @param array<mixed>|null $pinlessDebit Pinless debit configuration
+     * @param CardBrand[] $supportedCardBrands
+     * @param PaymentMethod[] $supportedPaymentMethods
+     * @param PaymentMethodOrigin[] $supportedPaymentMethodOrigins
      */
     public function __construct(
         public readonly ?string $href = null,

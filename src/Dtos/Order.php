@@ -46,24 +46,7 @@ class Order implements DataTransferObject
         ];
     }
 
-    /**
-     * @param string|null $href [Response] Order Resource URL (self link)
-     * @param string|null $id [Response] Order Resource ID assigned by server
-     * @param string|null $createdAt [Response] Creation timestamp
-     * @param string|null $modifiedAt [Response] Modification timestamp
-     * @param string|null $merchant [Response] Merchant Resource URL
-     * @param Money|null $total Total for all items (required for creation)
-     * @param string|null $description Description, which appears on the dashboard and might appear on receipts (max 255 chars)
-     * @param array<array<string, mixed>>|null $items Line items, 64 max
-     * @param Contact|array<string, mixed>|null $shipTo Shipping contact details
-     * @param string|null $shopperEmailAddress Shopper's email address (max 254 chars)
-     * @param string|null $shopperReference Optional reference provided by the shopper, such as a purchase order (max 255 chars)
-     * @param string|null $orderReference Optional order reference which we'll display in the merchant dashboard (max 255 chars)
-     * @param string|null $customReference Optional reference provided by the merchant (max 255 chars)
-     * @param array<string, string>|null $customFields Custom fields, an object containing arbitrary string values (field names max 64 chars, values max 1024 chars)
-     *
-     * @throws InvalidArgumentException When validation fails
-     */
+    /** @param OrderItem[] $items */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,
