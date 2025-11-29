@@ -37,24 +37,24 @@ class OrderTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $order = new Order(
-            href: 'https://api.example.com/orders/ord123',
-            id: 'ord123',
-            createdAt: '2025-11-19T10:00:00Z',
-            modifiedAt: '2025-11-19T11:00:00Z',
-            merchant: 'https://api.example.com/merchants/m123',
-            total: Money::USD(25000),
-            description: 'March 2025 Rent',
-            items: [
+        $order = Order::fromData([
+            'href' => 'https://api.example.com/orders/ord123',
+            'id' => 'ord123',
+            'createdAt' => '2025-11-19T10:00:00Z',
+            'modifiedAt' => '2025-11-19T11:00:00Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'total' => Money::USD(25000),
+            'description' => 'March 2025 Rent',
+            'items' => [
                 ['total' => ['amount' => '250.00', 'currencyCode' => 'USD'], 'description' => 'Rent'],
             ],
-            shipTo: ['fullName' => 'John Doe', 'street1' => '123 Main St'],
-            shopperEmailAddress: 'shopper@example.com',
-            shopperReference: 'PO-12345',
-            orderReference: 'ORD-67890',
-            customReference: 'CUST-REF-111',
-            customFields: ['field1' => 'value1'],
-        );
+            'shipTo' => ['fullName' => 'John Doe', 'street1' => '123 Main St'],
+            'shopperEmailAddress' => 'shopper@example.com',
+            'shopperReference' => 'PO-12345',
+            'orderReference' => 'ORD-67890',
+            'customReference' => 'CUST-REF-111',
+            'customFields' => ['field1' => 'value1'],
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/orders/ord123', $order->href);

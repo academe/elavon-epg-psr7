@@ -20,9 +20,6 @@ class OrderItem implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized enum
-    public readonly ?OrderItemType $type;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -54,11 +51,8 @@ class OrderItem implements DataTransferObject
         public readonly ?Money $unitPrice = null,
         public readonly ?int $quantity = null,
         public readonly ?string $customReference = null,
-        OrderItemType|string|null $type = null,
+        public readonly ?OrderItemType $type = null,
     ) {
-        // Normalize OrderItemType enum
-        $this->type = $this->normalizeEnum($type, 'type');
-
         $this->validate();
     }
 

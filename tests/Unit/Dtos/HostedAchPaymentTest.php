@@ -43,7 +43,7 @@ class HostedAchPaymentTest extends TestCase
         ];
 
         // Act
-        $hostedAchPayment = new HostedAchPayment(achPayment: $achPaymentData);
+        $hostedAchPayment = HostedAchPayment::fromData(['achPayment' => $achPaymentData]);
 
         // Assert
         $this->assertInstanceOf(AchPayment::class, $hostedAchPayment->achPayment);

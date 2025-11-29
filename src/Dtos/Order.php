@@ -24,9 +24,6 @@ class Order implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Contact $shipTo;
-
     /** @var array<OrderItem>|null */
     public readonly ?array $items;
 
@@ -79,20 +76,13 @@ class Order implements DataTransferObject
         public readonly ?Money $total = null,
         public readonly ?string $description = null,
         ?array $items = null,
-        Contact|array|null $shipTo = null,
+        public readonly ?Contact $shipTo = null,
         public readonly ?string $shopperEmailAddress = null,
         public readonly ?string $shopperReference = null,
         public readonly ?string $orderReference = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Contact object
-        $this->shipTo = match (true) {
-            $shipTo instanceof Contact => $shipTo,
-            is_array($shipTo) => Contact::fromData($shipTo),
-            default => null,
-        };
-
         // Normalize items array - convert array of arrays to array of OrderItem objects
         if ($items !== null) {
             $this->items = array_map(

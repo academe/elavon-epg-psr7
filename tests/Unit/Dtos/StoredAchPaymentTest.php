@@ -41,7 +41,7 @@ class StoredAchPaymentTest extends TestCase
         ];
 
         // Act
-        $storedAchPayment = new StoredAchPayment(achPayment: $achPaymentData);
+        $storedAchPayment = StoredAchPayment::fromData(['achPayment' => $achPaymentData]);
 
         // Assert
         $this->assertInstanceOf(AchPayment::class, $storedAchPayment->achPayment);
@@ -53,7 +53,7 @@ class StoredAchPaymentTest extends TestCase
     public function test_construct_withNullAchPayment_createsInstance(): void
     {
         // Act
-        $storedAchPayment = new StoredAchPayment(achPayment: null);
+        $storedAchPayment = StoredAchPayment::fromData(['achPayment' => null]);
 
         // Assert
         $this->assertNull($storedAchPayment->achPayment);
@@ -62,10 +62,10 @@ class StoredAchPaymentTest extends TestCase
     public function test_construct_withRequestFields_createsInstance(): void
     {
         // Act
-        $storedAchPayment = new StoredAchPayment(
-            shopper: 'https://api.example.com/shoppers/s123',
-            hostedAchPayment: 'https://api.example.com/hosted-ach-payments/hap456',
-        );
+        $storedAchPayment = StoredAchPayment::fromData([
+            'shopper' => 'https://api.example.com/shoppers/s123',
+            'hostedAchPayment' => 'https://api.example.com/hosted-ach-payments/hap456',
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/shoppers/s123', $storedAchPayment->shopper);
@@ -75,14 +75,14 @@ class StoredAchPaymentTest extends TestCase
     public function test_construct_withResponseFields_createsInstance(): void
     {
         // Act
-        $storedAchPayment = new StoredAchPayment(
-            href: 'https://api.example.com/stored-ach-payments/sap123',
-            id: 'sap123',
-            createdAt: '2025-01-01T00:00:00Z',
-            modifiedAt: '2025-01-02T00:00:00Z',
-            deletedAt: '2025-01-31T23:59:59Z',
-            merchant: 'https://api.example.com/merchants/m123',
-        );
+        $storedAchPayment = StoredAchPayment::fromData([
+            'href' => 'https://api.example.com/stored-ach-payments/sap123',
+            'id' => 'sap123',
+            'createdAt' => '2025-01-01T00:00:00Z',
+            'modifiedAt' => '2025-01-02T00:00:00Z',
+            'deletedAt' => '2025-01-31T23:59:59Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/stored-ach-payments/sap123', $storedAchPayment->href);
@@ -96,10 +96,10 @@ class StoredAchPaymentTest extends TestCase
     public function test_construct_withCustomReferenceAndFields_createsInstance(): void
     {
         // Act
-        $storedAchPayment = new StoredAchPayment(
-            customReference: 'ach-payment-789',
-            customFields: ['customer_id' => 'cust123'],
-        );
+        $storedAchPayment = StoredAchPayment::fromData([
+            'customReference' => 'ach-payment-789',
+            'customFields' => ['customer_id' => 'cust123'],
+        ]);
 
         // Assert
         $this->assertSame('ach-payment-789', $storedAchPayment->customReference);

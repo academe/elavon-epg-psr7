@@ -21,9 +21,6 @@ class HostedCard implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Card $card;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -54,7 +51,7 @@ class HostedCard implements DataTransferObject
      * @throws InvalidArgumentException When validation fails
      */
     public function __construct(
-        Card|array|null $card = null,
+        public readonly ?Card $card = null,
         public readonly ?string $href = null,
         public readonly ?string $id = null,
         public readonly ?string $createdAt = null,
@@ -65,13 +62,6 @@ class HostedCard implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Card
-        $this->card = match (true) {
-            $card instanceof Card => $card,
-            is_array($card) => Card::fromData($card),
-            default => null,
-        };
-
         $this->validate();
     }
 

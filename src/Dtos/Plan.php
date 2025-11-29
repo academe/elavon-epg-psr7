@@ -24,10 +24,6 @@ class Plan implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?BillingInterval $billingInterval;
-    public readonly ?ShopperStatement $shopperStatement;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -44,7 +40,7 @@ class Plan implements DataTransferObject
                 'planList', 'name', 'description', 'customReference',
             ],
             'int' => ['billCount', 'initialTotalBillCount'],
-            'bool' => ['isSubscribable'],
+            'boolean' => ['isSubscribable'],
         ];
     }
 
@@ -85,32 +81,18 @@ class Plan implements DataTransferObject
         public readonly ?string $planList = null,
         public readonly ?string $name = null,
         public readonly ?string $description = null,
-        BillingInterval|array|null $billingInterval = null,
+        public readonly ?BillingInterval $billingInterval = null,
         public readonly ?Money $total = null,
         public readonly ?Money $salesTax = null,
         public readonly ?int $billCount = null,
         public readonly ?Money $initialTotal = null,
         public readonly ?Money $initialSalesTax = null,
         public readonly ?int $initialTotalBillCount = null,
-        ShopperStatement|array|null $shopperStatement = null,
+        public readonly ?ShopperStatement $shopperStatement = null,
         public readonly ?bool $isSubscribable = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize BillingInterval object
-        $this->billingInterval = match (true) {
-            $billingInterval instanceof BillingInterval => $billingInterval,
-            is_array($billingInterval) => BillingInterval::fromData($billingInterval),
-            default => null,
-        };
-
-        // Normalize ShopperStatement object
-        $this->shopperStatement = match (true) {
-            $shopperStatement instanceof ShopperStatement => $shopperStatement,
-            is_array($shopperStatement) => ShopperStatement::fromData($shopperStatement),
-            default => null,
-        };
-
         $this->validate();
     }
 

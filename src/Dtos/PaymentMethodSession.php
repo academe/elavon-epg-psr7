@@ -23,11 +23,6 @@ class PaymentMethodSession implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?HppType $hppType;
-    public readonly ?ThreeDSecure $threeDSecure;
-    public readonly ?Contact $billTo;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -90,39 +85,18 @@ class PaymentMethodSession implements DataTransferObject
         public readonly ?string $account = null,
         public readonly ?string $paymentMethodLink = null,
         public readonly ?string $storedCard = null,
-        HppType|string|null $hppType = null,
+        public readonly ?HppType $hppType = null,
         public readonly ?string $returnUrl = null,
         public readonly ?string $cancelUrl = null,
         public readonly ?string $originUrl = null,
         public readonly ?string $defaultLanguageTag = null,
         public readonly ?string $shopperLanguageTag = null,
         public readonly ?bool $doThreeDSecure = null,
-        ThreeDSecure|array|null $threeDSecure = null,
-        Contact|array|null $billTo = null,
+        public readonly ?ThreeDSecure $threeDSecure = null,
+        public readonly ?Contact $billTo = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize HppType enum
-        $this->hppType = match (true) {
-            $hppType instanceof HppType => $hppType,
-            is_string($hppType) => HppType::from($hppType),
-            default => null,
-        };
-
-        // Normalize ThreeDSecure object
-        $this->threeDSecure = match (true) {
-            $threeDSecure instanceof ThreeDSecure => $threeDSecure,
-            is_array($threeDSecure) => ThreeDSecure::fromData($threeDSecure),
-            default => null,
-        };
-
-        // Normalize Contact object
-        $this->billTo = match (true) {
-            $billTo instanceof Contact => $billTo,
-            is_array($billTo) => Contact::fromData($billTo),
-            default => null,
-        };
-
         $this->validate();
     }
 

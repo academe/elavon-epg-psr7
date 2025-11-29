@@ -21,10 +21,6 @@ class PazePayment implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized nested DTOs
-    public readonly ?Card $card;
-    public readonly ?VerificationResults $verificationResults;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -67,25 +63,12 @@ class PazePayment implements DataTransferObject
         public readonly ?string $processorAccount = null,
         public readonly ?string $account = null,
         public readonly ?string $token = null,
-        Card|array|null $card = null,
+        public readonly ?Card $card = null,
         public readonly ?string $payloadId = null,
         public readonly ?string $sessionId = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
-        VerificationResults|array|null $verificationResults = null,
+        public readonly ?VerificationResults $verificationResults = null,
     ) {
-        // Normalize Card object
-        $this->card = match (true) {
-            $card instanceof Card => $card,
-            is_array($card) => Card::fromData($card),
-            default => null,
-        };
-
-        // Normalize VerificationResults object
-        $this->verificationResults = match (true) {
-            $verificationResults instanceof VerificationResults => $verificationResults,
-            is_array($verificationResults) => VerificationResults::fromData($verificationResults),
-            default => null,
-        };
     }
 }

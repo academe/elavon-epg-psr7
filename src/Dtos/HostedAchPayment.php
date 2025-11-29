@@ -21,9 +21,6 @@ class HostedAchPayment implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?AchPayment $achPayment;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -52,7 +49,7 @@ class HostedAchPayment implements DataTransferObject
      * @throws InvalidArgumentException When validation fails
      */
     public function __construct(
-        AchPayment|array|null $achPayment = null,
+        public readonly ?AchPayment $achPayment = null,
         public readonly ?string $href = null,
         public readonly ?string $id = null,
         public readonly ?string $createdAt = null,
@@ -62,13 +59,6 @@ class HostedAchPayment implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize AchPayment
-        $this->achPayment = match (true) {
-            $achPayment instanceof AchPayment => $achPayment,
-            is_array($achPayment) => AchPayment::fromData($achPayment),
-            default => null,
-        };
-
         $this->validate();
     }
 

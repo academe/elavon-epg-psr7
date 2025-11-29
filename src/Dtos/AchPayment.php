@@ -20,9 +20,7 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  */
 class AchPayment implements DataTransferObject
 {
-    use SerializesData {
-        fromData as private fromDataTrait;
-    }
+    use SerializesData;
 
     /**
      * Get property type definitions for this DTO.
@@ -38,35 +36,6 @@ class AchPayment implements DataTransferObject
                 'achFingerprint', 'last4', 'accountName',
             ],
         ];
-    }
-
-    /**
-     * Creates an AchPayment instance from JSON-compatible data.
-     *
-     * @param mixed $data Array with ACH payment data
-     * @return static
-     * @throws InvalidArgumentException When data is invalid
-     */
-    public static function fromData(mixed $data): static
-    {
-        // Parse achAccountType enum if present
-        $achAccountType = null;
-        if (isset($data['achAccountType'])) {
-            $achAccountType = AchAccountType::tryFrom($data['achAccountType']);
-            if ($achAccountType === null) {
-                throw new InvalidArgumentException("Invalid ACH account type: {$data['achAccountType']}");
-            }
-        }
-
-        return new self(
-            achAccountType: $achAccountType ?? throw new InvalidArgumentException('ACH account type is required'),
-            accountName: isset($data['accountName']) ? (string) $data['accountName'] : throw new InvalidArgumentException('Account name is required'),
-            bankRoutingNumber: isset($data['bankRoutingNumber']) ? (string) $data['bankRoutingNumber'] : null,
-            bankAccountNumber: isset($data['bankAccountNumber']) ? (string) $data['bankAccountNumber'] : null,
-            bankAccountToken: isset($data['bankAccountToken']) ? (string) $data['bankAccountToken'] : null,
-            achFingerprint: isset($data['achFingerprint']) ? (string) $data['achFingerprint'] : null,
-            last4: isset($data['last4']) ? (string) $data['last4'] : null,
-        );
     }
 
     /**

@@ -84,16 +84,6 @@ class Transaction implements DataTransferObject
         ];
     }
 
-    // Normalized properties (objects)
-    // public readonly ?Card $card;
-    // public readonly ?ShopperStatement $shopperStatement;
-    // public readonly ?Contact $shipTo;
-    // public readonly ?Contact $billTo;
-    // public readonly ?Surcharge $surcharge;
-    public readonly ?EmailAddress $shopperEmailAddress;
-    // public readonly ?IpAddress $shopperIpAddress;
-    public readonly ?LanguageTag $shopperLanguageTag;
-    public readonly ?TimeZone $shopperTimeZone;
     /** @var array<Failure>|null */
     public readonly ?array $failures;
 
@@ -218,10 +208,10 @@ class Transaction implements DataTransferObject
         public readonly ?string $issuerReference = null,
 
         // Shopper information
-        EmailAddress|string|null $shopperEmailAddress = null,
+        public readonly ?EmailAddress $shopperEmailAddress = null,
         public readonly ?IpAddress $shopperIpAddress = null,
-        LanguageTag|string|null $shopperLanguageTag = null,
-        TimeZone|string|null $shopperTimeZone = null,
+        public readonly ?LanguageTag $shopperLanguageTag = null,
+        public readonly ?TimeZone $shopperTimeZone = null,
 
         // Additional fields
         public readonly ?string $shippingDate = null,
@@ -262,68 +252,6 @@ class Transaction implements DataTransferObject
         public readonly ?bool $isSettled = null,
         public readonly ?bool $isPartiallyRefunded = null,
     ) {
-        // Normalize Card (accept Card object, array, or null)
-        // $this->card = match (true) {
-        //     $card instanceof Card => $card,
-        //     is_array($card) => Card::fromData($card),
-        //     default => null,
-        // };
-
-        // Normalize ShopperStatement
-        // $this->shopperStatement = match (true) {
-        //     $shopperStatement instanceof ShopperStatement => $shopperStatement,
-        //     is_array($shopperStatement) => ShopperStatement::fromData($shopperStatement),
-        //     default => null,
-        // };
-
-        // Normalize Contact objects
-        // $this->shipTo = match (true) {
-        //     $shipTo instanceof Contact => $shipTo,
-        //     is_array($shipTo) => Contact::fromData($shipTo),
-        //     default => null,
-        // };
-
-        // $this->billTo = match (true) {
-        //     $billTo instanceof Contact => $billTo,
-        //     is_array($billTo) => Contact::fromData($billTo),
-        //     default => null,
-        // };
-
-        // Normalize Surcharge
-        // $this->surcharge = match (true) {
-        //     $surcharge instanceof Surcharge => $surcharge,
-        //     is_array($surcharge) => Surcharge::fromData($surcharge),
-        //     default => null,
-        // };
-
-        // Normalize EmailAddress
-        $this->shopperEmailAddress = match (true) {
-            $shopperEmailAddress instanceof EmailAddress => $shopperEmailAddress,
-            is_string($shopperEmailAddress) => EmailAddress::fromData($shopperEmailAddress),
-            default => null,
-        };
-
-        // Normalize IpAddress
-        // $this->shopperIpAddress = match (true) {
-        //     $shopperIpAddress instanceof IpAddress => $shopperIpAddress,
-        //     is_string($shopperIpAddress) => IpAddress::fromData($shopperIpAddress),
-        //     default => null,
-        // };
-
-        // Normalize LanguageTag
-        $this->shopperLanguageTag = match (true) {
-            $shopperLanguageTag instanceof LanguageTag => $shopperLanguageTag,
-            is_string($shopperLanguageTag) => LanguageTag::fromData($shopperLanguageTag),
-            default => null,
-        };
-
-        // Normalize TimeZone
-        $this->shopperTimeZone = match (true) {
-            $shopperTimeZone instanceof TimeZone => $shopperTimeZone,
-            is_string($shopperTimeZone) => TimeZone::fromData($shopperTimeZone),
-            default => null,
-        };
-
         // Normalize failures array - convert array of arrays to array of Failure objects
         if ($failures !== null) {
             $this->failures = array_map(

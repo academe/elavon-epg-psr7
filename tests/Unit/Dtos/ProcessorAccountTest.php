@@ -40,34 +40,34 @@ class ProcessorAccountTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $processorAccount = new ProcessorAccount(
-            href: 'https://api.eu.elavonpayments.com/processor-accounts/123',
-            id: '6xxFwvM8BqmM6T6DcF3DyTB3',
-            merchant: 'https://api.eu.elavonpayments.com/merchants/456',
-            processorReference: 'PROC-REF-789',
-            legalName: 'Sirius Cybernetics Corporation',
-            friendlyName: 'Sirius Corp',
-            tradeName: 'Gringotts',
-            businessAddress: [
+        $processorAccount = ProcessorAccount::fromData([
+            'href' => 'https://api.eu.elavonpayments.com/processor-accounts/123',
+            'id' => '6xxFwvM8BqmM6T6DcF3DyTB3',
+            'merchant' => 'https://api.eu.elavonpayments.com/merchants/456',
+            'processorReference' => 'PROC-REF-789',
+            'legalName' => 'Sirius Cybernetics Corporation',
+            'friendlyName' => 'Sirius Corp',
+            'tradeName' => 'Gringotts',
+            'businessAddress' => [
                 'street1' => '123 Main St',
                 'city' => 'London',
                 'country' => 'GB',
             ],
-            businessPhone: '+44 020 7946 0123',
-            businessEmail: 'sales@gringotts.com',
-            businessWebsite: 'www.gringotts.com',
-            merchantCategoryCode: '8734',
-            marketSegment: 'retail',
-            region: 'eu',
-            settlementCurrencyCode: 'EUR',
-            languageTag: 'en-GB',
-            supportedCardBrands: ['Visa', 'MasterCard'],
-            supportedPaymentMethods: ['Card'],
-            supportedPaymentMethodOrigins: ['Card'],
-            isDccEnabled: true,
-            isMccEnabled: false,
-            isStandaloneRefundEnabled: true
-        );
+            'businessPhone' => '+44 020 7946 0123',
+            'businessEmail' => 'sales@gringotts.com',
+            'businessWebsite' => 'www.gringotts.com',
+            'merchantCategoryCode' => '8734',
+            'marketSegment' => 'retail',
+            'region' => 'eu',
+            'settlementCurrencyCode' => 'EUR',
+            'languageTag' => 'en-GB',
+            'supportedCardBrands' => ['Visa', 'MasterCard'],
+            'supportedPaymentMethods' => ['Card'],
+            'supportedPaymentMethodOrigins' => ['Card'],
+            'isDccEnabled' => true,
+            'isMccEnabled' => false,
+            'isStandaloneRefundEnabled' => true
+        ]);
 
         // Assert
         $this->assertSame('https://api.eu.elavonpayments.com/processor-accounts/123', $processorAccount->href);
@@ -182,13 +182,13 @@ class ProcessorAccountTest extends TestCase
     public function test_toData_withFullData_returnsArray(): void
     {
         // Arrange
-        $processorAccount = new ProcessorAccount(
-            id: 'proc-123',
-            legalName: 'My Company',
-            marketSegment: 'retail',
-            region: 'eu',
-            isDccEnabled: true
-        );
+        $processorAccount = ProcessorAccount::fromData([
+            'id' => 'proc-123',
+            'legalName' => 'My Company',
+            'marketSegment' => 'retail',
+            'region' => 'eu',
+            'isDccEnabled' => true
+        ]);
 
         // Act
         $array = $processorAccount->toData();

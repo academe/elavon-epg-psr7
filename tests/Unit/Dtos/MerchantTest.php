@@ -50,9 +50,9 @@ class MerchantTest extends TestCase
 
     public function test_construct_withRegionEnums_createsInstance(): void
     {
-        $merchant = new Merchant(
-            regions: [Region::EU, Region::NA]
-        );
+        $merchant = Merchant::fromData([
+            'regions' => [Region::EU, Region::NA]
+        ]);
 
         $this->assertCount(2, $merchant->regions);
         $this->assertSame(Region::EU, $merchant->regions[0]);
@@ -82,13 +82,13 @@ class MerchantTest extends TestCase
 
     public function test_toData_withFullData_returnsArray(): void
     {
-        $merchant = new Merchant(
-            id: 'merchant-789',
-            legalName: 'My Company',
-            friendlyName: 'Company',
-            regions: [Region::NA],
-            isDemo: true
-        );
+        $merchant = Merchant::fromData([
+            'id' => 'merchant-789',
+            'legalName' => 'My Company',
+            'friendlyName' => 'Company',
+            'regions' => [Region::NA],
+            'isDemo' => true
+        ]);
 
         $array = $merchant->toData();
 

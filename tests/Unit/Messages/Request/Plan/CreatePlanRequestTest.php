@@ -18,12 +18,11 @@ class CreatePlanRequestTest extends TestCase
     public function test_construct_withValidPlan_createsInstance(): void
     {
         // Arrange
-        $plan = new Plan(
-            name: 'Monthly License',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(2999)
-        );
-
+        $plan = Plan::fromData([
+            'name' => 'Monthly License',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(2999)
+        ]);
         // Act
         $request = new CreatePlanRequest($plan);
 
@@ -52,10 +51,10 @@ class CreatePlanRequestTest extends TestCase
     public function test_construct_withMissingName_throwsException(): void
     {
         // Arrange
-        $plan = new Plan(
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(2999)
-        );
+        $plan = Plan::fromData([
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(2999)
+        ]);
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -68,10 +67,10 @@ class CreatePlanRequestTest extends TestCase
     public function test_construct_withMissingBillingInterval_throwsException(): void
     {
         // Arrange
-        $plan = new Plan(
-            name: 'Test Plan',
-            total: Money::USD(2999)
-        );
+        $plan = Plan::fromData([
+            'name' => 'Test Plan',
+            'total' => Money::USD(2999)
+        ]);
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -84,10 +83,10 @@ class CreatePlanRequestTest extends TestCase
     public function test_construct_withMissingTotal_throwsException(): void
     {
         // Arrange
-        $plan = new Plan(
-            name: 'Test Plan',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1]
-        );
+        $plan = Plan::fromData([
+            'name' => 'Test Plan',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1]
+        ]);
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -100,12 +99,12 @@ class CreatePlanRequestTest extends TestCase
     public function test_build_createsValidPsr7Request(): void
     {
         // Arrange
-        $plan = new Plan(
-            name: 'Weekly Plan',
-            description: 'Billed weekly',
-            billingInterval: ['timeUnit' => 'week', 'count' => 1],
-            total: Money::GBP(999)
-        );
+        $plan = Plan::fromData([
+            'name' => 'Weekly Plan',
+            'description' => 'Billed weekly',
+            'billingInterval' => ['timeUnit' => 'week', 'count' => 1],
+            'total' => Money::GBP(999)
+        ]);
         $createRequest = new CreatePlanRequest($plan);
 
         // Act

@@ -25,9 +25,6 @@ class HsmCard implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Card $card;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -72,19 +69,12 @@ class HsmCard implements DataTransferObject
 
         // Request/Response fields
         public readonly ?string $terminal = null,
-        Card|array|null $card = null,
+        public readonly ?Card $card = null,
         public readonly mixed $accountEntryMode = null,
         public readonly mixed $deviceInteraction = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Card object
-        $this->card = match (true) {
-            $card instanceof Card => $card,
-            is_array($card) => Card::fromData($card),
-            default => null,
-        };
-
         $this->validate();
     }
 

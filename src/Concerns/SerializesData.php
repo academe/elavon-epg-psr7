@@ -321,7 +321,7 @@ trait SerializesData
      * @param class-string<T> $enumClass
      * @return array<T>|null
      */
-    protected function normalizeEnumArray(?array $items, string $enumClass): ?array
+    protected static function normalizeEnumArray(?array $items, string $enumClass): ?array
     {
         if ($items === null) {
             return null;

@@ -25,11 +25,6 @@ class ProcessorAccount implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Address $businessAddress;
-    public readonly ?MarketSegment $marketSegment;
-    public readonly ?Region $region;
-
     /** @var array<CardBrand>|null */
     public readonly ?array $supportedCardBrands;
 
@@ -100,13 +95,13 @@ class ProcessorAccount implements DataTransferObject
         public readonly ?string $legalName = null,
         public readonly ?string $friendlyName = null,
         public readonly ?string $tradeName = null,
-        Address|array|null $businessAddress = null,
+        public readonly ?Address $businessAddress = null,
         public readonly ?string $businessPhone = null,
         public readonly ?string $businessEmail = null,
         public readonly ?string $businessWebsite = null,
         public readonly ?string $merchantCategoryCode = null,
-        MarketSegment|string|null $marketSegment = null,
-        Region|string|null $region = null,
+        public readonly ?MarketSegment $marketSegment = null,
+        public readonly ?Region $region = null,
         public readonly ?string $settlementCurrencyCode = null,
         public readonly ?string $languageTag = null,
         array|null $supportedCardBrands = null,
@@ -117,27 +112,6 @@ class ProcessorAccount implements DataTransferObject
         public readonly ?bool $isStandaloneRefundEnabled = null,
         public readonly ?array $pinlessDebit = null,
     ) {
-        // Normalize Address object
-        $this->businessAddress = match (true) {
-            $businessAddress instanceof Address => $businessAddress,
-            is_array($businessAddress) => Address::fromData($businessAddress),
-            default => null,
-        };
-
-        // Normalize MarketSegment enum
-        $this->marketSegment = match (true) {
-            $marketSegment instanceof MarketSegment => $marketSegment,
-            is_string($marketSegment) => MarketSegment::from($marketSegment),
-            default => null,
-        };
-
-        // Normalize Region enum
-        $this->region = match (true) {
-            $region instanceof Region => $region,
-            is_string($region) => Region::from($region),
-            default => null,
-        };
-
         // Normalize CardBrand array
         $this->supportedCardBrands = $this->normalizeEnumArray(
             $supportedCardBrands,

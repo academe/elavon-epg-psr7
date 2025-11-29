@@ -23,10 +23,6 @@ class Notification implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized enum properties
-    public readonly ?EventType $eventType;
-    public readonly ?ResourceType $resourceType;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -57,23 +53,10 @@ class Notification implements DataTransferObject
         public readonly ?string $id = null,
         public readonly ?string $merchant = null,
         public readonly ?string $createdAt = null,
-        EventType|string|null $eventType = null,
-        ResourceType|string|null $resourceType = null,
+        public readonly ?EventType $eventType = null,
+        public readonly ?ResourceType $resourceType = null,
         public readonly ?string $resource = null,
         public readonly ?string $customReference = null,
     ) {
-        // Normalize EventType enum
-        $this->eventType = match (true) {
-            $eventType instanceof EventType => $eventType,
-            is_string($eventType) => EventType::from($eventType),
-            default => null,
-        };
-
-        // Normalize ResourceType enum
-        $this->resourceType = match (true) {
-            $resourceType instanceof ResourceType => $resourceType,
-            is_string($resourceType) => ResourceType::from($resourceType),
-            default => null,
-        };
     }
 }

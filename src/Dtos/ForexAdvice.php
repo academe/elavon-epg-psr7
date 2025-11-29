@@ -20,10 +20,6 @@ class ForexAdvice implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized enum properties
-    public readonly ?MarkupRateAnnotation $markupRateAnnotation;
-    public readonly ?ShopperInteraction $shopperInteraction;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -92,23 +88,11 @@ class ForexAdvice implements DataTransferObject
         public readonly ?Money $issuerTotal = null,
         public readonly ?string $conversionRate = null,
         public readonly ?string $markupRate = null,
-        MarkupRateAnnotation|string|null $markupRateAnnotation = null,
+        public readonly ?MarkupRateAnnotation $markupRateAnnotation = null,
         public readonly ?string $rateProviderName = null,
-        ShopperInteraction|string|null $shopperInteraction = null,
+        public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize enum objects
-        $this->markupRateAnnotation = match (true) {
-            $markupRateAnnotation instanceof MarkupRateAnnotation => $markupRateAnnotation,
-            is_string($markupRateAnnotation) => MarkupRateAnnotation::from($markupRateAnnotation),
-            default => null,
-        };
-
-        $this->shopperInteraction = match (true) {
-            $shopperInteraction instanceof ShopperInteraction => $shopperInteraction,
-            is_string($shopperInteraction) => ShopperInteraction::from($shopperInteraction),
-            default => null,
-        };
     }
 }

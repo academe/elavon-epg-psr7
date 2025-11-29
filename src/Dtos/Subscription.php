@@ -26,10 +26,6 @@ class Subscription implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?DebtorAccount $debtorAccount;
-    public readonly ?SubscriptionSurcharge $surcharge;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -102,13 +98,13 @@ class Subscription implements DataTransferObject
         // Request/Response fields
         public readonly ?string $plan = null,
         public readonly ?string $account = null,
-        DebtorAccount|array|null $debtorAccount = null,
+        public readonly ?DebtorAccount $debtorAccount = null,
         public readonly string|bool|null $doSendReceipt = null,
         public readonly ?string $storedCard = null,
         public readonly ?string $storedAchPayment = null,
         public readonly ?string $surchargeAdvice = null,
         public readonly ?string $initialSurchargeAdvice = null,
-        SubscriptionSurcharge|array|null $surcharge = null,
+        public readonly ?SubscriptionSurcharge $surcharge = null,
         public readonly ?int $billCount = null,
         public readonly ?string $timeZoneId = null,
         public readonly ?string $firstBillAt = null,
@@ -116,20 +112,6 @@ class Subscription implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize DebtorAccount object
-        $this->debtorAccount = match (true) {
-            $debtorAccount instanceof DebtorAccount => $debtorAccount,
-            is_array($debtorAccount) => DebtorAccount::fromData($debtorAccount),
-            default => null,
-        };
-
-        // Normalize SubscriptionSurcharge object
-        $this->surcharge = match (true) {
-            $surcharge instanceof SubscriptionSurcharge => $surcharge,
-            is_array($surcharge) => SubscriptionSurcharge::fromData($surcharge),
-            default => null,
-        };
-
         $this->validate();
     }
 

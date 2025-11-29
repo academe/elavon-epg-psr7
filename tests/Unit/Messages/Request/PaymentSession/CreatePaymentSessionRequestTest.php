@@ -84,19 +84,19 @@ class CreatePaymentSessionRequestTest extends TestCase
 
     public function test_build_withBillToAndShipTo_includesContactsInBody(): void
     {
-        $paymentSession = new PaymentSession(
-            order: 'https://api.example.com/orders/ord123',
-            billTo: [
+        $paymentSession = PaymentSession::fromData([
+            'order' => 'https://api.example.com/orders/ord123',
+            'billTo' => [
                 'fullName' => 'John Doe',
                 'street1' => '123 Main St',
                 'city' => 'New York',
             ],
-            shipTo: [
+            'shipTo' => [
                 'fullName' => 'Jane Smith',
                 'street1' => '456 Oak Ave',
                 'city' => 'Boston',
             ],
-        );
+        ]);
 
         $request = new CreatePaymentSessionRequest($paymentSession);
         $psr7Request = $request->build();

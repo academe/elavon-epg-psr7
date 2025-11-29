@@ -19,11 +19,11 @@ class PlanTest extends TestCase
     public function test_construct_withMinimalFields_createsInstance(): void
     {
         // Arrange & Act
-        $plan = new Plan(
-            name: 'Monthly License',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(2999)
-        );
+        $plan = Plan::fromData([
+            'name' => 'Monthly License',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(2999)
+        ]);
 
         // Assert
         $this->assertSame('Monthly License', $plan->name);
@@ -37,27 +37,27 @@ class PlanTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $plan = new Plan(
-            href: 'https://api.example.com/plans/plan123',
-            id: 'plan123',
-            createdAt: '2025-11-19T10:00:00Z',
-            modifiedAt: '2025-11-19T11:00:00Z',
-            merchant: 'https://api.example.com/merchants/m123',
-            planList: 'https://api.example.com/plan-lists/pl123',
-            name: 'Annual Subscription',
-            description: 'Yearly billing plan',
-            billingInterval: ['timeUnit' => 'year', 'count' => 1],
-            total: Money::USD(29999),
-            salesTax: Money::USD(3000),
-            billCount: 12,
-            initialTotal: Money::USD(0),
-            initialSalesTax: Money::USD(0),
-            initialTotalBillCount: 1,
-            shopperStatement: ['name' => 'ACME Corp'],
-            isSubscribable: true,
-            customReference: 'PLAN-001',
-            customFields: ['tier' => 'premium'],
-        );
+        $plan = Plan::fromData([
+            'href' => 'https://api.example.com/plans/plan123',
+            'id' => 'plan123',
+            'createdAt' => '2025-11-19T10:00:00Z',
+            'modifiedAt' => '2025-11-19T11:00:00Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'planList' => 'https://api.example.com/plan-lists/pl123',
+            'name' => 'Annual Subscription',
+            'description' => 'Yearly billing plan',
+            'billingInterval' => ['timeUnit' => 'year', 'count' => 1],
+            'total' => Money::USD(29999),
+            'salesTax' => Money::USD(3000),
+            'billCount' => 12,
+            'initialTotal' => Money::USD(0),
+            'initialSalesTax' => Money::USD(0),
+            'initialTotalBillCount' => 1,
+            'shopperStatement' => ['name' => 'ACME Corp'],
+            'isSubscribable' => true,
+            'customReference' => 'PLAN-001',
+            'customFields' => ['tier' => 'premium'],
+        ]);
 
         // Assert
         $this->assertSame('plan123', $plan->id);
@@ -77,12 +77,12 @@ class PlanTest extends TestCase
         $salesTax = Money::EUR(500); // 5.00 EUR
 
         // Act
-        $plan = new Plan(
-            name: 'Test Plan',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: $total,
-            salesTax: $salesTax
-        );
+        $plan = Plan::fromData([
+            'name' => 'Test Plan',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => $total,
+            'salesTax' => $salesTax
+        ]);
 
         // Assert
         $this->assertSame($total, $plan->total);
@@ -115,11 +115,11 @@ class PlanTest extends TestCase
         $this->expectExceptionMessage('Name must not exceed 255 characters');
 
         // Act
-        new Plan(
-            name: $longName,
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(1000)
-        );
+        Plan::fromData([
+            'name' => $longName,
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(1000)
+        ]);
     }
 
     public function test_construct_withTooLongDescription_throwsException(): void
@@ -132,12 +132,12 @@ class PlanTest extends TestCase
         $this->expectExceptionMessage('Description must not exceed 255 characters');
 
         // Act
-        new Plan(
-            name: 'Test',
-            description: $longDescription,
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(1000)
-        );
+        Plan::fromData([
+            'name' => 'Test',
+            'description' => $longDescription,
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(1000)
+        ]);
     }
 
     public function test_construct_withZeroBillCount_throwsException(): void
@@ -147,12 +147,12 @@ class PlanTest extends TestCase
         $this->expectExceptionMessage('Bill count must be at least 1');
 
         // Act
-        new Plan(
-            name: 'Test',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(1000),
-            billCount: 0
-        );
+        Plan::fromData([
+            'name' => 'Test',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(1000),
+            'billCount' => 0
+        ]);
     }
 
     public function test_construct_withNegativeInitialTotalBillCount_throwsException(): void
@@ -162,12 +162,12 @@ class PlanTest extends TestCase
         $this->expectExceptionMessage('Initial total bill count must be at least 0');
 
         // Act
-        new Plan(
-            name: 'Test',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(1000),
-            initialTotalBillCount: -1
-        );
+        Plan::fromData([
+            'name' => 'Test',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(1000),
+            'initialTotalBillCount' => -1
+        ]);
     }
 
     public function test_fromData_createsInstance(): void
@@ -191,12 +191,12 @@ class PlanTest extends TestCase
     public function test_toData_returnsArrayWithoutNullValues(): void
     {
         // Arrange
-        $plan = new Plan(
-            name: 'Basic Plan',
-            description: 'A basic plan',
-            billingInterval: ['timeUnit' => 'month', 'count' => 1],
-            total: Money::USD(999)
-        );
+        $plan = Plan::fromData([
+            'name' => 'Basic Plan',
+            'description' => 'A basic plan',
+            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
+            'total' => Money::USD(999)
+        ]);
 
         // Act
         $data = $plan->toData();

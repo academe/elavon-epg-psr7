@@ -20,9 +20,6 @@ class Merchant implements DataTransferObject
 {
     use SerializesData;
 
-    /** @var array<Region>|null */
-    public readonly ?array $regions;
-
     /**
      * Get property type definitions for this DTO.
      *

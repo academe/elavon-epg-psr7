@@ -39,30 +39,30 @@ class BatchTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $batch = new Batch(
-            href: 'https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ',
-            id: 'wrKK4HcHCXcK3KkXwFRMXVjQ',
-            createdAt: '2018-07-31T00:00:01.508Z',
-            modifiedAt: '2018-07-31T00:00:12.074Z',
-            merchant: 'https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49',
-            processorAccount: 'https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD',
-            terminal: 'https://api.converge.eu.elavon.net/terminals/terminal123',
-            account: 'https://api.converge.eu.elavon.net/accounts/account456',
-            processorReference: '21280002',
-            state: 'settled',
-            credits: [
+        $batch = Batch::fromData([
+            'href' => 'https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ',
+            'id' => 'wrKK4HcHCXcK3KkXwFRMXVjQ',
+            'createdAt' => '2018-07-31T00:00:01.508Z',
+            'modifiedAt' => '2018-07-31T00:00:12.074Z',
+            'merchant' => 'https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49',
+            'processorAccount' => 'https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD',
+            'terminal' => 'https://api.converge.eu.elavon.net/terminals/terminal123',
+            'account' => 'https://api.converge.eu.elavon.net/accounts/account456',
+            'processorReference' => '21280002',
+            'state' => 'settled',
+            'credits' => [
                 'count' => 1,
                 'total' => ['amount' => '100.00', 'currencyCode' => 'EUR'],
             ],
-            debits: [
+            'debits' => [
                 'count' => 3,
                 'total' => ['amount' => '22.00', 'currencyCode' => 'EUR'],
             ],
-            net: [
+            'net' => [
                 'count' => 4,
                 'total' => ['amount' => '78.00', 'currencyCode' => 'EUR'],
             ]
-        );
+        ]);
 
         // Assert
         $this->assertSame('https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ', $batch->href);
@@ -227,23 +227,23 @@ class BatchTest extends TestCase
     public function test_toData_withFullData_returnsArray(): void
     {
         // Arrange
-        $batch = new Batch(
-            id: 'batch123',
-            state: 'settled',
-            processorReference: 'proc-ref-456',
-            credits: [
+        $batch = Batch::fromData([
+            'id' => 'batch123',
+            'state' => 'settled',
+            'processorReference' => 'proc-ref-456',
+            'credits' => [
                 'count' => 2,
                 'total' => ['amount' => '200.00', 'currencyCode' => 'USD'],
             ],
-            debits: [
+            'debits' => [
                 'count' => 1,
                 'total' => ['amount' => '50.00', 'currencyCode' => 'USD'],
             ],
-            net: [
+            'net' => [
                 'count' => 3,
                 'total' => ['amount' => '150.00', 'currencyCode' => 'USD'],
             ]
-        );
+        ]);
 
         // Act
         $array = $batch->toData();
@@ -264,10 +264,10 @@ class BatchTest extends TestCase
     public function test_toData_onlyIncludesNonNullValues(): void
     {
         // Arrange
-        $batch = new Batch(
-            id: 'batch999',
-            state: 'submitted'
-        );
+        $batch = Batch::fromData([
+            'id' => 'batch999',
+            'state' => 'submitted'
+        ]);
 
         // Act
         $array = $batch->toData();

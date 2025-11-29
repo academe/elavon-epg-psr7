@@ -20,9 +20,6 @@ class Shopper implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized nested DTO
-    public readonly ?Contact $primaryAddress;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -73,7 +70,7 @@ class Shopper implements DataTransferObject
         public readonly ?string $fullName = null,
         public readonly ?string $description = null,
         public readonly ?string $company = null,
-        Contact|array|null $primaryAddress = null,
+        public readonly ?Contact $primaryAddress = null,
         public readonly ?string $primaryPhone = null,
         public readonly ?string $alternatePhone = null,
         public readonly ?string $fax = null,
@@ -81,13 +78,6 @@ class Shopper implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Contact object
-        $this->primaryAddress = match (true) {
-            $primaryAddress instanceof Contact => $primaryAddress,
-            is_array($primaryAddress) => Contact::fromData($primaryAddress),
-            default => null,
-        };
-
         $this->validate();
     }
 

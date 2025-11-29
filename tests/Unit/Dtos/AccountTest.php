@@ -34,32 +34,32 @@ class AccountTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $account = new Account(
-            href: 'https://api.eu.elavonpayments.com/accounts/f9g699w9v43r9gcp77y2bxq4rjcx',
-            id: 'f9g699w9v43r9gcp77y2bxq4rjcx',
-            createdAt: '2017-02-22T13:01:23.123Z',
-            modifiedAt: '2017-02-22T13:01:33.567Z',
-            merchant: 'https://api.eu.elavonpayments.com/merchants/6xxFwvM8BqmM6T6DcF3DyTB3',
-            processorAccounts: [
+        $account = Account::fromData([
+            'href' => 'https://api.eu.elavonpayments.com/accounts/f9g699w9v43r9gcp77y2bxq4rjcx',
+            'id' => 'f9g699w9v43r9gcp77y2bxq4rjcx',
+            'createdAt' => '2017-02-22T13:01:23.123Z',
+            'modifiedAt' => '2017-02-22T13:01:33.567Z',
+            'merchant' => 'https://api.eu.elavonpayments.com/merchants/6xxFwvM8BqmM6T6DcF3DyTB3',
+            'processorAccounts' => [
                 [
                     'id' => 'proc-123',
                     'legalName' => 'Test Processor',
                 ],
             ],
-            name: 'Sirius Corporation',
-            description: 'A fintech company.',
-            tradeName: 'Gringotts',
-            businessAddress: '123 Main St, London',
-            businessPhone: '+44 020 7946 0123',
-            businessEmail: 'sales@gringotts.com',
-            businessWebsite: 'www.gringotts.com',
-            planList: 'https://api.eu.elavonpayments.com/plan-lists/f9g699w9v43r9gcp77y2bxq4rjcx',
-            logoUrl: 'https://cf.media.eu.convergepay.com/logo.jpg',
-            autoSettleAt: [
+            'name' => 'Sirius Corporation',
+            'description' => 'A fintech company.',
+            'tradeName' => 'Gringotts',
+            'businessAddress' => '123 Main St, London',
+            'businessPhone' => '+44 020 7946 0123',
+            'businessEmail' => 'sales@gringotts.com',
+            'businessWebsite' => 'www.gringotts.com',
+            'planList' => 'https://api.eu.elavonpayments.com/plan-lists/f9g699w9v43r9gcp77y2bxq4rjcx',
+            'logoUrl' => 'https://cf.media.eu.convergepay.com/logo.jpg',
+            'autoSettleAt' => [
                 'time' => '23:00',
                 'timeZoneId' => 'Europe/Berlin',
             ]
-        );
+        ]);
 
         // Assert
         $this->assertSame('https://api.eu.elavonpayments.com/accounts/f9g699w9v43r9gcp77y2bxq4rjcx', $account->href);
@@ -196,15 +196,15 @@ class AccountTest extends TestCase
     public function test_toData_withFullData_returnsArray(): void
     {
         // Arrange
-        $account = new Account(
-            id: 'account-789',
-            name: 'My Account',
-            description: 'Test description',
-            autoSettleAt: [
+        $account = Account::fromData([
+            'id' => 'account-789',
+            'name' => 'My Account',
+            'description' => 'Test description',
+            'autoSettleAt' => [
                 'time' => '12:00',
                 'timeZoneId' => 'UTC',
             ]
-        );
+        ]);
 
         // Act
         $array = $account->toData();

@@ -21,7 +21,7 @@ class Account implements DataTransferObject
     use SerializesData;
 
     // Normalized properties (objects)
-    public readonly ?AutoSettleAt $autoSettleAt;
+    // public readonly ?AutoSettleAt $autoSettleAt;
 
     /** @var array<ProcessorAccount>|null */
     public readonly ?array $processorAccounts;
@@ -84,14 +84,14 @@ class Account implements DataTransferObject
         public readonly ?string $salesTaxEntry = null,
         public readonly ?string $signatureVerification = null,
         public readonly ?string $logoUrl = null,
-        AutoSettleAt|array|null $autoSettleAt = null,
+        public readonly ?AutoSettleAt $autoSettleAt = null,
     ) {
         // Normalize AutoSettleAt object
-        $this->autoSettleAt = match (true) {
-            $autoSettleAt instanceof AutoSettleAt => $autoSettleAt,
-            is_array($autoSettleAt) => AutoSettleAt::fromData($autoSettleAt),
-            default => null,
-        };
+        // $this->autoSettleAt = match (true) {
+        //     $autoSettleAt instanceof AutoSettleAt => $autoSettleAt,
+        //     is_array($autoSettleAt) => AutoSettleAt::fromData($autoSettleAt),
+        //     default => null,
+        // };
 
         // Normalize ProcessorAccount array
         $this->processorAccounts = $this->normalizeProcessorAccounts($processorAccounts);

@@ -75,10 +75,10 @@ class OrderItemTest extends TestCase
     public function test_construct_withTypeString_normalizesToEnum(): void
     {
         // Arrange & Act
-        $item = new OrderItem(
-            total: Money::USD(1000),
-            type: 'goods',
-        );
+        $item = OrderItem::fromData([
+            'total' => Money::USD(1000),
+            'type' => 'goods',
+        ]);
 
         // Assert
         $this->assertSame(OrderItemType::GOODS, $item->type);
@@ -91,10 +91,10 @@ class OrderItemTest extends TestCase
         $this->expectExceptionMessage('Invalid type: invalid_type');
 
         // Act
-        new OrderItem(
-            total: Money::USD(1000),
-            type: 'invalid_type',
-        );
+        OrderItem::fromData([
+            'total' => Money::USD(1000),
+            'type' => 'invalid_type',
+        ]);
     }
 
     public function test_construct_withEmptyDescription_throwsException(): void

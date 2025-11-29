@@ -31,15 +31,6 @@ class PaymentSession implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?Contact $billTo;
-    public readonly ?Contact $shipTo;
-    public readonly ?Blik $blik;
-    public readonly ?DebtorAccount $debtorAccount;
-    public readonly ?ThreeDSecure $threeDSecure;
-    // public readonly ?HppType $hppType;
-    // public readonly ?ShopperInteraction $shopperInteraction;
-
     /** @var array<PaymentMethod>|null */
     public readonly ?array $allowedPaymentMethods;
 
@@ -150,13 +141,13 @@ class PaymentSession implements DataTransferObject
         public readonly ?string $googlePayPayment = null,
         public readonly ?string $applePayPayment = null,
         public readonly ?string $pazePayment = null,
-        Blik|array|null $blik = null,
+        public readonly ?Blik $blik = null,
         public readonly ?string $shopper = null,
-        DebtorAccount|array|null $debtorAccount = null,
-        ThreeDSecure|array|null $threeDSecure = null,
+        public readonly ?DebtorAccount $debtorAccount = null,
+        public readonly ?ThreeDSecure $threeDSecure = null,
         public readonly ?string $shopperEmailAddress = null,
-        Contact|array|null $billTo = null,
-        Contact|array|null $shipTo = null,
+        public readonly ?Contact $billTo = null,
+        public readonly ?Contact $shipTo = null,
         public readonly ?HppType $hppType = null,
         public readonly ?string $returnUrl = null,
         public readonly ?string $cancelUrl = null,
@@ -176,54 +167,6 @@ class PaymentSession implements DataTransferObject
         ?array $allowedPaymentMethods = null,
         ?array $allowedPaymentMethodOrigins = null,
     ) {
-        // Normalize Contact objects
-        $this->billTo = match (true) {
-            $billTo instanceof Contact => $billTo,
-            is_array($billTo) => Contact::fromData($billTo),
-            default => null,
-        };
-
-        $this->shipTo = match (true) {
-            $shipTo instanceof Contact => $shipTo,
-            is_array($shipTo) => Contact::fromData($shipTo),
-            default => null,
-        };
-
-        // Normalize Blik object
-        $this->blik = match (true) {
-            $blik instanceof Blik => $blik,
-            is_array($blik) => Blik::fromData($blik),
-            default => null,
-        };
-
-        // Normalize DebtorAccount object
-        $this->debtorAccount = match (true) {
-            $debtorAccount instanceof DebtorAccount => $debtorAccount,
-            is_array($debtorAccount) => DebtorAccount::fromData($debtorAccount),
-            default => null,
-        };
-
-        // Normalize ThreeDSecure object
-        $this->threeDSecure = match (true) {
-            $threeDSecure instanceof ThreeDSecure => $threeDSecure,
-            is_array($threeDSecure) => ThreeDSecure::fromData($threeDSecure),
-            default => null,
-        };
-
-        // // Normalize HppType enum
-        // $this->hppType = match (true) {
-        //     $hppType instanceof HppType => $hppType,
-        //     is_string($hppType) => HppType::from($hppType),
-        //     default => null,
-        // };
-
-        // // Normalize ShopperInteraction enum
-        // $this->shopperInteraction = match (true) {
-        //     $shopperInteraction instanceof ShopperInteraction => $shopperInteraction,
-        //     is_string($shopperInteraction) => ShopperInteraction::from($shopperInteraction),
-        //     default => null,
-        // };
-
         // Normalize allowedPaymentMethods array
         if ($allowedPaymentMethods !== null) {
             $this->allowedPaymentMethods = array_map(

@@ -42,7 +42,7 @@ class HostedCardTest extends TestCase
         ];
 
         // Act
-        $hostedCard = new HostedCard(card: $cardData);
+        $hostedCard = HostedCard::fromData(['card' => $cardData]);
 
         // Assert
         $this->assertInstanceOf(Card::class, $hostedCard->card);
