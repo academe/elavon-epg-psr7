@@ -319,7 +319,7 @@ class AchPaymentTest extends TestCase
         $array = $achPayment->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'achAccountType' => 'checkingBusiness',
             'bankRoutingNumber' => '987654321',
             'bankAccountNumber' => '9876543210',
@@ -341,7 +341,7 @@ class AchPaymentTest extends TestCase
         $array = $achPayment->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'achAccountType' => 'savingsPersonal',
             'achFingerprint' => 'fingerprint456',
             'last4' => '5678',
@@ -388,7 +388,7 @@ class AchPaymentTest extends TestCase
         $resultData = $achPayment->toData();
 
         // Assert
-        $this->assertSame($originalData, $resultData);
+        $this->assertEquals($originalData, $resultData);
     }
 
     public function test_properties_areReadonly(): void

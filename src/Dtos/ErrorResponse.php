@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 
 /**
  * Error Response.
@@ -31,20 +31,17 @@ class ErrorResponse implements DataTransferObject
         ];
     }
 
-    /** @param ErrorDetail[] $failures */
-    public function __construct(
-        public readonly ?int $status = null,
-        array|null $failures = null,
-    ) {
-        // Normalize failures to ErrorDetail objects
-        $this->failures = $failures === null ? [] : array_map(
-            fn($failure) => $failure instanceof ErrorDetail ? $failure : ErrorDetail::fromData($failure),
-            $failures
-        );
-    }
-
     /** @var ErrorDetail[] */
     public readonly array $failures;
+
+    public function __construct(
+        public readonly ?int $status = null,
+        /** @var ErrorDetail[]|null */
+        #[ArrayOf(ErrorDetail::class)]
+        ?array $failures = null,
+    ) {
+        $this->failures = $failures ?? [];
+    }
 
     /**
      * Gets the primary error message (from first failure).

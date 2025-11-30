@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
@@ -24,9 +25,6 @@ class Order implements DataTransferObject
 {
     use SerializesData;
 
-    /** @var array<OrderItem>|null */
-    public readonly ?array $items;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -46,7 +44,6 @@ class Order implements DataTransferObject
         ];
     }
 
-    /** @param OrderItem[] $items */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,
@@ -58,7 +55,9 @@ class Order implements DataTransferObject
         // Request/Response fields
         public readonly ?Money $total = null,
         public readonly ?string $description = null,
-        ?array $items = null,
+        /** @var array<OrderItem>|null */
+        #[ArrayOf(OrderItem::class)]
+        public readonly ?array $items = null,
         public readonly ?Contact $shipTo = null,
         public readonly ?string $shopperEmailAddress = null,
         public readonly ?string $shopperReference = null,
@@ -66,18 +65,6 @@ class Order implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize items array - convert array of arrays to array of OrderItem objects
-        if ($items !== null) {
-            $this->items = array_map(
-                fn($itemData) => $itemData instanceof OrderItem
-                    ? $itemData
-                    : OrderItem::fromData($itemData),
-                $items
-            );
-        } else {
-            $this->items = null;
-        }
-
         $this->validate();
     }
 

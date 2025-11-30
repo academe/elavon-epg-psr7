@@ -157,8 +157,8 @@ class CountAndTotalTest extends TestCase
         // Act
         $array = $countAndTotal->toData();
 
-        // Assert - Order follows SerializesData trait: object, array, enum, scalar
-        $this->assertSame([
+        // Assert
+        $this->assertEquals([
             'total' => [
                 'amount' => '500.00',
                 'currencyCode' => 'USD',

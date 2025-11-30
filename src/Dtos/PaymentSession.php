@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\HppType;
@@ -31,15 +32,6 @@ class PaymentSession implements DataTransferObject
 {
     use SerializesData;
 
-    /** @var array<PaymentMethod>|null */
-    public readonly ?array $allowedPaymentMethods;
-
-    /** @var array<PaymentMethodOrigin>|null */
-    public readonly ?array $allowedPaymentMethodOrigins;
-
-    /** @var array<Transaction>|null */
-    public readonly ?array $previousTransactions;
-
     /**
      * Get property type definitions for this DTO.
      *
@@ -64,11 +56,6 @@ class PaymentSession implements DataTransferObject
         ];
     }
 
-    /**
-     * @param PaymentMethod[] $allowedPaymentMethods
-     * @param PaymentMethodOrigin[] $allowedPaymentMethodOrigins
-     * @param Transaction[] $previousTransactions
-     */
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,
@@ -115,48 +102,18 @@ class PaymentSession implements DataTransferObject
         public readonly ?bool $doReset = null,
         public readonly ?bool $useStoredPaymentMethod = null,
         public readonly ?string $createdBy = null,
-        ?array $previousTransactions = null,
+        /** @var array<Transaction>|null */
+        #[ArrayOf(Transaction::class)]
+        public readonly ?array $previousTransactions = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
-        ?array $allowedPaymentMethods = null,
-        ?array $allowedPaymentMethodOrigins = null,
+        /** @var array<PaymentMethod>|null */
+        #[ArrayOf(PaymentMethod::class)]
+        public readonly ?array $allowedPaymentMethods = null,
+        /** @var array<PaymentMethodOrigin>|null */
+        #[ArrayOf(PaymentMethodOrigin::class)]
+        public readonly ?array $allowedPaymentMethodOrigins = null,
     ) {
-        // Normalize allowedPaymentMethods array
-        if ($allowedPaymentMethods !== null) {
-            $this->allowedPaymentMethods = array_map(
-                fn($method) => $method instanceof PaymentMethod
-                    ? $method
-                    : PaymentMethod::from($method),
-                $allowedPaymentMethods
-            );
-        } else {
-            $this->allowedPaymentMethods = null;
-        }
-
-        // Normalize allowedPaymentMethodOrigins array
-        if ($allowedPaymentMethodOrigins !== null) {
-            $this->allowedPaymentMethodOrigins = array_map(
-                fn($origin) => $origin instanceof PaymentMethodOrigin
-                    ? $origin
-                    : PaymentMethodOrigin::from($origin),
-                $allowedPaymentMethodOrigins
-            );
-        } else {
-            $this->allowedPaymentMethodOrigins = null;
-        }
-
-        // Normalize previousTransactions array
-        if ($previousTransactions !== null) {
-            $this->previousTransactions = array_map(
-                fn($transaction) => $transaction instanceof Transaction
-                    ? $transaction
-                    : Transaction::fromData($transaction),
-                $previousTransactions
-            );
-        } else {
-            $this->previousTransactions = null;
-        }
-
         $this->validate();
     }
 

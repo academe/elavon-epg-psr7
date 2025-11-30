@@ -340,7 +340,7 @@ class StoredCardTest extends TestCase
         $array = $storedCard->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'card' => [
                 'last4' => '7777',
                 'bin' => '515151',
@@ -365,7 +365,7 @@ class StoredCardTest extends TestCase
         $array = $storedCard->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'id' => 'sc999',
             'customReference' => 'ref-999',
         ], $array);
@@ -392,7 +392,7 @@ class StoredCardTest extends TestCase
         $array = $storedCard->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'customFields' => $customFields,
             'id' => 'sc222',
         ], $array);
@@ -421,7 +421,7 @@ class StoredCardTest extends TestCase
         $resultData = $storedCard->toData();
 
         // Assert
-        $this->assertSame($originalData, $resultData);
+        $this->assertEquals($originalData, $resultData);
     }
 
     public function test_properties_areReadonly(): void

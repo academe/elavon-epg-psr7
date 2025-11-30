@@ -121,7 +121,7 @@ class BillingIntervalTest extends TestCase
         $interval = BillingInterval::fromData($data);
 
         // Assert
-        $this->assertSame('week', $interval->timeUnit);
+        $this->assertSame(TimeUnit::WEEK, $interval->timeUnit);
         $this->assertSame(4, $interval->count);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Money\Money;
@@ -19,9 +20,6 @@ use Money\Money;
 class TotalAdjustment implements DataTransferObject
 {
     use SerializesData;
-
-    /** @var array<Failure>|null */
-    public readonly ?array $failures;
 
     /**
      * Get property type definitions for this DTO.
@@ -45,7 +43,6 @@ class TotalAdjustment implements DataTransferObject
         ];
     }
 
-    /** @param Failure[] $failures */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,
@@ -64,31 +61,11 @@ class TotalAdjustment implements DataTransferObject
         public readonly ?string $authorizationCode = null,
         public readonly ?string $issuerResponseCode = null,
         public readonly ?string $rawProcessorResponseInfo = null,
-        array|null $failures = null,
+        /** @var array<Failure>|null */
+        #[ArrayOf(Failure::class)]
+        public readonly ?array $failures = null,
         public readonly ?string $customReference = null,
         public readonly ?array $customFields = null,
     ) {
-        // Normalize Failure array
-        $this->failures = $this->normalizeFailures($failures);
-    }
-
-    /**
-     * Normalize an array of Failure objects.
-     *
-     * @param array<Failure|array<string, mixed>>|null $items
-     * @return array<Failure>|null
-     */
-    private function normalizeFailures(?array $items): ?array
-    {
-        if ($items === null) {
-            return null;
-        }
-
-        return array_map(
-            fn ($item) => $item instanceof Failure
-                ? $item
-                : Failure::fromData($item),
-            $items
-        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Concerns;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Money\Currencies\ISOCurrencies;
@@ -23,109 +24,150 @@ trait SerializesData
     /**
      * Creates an instance from JSON-compatible data.
      *
+     * Uses reflection to determine parameter types and convert data accordingly.
+     * Supports: scalars (string, int, bool), enums, Money, DTOs/VOs with fromData(),
+     * and arrays with #[ArrayOf] attributes.
+     *
      * @param mixed $data Typically an array with DTO data
      * @return static
      */
     public static function fromData(mixed $data): static
     {
-        /** @var DataTransferObject $class */
-        $class = static::class;
-        $propertyTypes = $class::getPropertyTypes();
+        $constructor = (new \ReflectionClass(static::class))->getConstructor();
 
-        // Build constructor arguments dynamically using property type definitions
+        if ($constructor === null) {
+            return new static();
+        }
+
         $args = [];
 
-        // Object properties - todo label the dtos as specificly dtos.
-        foreach ($propertyTypes['object'] ?? [] as $prop) {
-            if (isset($data[$prop]) && (is_array($data[$prop]) || is_scalar($data[$prop]))) {
-                /** @var class-string<DataTransferObject> $dtoClass */
-                $dtoClass = null;
+        foreach ($constructor->getParameters() as $param) {
+            $name = $param->getName();
+            $rawValue = $data[$name] ?? null;
 
-                $type = static::getConstructorArg($prop)?->getType();
+            // Get the parameter type first
+            $type = $param->getType();
+            $typeName = null;
 
-                if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
-                    $dtoClass = $type->getName();
-                } elseif ($type instanceof \ReflectionUnionType) {
-                    // Handle union types like MyDtoClass|string|null
+            if ($type instanceof \ReflectionNamedType) {
+                $typeName = $type->getName();
+            } elseif ($type instanceof \ReflectionUnionType) {
+                // Find the first non-null, non-builtin type
+                foreach ($type->getTypes() as $unionType) {
+                    if ($unionType instanceof \ReflectionNamedType && !$unionType->isBuiltin() && $unionType->getName() !== 'null') {
+                        $typeName = $unionType->getName();
+                        break;
+                    }
+                }
+                // If no class type found, check for builtin types
+                if ($typeName === null) {
                     foreach ($type->getTypes() as $unionType) {
-                        if ($unionType instanceof \ReflectionNamedType && !$unionType->isBuiltin()) {
+                        if ($unionType instanceof \ReflectionNamedType && $unionType->isBuiltin() && $unionType->getName() !== 'null') {
                             $typeName = $unionType->getName();
-                            if (class_exists($typeName)) {
-                                $dtoClass = $typeName;
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
-
-                // Could be a DTO or VO - anything with a fromData() method.
-                if ($dtoClass === null /*|| !is_subclass_of($dtoClass, DataTransferObject::class)*/) {
-                    throw new InvalidArgumentException("Cannot determine DTO class for property {$prop}");
-                }
-
-                $args[$prop] = $dtoClass::fromData($data[$prop]);
-            } elseif (isset($data[$prop]) && is_object($data[$prop])) {
-                $args[$prop] = $data[$prop];
-            } else {
-                $args[$prop] = null;
             }
-        }
 
-        // Arrays as they are (will need comversion of items though)
-        foreach ($propertyTypes['array'] ?? [] as $prop) {
-            $args[$prop] = $data[$prop] ?? null;
-        }
-
-        // Money properties - parse decimal amount with currency into Money\Money object.
-        // Expects data in format: ['amount' => '10.00', 'currencyCode' => 'USD']
-        foreach ($propertyTypes['money'] ?? [] as $prop) {
-            if (isset($data[$prop]) && is_array($data[$prop])) {
-                $moneyData = $data[$prop];
-                if (isset($moneyData['amount'], $moneyData['currencyCode'])) {
-                    $currencies = new ISOCurrencies();
-                    $parser = new DecimalMoneyParser($currencies);
-                    $args[$prop] = $parser->parse(
-                        (string) $moneyData['amount'],
-                        $moneyData['currencyCode'] instanceof Currency
-                            ? $moneyData['currencyCode']
-                            : new Currency($moneyData['currencyCode'])
-                    );
-                } else {
-                    $args[$prop] = null;
-                }
-            } elseif (isset($data[$prop]) && $data[$prop] instanceof Money) {
-                $args[$prop] = $data[$prop];
-            } else {
-                $args[$prop] = null;
+            // Handle null values
+            if ($rawValue === null) {
+                $args[$name] = null;
+                continue;
             }
+
+            // For array types, check for ArrayOf attribute to convert elements
+            if ($typeName === 'array') {
+                $arrayOfAttr = static::getArrayOfAttributeFromParam($param);
+                $args[$name] = $arrayOfAttr !== null
+                    ? $arrayOfAttr->convertArray($rawValue)
+                    : $rawValue;
+                continue;
+            }
+
+            // Already the correct type (object passed directly)
+            if (is_object($rawValue) && $typeName !== null && $rawValue instanceof $typeName) {
+                $args[$name] = $rawValue;
+                continue;
+            }
+
+            // Convert based on type
+            $args[$name] = match (true) {
+                // Scalar types
+                $typeName === 'string' => (string) $rawValue,
+                $typeName === 'int' => (int) $rawValue,
+                $typeName === 'bool' => (bool) $rawValue,
+                $typeName === 'float' => (float) $rawValue,
+
+                // Money type
+                $typeName === Money::class => static::parseMoneyData($rawValue),
+
+                // Enum type
+                $typeName !== null && enum_exists($typeName) => static::parseEnumValue($rawValue, $typeName),
+
+                // Class with fromData() method (DTO/VO)
+                $typeName !== null && class_exists($typeName) && method_exists($typeName, 'fromData')
+                    => $typeName::fromData($rawValue),
+
+                // Default: pass through as-is
+                default => $rawValue,
+            };
         }
 
-        // Enum properties - convert backing values to enums.
-        foreach ($propertyTypes['enum'] ?? [] as $prop) {
-            $args[$prop] = static::normalizeEnum($data[$prop] ?? null, $prop);
-        }
-
-        // String properties - cast to string if present
-        foreach ($propertyTypes['string'] ?? [] as $prop) {
-            $args[$prop] = isset($data[$prop]) ? (string) $data[$prop] : null;
-        }
-
-        // Boolean properties - cast to bool if present
-        foreach ($propertyTypes['boolean'] ?? [] as $prop) {
-            $args[$prop] = isset($data[$prop]) ? (bool) $data[$prop] : null;
-        }
-
-        // Integer properties - cast to int if present
-        foreach ($propertyTypes['int'] ?? [] as $prop) {
-            $args[$prop] = isset($data[$prop]) ? (int) $data[$prop] : null;
-        }
-
-        // Unpack arguments array as named parameters
         return new static(...$args);
     }
 
-    // Reflection helper to get constructor by name.
-    protected static function getConstructorArg(string $property): mixed
+    /**
+     * Parse money data from array format.
+     */
+    private static function parseMoneyData(mixed $data): ?Money
+    {
+        if ($data instanceof Money) {
+            return $data;
+        }
+
+        if (!is_array($data) || !isset($data['amount'], $data['currencyCode'])) {
+            return null;
+        }
+
+        $currencies = new ISOCurrencies();
+        $parser = new DecimalMoneyParser($currencies);
+
+        return $parser->parse(
+            (string) $data['amount'],
+            $data['currencyCode'] instanceof Currency
+                ? $data['currencyCode']
+                : new Currency($data['currencyCode'])
+        );
+    }
+
+    /**
+     * Parse enum value from string.
+     *
+     * @template T of \BackedEnum
+     * @param mixed $value
+     * @param class-string<T> $enumClass
+     * @return T|null
+     */
+    private static function parseEnumValue(mixed $value, string $enumClass): ?\BackedEnum
+    {
+        if ($value instanceof $enumClass) {
+            return $value;
+        }
+
+        if (is_string($value) || is_int($value)) {
+            $enum = $enumClass::tryFrom($value);
+            if ($enum === null) {
+                throw new InvalidArgumentException("Invalid enum value for {$enumClass}: {$value}");
+            }
+            return $enum;
+        }
+
+        return null;
+    }
+
+    // Reflection helper to get constructor parameter by name.
+    protected static function getConstructorArg(string $property): ?\ReflectionParameter
     {
         $constructor = (new \ReflectionClass(static::class))->getConstructor();
 
@@ -136,6 +178,58 @@ trait SerializesData
         }
 
         return null;
+    }
+
+    /**
+     * Gets the ArrayOf attribute from a constructor parameter if present.
+     */
+    protected static function getArrayOfAttribute(string $property): ?ArrayOf
+    {
+        $param = static::getConstructorArg($property);
+
+        if ($param === null) {
+            return null;
+        }
+
+        return static::getArrayOfAttributeFromParam($param);
+    }
+
+    /**
+     * Gets the ArrayOf attribute from a reflection parameter.
+     */
+    protected static function getArrayOfAttributeFromParam(\ReflectionParameter $param): ?ArrayOf
+    {
+        $attributes = $param->getAttributes(ArrayOf::class);
+
+        if (empty($attributes)) {
+            return null;
+        }
+
+        return $attributes[0]->newInstance();
+    }
+
+    /**
+     * Gets all ArrayOf attributes from constructor parameters.
+     *
+     * @return array<string, ArrayOf> Map of property name to ArrayOf attribute
+     */
+    protected static function getArrayOfAttributes(): array
+    {
+        $constructor = (new \ReflectionClass(static::class))->getConstructor();
+
+        if ($constructor === null) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($constructor->getParameters() as $param) {
+            $attributes = $param->getAttributes(ArrayOf::class);
+            if (!empty($attributes)) {
+                $result[$param->getName()] = $attributes[0]->newInstance();
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -178,6 +272,7 @@ trait SerializesData
     /**
      * Converts the DTO to JSON-compatible data.
      *
+     * Uses reflection to inspect properties and convert them appropriately.
      * Recursively converts all nested objects to their data representations.
      * Only includes non-null values for cleaner JSON output.
      *
@@ -185,64 +280,60 @@ trait SerializesData
      */
     public function toData(): mixed
     {
-        /** @var DataTransferObject $class */
-        $class = static::class;
-        $propertyTypes = $class::getPropertyTypes();
-
+        $reflection = new \ReflectionClass(static::class);
         $data = [];
 
-        // Convert Money\Money objects to data (amount + currencyCode)
-        foreach ($propertyTypes['money'] ?? [] as $prop) {
-            if ($this->$prop !== null) {
-                $currencies = new ISOCurrencies();
-                $formatter = new DecimalMoneyFormatter($currencies);
-                $data[$prop] = [
-                    'amount' => $formatter->format($this->$prop),
-                    'currencyCode' => $this->$prop->getCurrency()->getCode(),
-                ];
-            }
-        }
+        foreach ($reflection->getProperties() as $property) {
+            $name = $property->getName();
+            $value = $this->$name;
 
-        // Convert all objects (DTOs, value objects, etc.) to data
-        foreach ($propertyTypes['object'] ?? [] as $prop) {
-            if ($this->$prop !== null) {
-                $data[$prop] = $this->$prop->toData();
+            // Skip null values
+            if ($value === null) {
+                continue;
             }
-        }
 
-        // Handle array properties - can contain objects with toData() or primitives
-        foreach ($propertyTypes['array'] ?? [] as $prop) {
-            if ($this->$prop !== null) {
-                $data[$prop] = array_map(
-                    fn($item) => is_object($item) && method_exists($item, 'toData')
-                        ? $item->toData()
-                        : $item,
-                    $this->$prop
-                );
-            }
-        }
-
-        // Convert enum properties to their string values
-        foreach ($propertyTypes['enum'] ?? [] as $prop) {
-            if ($this->$prop !== null) {
-                $data[$prop] = $this->$prop->value;
-            }
-        }
-
-        // Add scalar properties (strings, booleans, and integers)
-        $scalarProperties = array_merge(
-            $propertyTypes['string'] ?? [],
-            $propertyTypes['boolean'] ?? [],
-            $propertyTypes['int'] ?? []
-        );
-
-        foreach ($scalarProperties as $prop) {
-            if ($this->$prop !== null) {
-                $data[$prop] = $this->$prop;
-            }
+            // Convert value based on its type
+            $data[$name] = $this->convertValueToData($value);
         }
 
         return $data;
+    }
+
+    /**
+     * Converts a value to its JSON-compatible representation.
+     */
+    private function convertValueToData(mixed $value): mixed
+    {
+        // Money objects - convert to amount + currencyCode
+        if ($value instanceof Money) {
+            $currencies = new ISOCurrencies();
+            $formatter = new DecimalMoneyFormatter($currencies);
+            return [
+                'amount' => $formatter->format($value),
+                'currencyCode' => $value->getCurrency()->getCode(),
+            ];
+        }
+
+        // Backed enums - convert to their value
+        if ($value instanceof \BackedEnum) {
+            return $value->value;
+        }
+
+        // Objects with toData() method - recurse
+        if (is_object($value) && method_exists($value, 'toData')) {
+            return $value->toData();
+        }
+
+        // Arrays - convert each element
+        if (is_array($value)) {
+            return array_map(
+                fn($item) => $this->convertValueToData($item),
+                $value
+            );
+        }
+
+        // Scalars and other values - pass through as-is
+        return $value;
     }
 
     /**
@@ -314,22 +405,27 @@ trait SerializesData
     }
 
     /**
-     * Normalizes an array of enum values from either enum objects or strings.
+     * Normalizes an array using the ArrayOf attribute on the specified property.
      *
-     * @template T of \BackedEnum
-     * @param array<T|string>|null $items
-     * @param class-string<T> $enumClass
-     * @return array<T>|null
+     * Call this from constructors to convert array elements based on the
+     * ArrayOf attribute defined on the constructor parameter.
+     *
+     * @param string $property The constructor parameter name
+     * @param array|null $values The array to normalize
+     * @return array|null The normalized array
      */
-    protected static function normalizeEnumArray(?array $items, string $enumClass): ?array
+    protected function normalizeArray(string $property, ?array $values): ?array
     {
-        if ($items === null) {
+        if ($values === null) {
             return null;
         }
 
-        return array_map(
-            fn ($item) => $item instanceof $enumClass ? $item : $enumClass::from($item),
-            $items
-        );
+        $arrayOfAttr = static::getArrayOfAttribute($property);
+
+        if ($arrayOfAttr === null) {
+            return $values;
+        }
+
+        return $arrayOfAttr->convertArray($values);
     }
 }

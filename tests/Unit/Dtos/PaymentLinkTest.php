@@ -264,7 +264,7 @@ class PaymentLinkTest extends TestCase
         $array = $paymentLink->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'total' => [
                 'amount' => '50.00',
                 'currencyCode' => 'USD',

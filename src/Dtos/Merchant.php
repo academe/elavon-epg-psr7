@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\Region;
@@ -34,16 +35,15 @@ class Merchant implements DataTransferObject
         ];
     }
 
-    /** @param Region[] $regions */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,
         public readonly ?string $legalName = null,
         public readonly ?string $friendlyName = null,
-        array|null $regions = null,
+        /** @var array<Region>|null */
+        #[ArrayOf(Region::class)]
+        public readonly ?array $regions = null,
         public readonly ?bool $isDemo = null,
     ) {
-        // Normalize Region array
-        $this->regions = $this->normalizeEnumArray($regions, Region::class);
     }
 }

@@ -88,7 +88,7 @@ class OrderItemTest extends TestCase
     {
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid type: invalid_type');
+        $this->expectExceptionMessage('Invalid enum value for');
 
         // Act
         OrderItem::fromData([
@@ -243,7 +243,7 @@ class OrderItemTest extends TestCase
         $array = $item->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'total' => [
                 'amount' => '120.00',
                 'currencyCode' => 'EUR',

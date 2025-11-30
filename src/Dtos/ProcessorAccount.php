@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\CardBrand;
@@ -24,15 +25,6 @@ use Academe\Elavon\Epg\Psr7\Enums\Region;
 class ProcessorAccount implements DataTransferObject
 {
     use SerializesData;
-
-    /** @var array<CardBrand>|null */
-    public readonly ?array $supportedCardBrands;
-
-    /** @var array<PaymentMethod>|null */
-    public readonly ?array $supportedPaymentMethods;
-
-    /** @var array<PaymentMethodOrigin>|null */
-    public readonly ?array $supportedPaymentMethodOrigins;
 
     /**
      * Get property type definitions for this DTO.
@@ -62,11 +54,6 @@ class ProcessorAccount implements DataTransferObject
         ];
     }
 
-    /**
-     * @param CardBrand[] $supportedCardBrands
-     * @param PaymentMethod[] $supportedPaymentMethods
-     * @param PaymentMethodOrigin[] $supportedPaymentMethodOrigins
-     */
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,
@@ -84,30 +71,21 @@ class ProcessorAccount implements DataTransferObject
         public readonly ?Region $region = null,
         public readonly ?string $settlementCurrencyCode = null,
         public readonly ?string $languageTag = null,
-        array|null $supportedCardBrands = null,
-        array|null $supportedPaymentMethods = null,
-        array|null $supportedPaymentMethodOrigins = null,
+        /** @var array<CardBrand>|null */
+        #[ArrayOf(CardBrand::class)]
+        public readonly ?array $supportedCardBrands = null,
+        /** @var array<PaymentMethod>|null */
+        #[ArrayOf(PaymentMethod::class)]
+        public readonly ?array $supportedPaymentMethods = null,
+        /** @var array<PaymentMethodOrigin>|null */
+        #[ArrayOf(PaymentMethodOrigin::class)]
+        public readonly ?array $supportedPaymentMethodOrigins = null,
         public readonly ?bool $isDccEnabled = null,
         public readonly ?bool $isMccEnabled = null,
         public readonly ?bool $isStandaloneRefundEnabled = null,
+        /** @var array<PinlessDebitCardScheme>|null */
+        #[ArrayOf(PinlessDebitCardScheme::class)]
         public readonly ?array $pinlessDebit = null,
     ) {
-        // Normalize CardBrand array
-        $this->supportedCardBrands = $this->normalizeEnumArray(
-            $supportedCardBrands,
-            CardBrand::class
-        );
-
-        // Normalize PaymentMethod array
-        $this->supportedPaymentMethods = $this->normalizeEnumArray(
-            $supportedPaymentMethods,
-            PaymentMethod::class
-        );
-
-        // Normalize PaymentMethodOrigin array
-        $this->supportedPaymentMethodOrigins = $this->normalizeEnumArray(
-            $supportedPaymentMethodOrigins,
-            PaymentMethodOrigin::class
-        );
     }
 }

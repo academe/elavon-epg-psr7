@@ -223,11 +223,9 @@ class ProcessorAccountTest extends TestCase
         $this->assertSame($originalData['legalName'], $resultData['legalName']);
         $this->assertSame($originalData['marketSegment'], $resultData['marketSegment']);
         $this->assertSame($originalData['region'], $resultData['region']);
-        // For arrays of enums, toData() returns the enum objects, not their string values
         $this->assertIsArray($resultData['supportedCardBrands']);
         $this->assertCount(1, $resultData['supportedCardBrands']);
-        $this->assertInstanceOf(CardBrand::class, $resultData['supportedCardBrands'][0]);
-        $this->assertSame('Visa', $resultData['supportedCardBrands'][0]->value);
+        $this->assertSame('Visa', $resultData['supportedCardBrands'][0]);
         $this->assertFalse($resultData['isDccEnabled']);
     }
 

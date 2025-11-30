@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Dtos\Contact;
@@ -84,10 +85,6 @@ class Transaction implements DataTransferObject
         ];
     }
 
-    /** @var array<Failure>|null */
-    public readonly ?array $failures;
-
-    /** @param Failure[] $failures */
     public function __construct(
         // Primary transaction data
         public readonly ?Money $total = null,
@@ -100,7 +97,9 @@ class Transaction implements DataTransferObject
         public readonly ?Contact $shipTo = null,
         public readonly ?Contact $billTo = null,
         public readonly ?Surcharge $surcharge = null,
-        ?array $failures = null,
+        /** @var array<Failure>|null */
+        #[ArrayOf(Failure::class)]
+        public readonly ?array $failures = null,
 
         // Identity and state
         public readonly ?string $id = null,
@@ -182,18 +181,6 @@ class Transaction implements DataTransferObject
         public readonly ?bool $isSettled = null,
         public readonly ?bool $isPartiallyRefunded = null,
     ) {
-        // Normalize failures array - convert array of arrays to array of Failure objects
-        if ($failures !== null) {
-            $this->failures = array_map(
-                fn($failureData) => $failureData instanceof Failure
-                    ? $failureData
-                    : Failure::fromData($failureData),
-                $failures
-            );
-        } else {
-            $this->failures = null;
-        }
-
         $this->validate();
     }
 

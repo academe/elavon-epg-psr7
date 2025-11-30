@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 
@@ -19,12 +20,6 @@ use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 class Account implements DataTransferObject
 {
     use SerializesData;
-
-    // Normalized properties (objects)
-    // public readonly ?AutoSettleAt $autoSettleAt;
-
-    /** @var array<ProcessorAccount>|null */
-    public readonly ?array $processorAccounts;
 
     /**
      * Get property type definitions for this DTO.
@@ -52,7 +47,9 @@ class Account implements DataTransferObject
         public readonly ?string $createdAt = null,
         public readonly ?string $modifiedAt = null,
         public readonly ?string $merchant = null,
-        array|null $processorAccounts = null,
+        /** @var array<ProcessorAccount>|null */
+        #[ArrayOf(ProcessorAccount::class)]
+        public readonly ?array $processorAccounts = null,
         public readonly ?string $name = null,
         public readonly ?string $description = null,
         public readonly ?string $tradeName = null,
@@ -66,34 +63,5 @@ class Account implements DataTransferObject
         public readonly ?string $logoUrl = null,
         public readonly ?AutoSettleAt $autoSettleAt = null,
     ) {
-        // Normalize AutoSettleAt object
-        // $this->autoSettleAt = match (true) {
-        //     $autoSettleAt instanceof AutoSettleAt => $autoSettleAt,
-        //     is_array($autoSettleAt) => AutoSettleAt::fromData($autoSettleAt),
-        //     default => null,
-        // };
-
-        // Normalize ProcessorAccount array
-        $this->processorAccounts = $this->normalizeProcessorAccounts($processorAccounts);
-    }
-
-    /**
-     * Normalize an array of ProcessorAccount objects.
-     *
-     * @param array<ProcessorAccount|array<string, mixed>>|null $items
-     * @return array<ProcessorAccount>|null
-     */
-    private function normalizeProcessorAccounts(?array $items): ?array
-    {
-        if ($items === null) {
-            return null;
-        }
-
-        return array_map(
-            fn ($item) => $item instanceof ProcessorAccount
-                ? $item
-                : ProcessorAccount::fromData($item),
-            $items
-        );
     }
 }

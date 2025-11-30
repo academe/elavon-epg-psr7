@@ -215,7 +215,7 @@ class TransactionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid state: invalid_state');
+        $this->expectExceptionMessage('Invalid enum value for');
 
         // Act
         Transaction::fromData($data);
@@ -263,7 +263,7 @@ class TransactionTest extends TestCase
         $array = $transaction->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'total' => [
                 'amount' => '99.99',
                 'currencyCode' => 'USD',

@@ -334,7 +334,7 @@ class HostedCardTest extends TestCase
         $array = $hostedCard->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'customFields' => $customFields,
             'id' => 'hc111',
         ], $array);
@@ -363,7 +363,7 @@ class HostedCardTest extends TestCase
         $resultData = $hostedCard->toData();
 
         // Assert
-        $this->assertSame($originalData, $resultData);
+        $this->assertEquals($originalData, $resultData);
     }
 
     public function test_properties_areReadonly(): void

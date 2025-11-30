@@ -57,7 +57,7 @@ class TotalAdjustmentTest extends TestCase
     {
         $adjustment = new TotalAdjustment(
             failures: [
-                ['code' => 'invalid_amount', 'description' => 'Amount too high'],
+                new Failure(code: 'invalid_amount', description: 'Amount too high'),
             ]
         );
 

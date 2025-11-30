@@ -32,7 +32,7 @@ class MerchantTest extends TestCase
             id: '6xxFwvM8BqmM6T6DcF3DyTB3',
             legalName: 'Sirius Cybernetics Corporation',
             friendlyName: 'Sirius Corp',
-            regions: ['eu', 'na'],
+            regions: [Region::EU, Region::NA],
             isDemo: true
         );
 
@@ -98,11 +98,9 @@ class MerchantTest extends TestCase
         $this->assertSame('Company', $array['friendlyName']);
         $this->assertTrue($array['isDemo']);
         $this->assertArrayHasKey('regions', $array);
-        // For arrays of enums, toData() returns the enum objects, not their string values
         $this->assertIsArray($array['regions']);
         $this->assertCount(1, $array['regions']);
-        $this->assertInstanceOf(Region::class, $array['regions'][0]);
-        $this->assertSame('na', $array['regions'][0]->value);
+        $this->assertSame('na', $array['regions'][0]);
     }
 
     public function test_toData_onlyIncludesNonNullValues(): void
