@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\SubscriptionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * Subscription data transfer object.
@@ -25,27 +26,6 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 class Subscription implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['debtorAccount', 'surcharge'],
-            'array' => ['customFields'],
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'merchant', 'plan',
-                'shopper', 'account', 'doSendReceipt', 'storedCard', 'storedAchPayment',
-                'surchargeAdvice', 'initialSurchargeAdvice', 'timeZoneId',
-                'firstBillAt', 'nextBillAt', 'previousBillAt', 'finalBillAt',
-                'cancelRequestedAt', 'subscriptionState', 'customReference',
-            ],
-            'int' => ['billCount', 'cancelAfterBillNumber', 'nextBillNumber', 'failureCount'],
-        ];
-    }
 
     // firstBillAt: YYYY-MM-DD format, timeZoneId: IANA timezone name
     public function __construct(
@@ -79,7 +59,7 @@ class Subscription implements DataTransferObject
         public readonly ?string $firstBillAt = null,
         public readonly ?int $cancelAfterBillNumber = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -123,48 +103,6 @@ class Subscription implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
-    }
-
-    /**
-     * Serializes this object to an array for API requests.
-     *
-     * @return array<string, mixed>
-     */
-    public function toData(): array
-    {
-        $data = [];
-
-        foreach (self::getPropertyTypes() as $type => $properties) {
-            foreach ($properties as $property) {
-                $value = $this->$property ?? null;
-
-                // Skip null values
-                if ($value === null) {
-                    continue;
-                }
-
-                // Handle special serialization
-                if ($type === 'object' && method_exists($value, 'toData')) {
-                    $data[$property] = $value->toData();
-                } elseif ($value instanceof SubscriptionState) {
-                    $data[$property] = $value->value;
-                } else {
-                    $data[$property] = $value;
-                }
-            }
-        }
-
-        return $data;
+        // customFields validation is handled by CustomFields value object
     }
 }

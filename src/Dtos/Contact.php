@@ -8,6 +8,9 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
+use League\ISO3166\Exception\DomainException;
+use League\ISO3166\Exception\OutOfBoundsException;
+use League\ISO3166\ISO3166;
 
 /**
  * Contact data transfer object.
@@ -18,24 +21,6 @@ use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 class Contact implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => [
-                'email',
-            ],
-            'string' => [
-                'fullName', 'company', 'street1', 'street2', 'city', 'region',
-                'postalCode', 'countryCode', 'primaryPhone', 'alternatePhone', 'fax',
-            ],
-        ];
-    }
 
     // countryCode: ISO 3166-1 Alpha-3 (3 chars)
     public function __construct(
@@ -62,11 +47,15 @@ class Contact implements DataTransferObject
      */
     private function validate(): void
     {
-        // Validate country code format (if present)
-        if ($this->countryCode !== null && strlen($this->countryCode) !== 3) {
-            throw new InvalidArgumentException(
-                "Country code must be exactly 3 characters, got: '{$this->countryCode}'"
-            );
+        // Validate country code is a valid ISO 3166-1 alpha-3 code
+        if ($this->countryCode !== null) {
+            try {
+                (new ISO3166())->alpha3($this->countryCode);
+            } catch (OutOfBoundsException | DomainException) {
+                throw new InvalidArgumentException(
+                    "Invalid ISO 3166-1 alpha-3 country code: '{$this->countryCode}'"
+                );
+            }
         }
 
         // Email validation is handled by EmailAddress value object

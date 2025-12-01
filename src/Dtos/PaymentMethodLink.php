@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * PaymentMethodLink data transfer object.
@@ -22,24 +23,6 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 class PaymentMethodLink implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'array' => ['status', 'customFields'],
-            'string' => [
-                'href', 'id', 'merchant', 'account', 'url', 'returnUrl',
-                'createdAt', 'modifiedAt', 'expiresAt', 'cancelledAt',
-                'cancelledBy', 'description', 'shopper', 'customReference',
-            ],
-            'bool' => ['doCancel'],
-        ];
-    }
 
     public function __construct(
         // Response-only fields
@@ -61,7 +44,7 @@ class PaymentMethodLink implements DataTransferObject
         public readonly ?string $shopper = null,
         public readonly ?array $status = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -116,16 +99,6 @@ class PaymentMethodLink implements DataTransferObject
             }
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
     }
 }

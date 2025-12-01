@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * Hosted Card data transfer object.
@@ -21,21 +22,6 @@ class HostedCard implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['card'],
-            'string' => ['href', 'id', 'createdAt', 'modifiedAt', 'expiresAt', 'merchant', 'customReference'],
-            'boolean' => ['doVerify'],
-            'array' => ['customFields'],
-        ];
-    }
-
     public function __construct(
         public readonly ?Card $card = null,
         public readonly ?string $href = null,
@@ -46,7 +32,7 @@ class HostedCard implements DataTransferObject
         public readonly ?string $merchant = null,
         public readonly ?bool $doVerify = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -63,16 +49,6 @@ class HostedCard implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate custom fields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field name must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field value must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
     }
 }

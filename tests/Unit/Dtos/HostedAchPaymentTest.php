@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\AchPayment;
 use Academe\Elavon\Epg\Psr7\Dtos\HostedAchPayment;
 use Academe\Elavon\Epg\Psr7\Enums\AchAccountType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -87,12 +88,12 @@ class HostedAchPaymentTest extends TestCase
         // Act
         $hostedAchPayment = new HostedAchPayment(
             customReference: 'hosted-ach-789',
-            customFields: ['session_id' => 'sess123'],
+            customFields: new CustomFields(['session_id' => 'sess123']),
         );
 
         // Assert
         $this->assertSame('hosted-ach-789', $hostedAchPayment->customReference);
-        $this->assertSame(['session_id' => 'sess123'], $hostedAchPayment->customFields);
+        $this->assertSame(['session_id' => 'sess123'], $hostedAchPayment->customFields->all());
     }
 
     public function test_construct_withCustomReferenceTooLong_throwsException(): void

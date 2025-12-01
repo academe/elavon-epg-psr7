@@ -21,21 +21,6 @@ class ApplePayPaymentSession implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => [
-                'merchant', 'account', 'displayName',
-                'initiativeContext', 'paymentSession',
-            ],
-        ];
-    }
-
     // initiativeContext: FQDN registered with Apple (no protocol)
     public function __construct(
         // Response-only fields

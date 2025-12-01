@@ -18,25 +18,6 @@ class VerificationResults implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'enum' => [
-                'name',
-                'securityCode',
-                'addressStreet',
-                'addressPostalCode',
-                'threeDSecureV2',
-                'cryptogramSecurity',
-            ],
-        ];
-    }
-
     public function __construct(
         public readonly ?Verification $name = null,
         public readonly ?Verification $securityCode = null,

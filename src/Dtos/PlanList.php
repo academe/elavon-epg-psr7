@@ -19,21 +19,6 @@ class PlanList implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'merchant',
-                'name', 'description',
-            ],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

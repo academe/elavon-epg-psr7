@@ -20,20 +20,6 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
  */
 class Card implements DataTransferObject
 {
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['number', 'securityCode', 'holderName', 'last4', 'bin', 'fingerprint'],
-            'int' => ['expirationMonth', 'expirationYear'],
-            'enum' => ['scheme'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $number = null,
         public readonly ?string $securityCode = null,

@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 
 /**
@@ -29,28 +30,6 @@ class PaymentLink implements DataTransferObject
 
     /** @var array<string>|null */
     public readonly ?array $status;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total', 'salesTax'],
-            'object' => ['debtorAccount'],
-            'array' => ['status', 'customFields'],
-            'string' => [
-                'href', 'id', 'merchant', 'account', 'url', 'returnUrl',
-                'createdAt', 'createdBy', 'modifiedAt', 'expiresAt',
-                'cancelledAt', 'cancelledBy', 'description', 'orderReference',
-                'shopperEmailAddress', 'shopper', 'customReference',
-            ],
-            'boolean' => ['doCancel', 'doCapture', 'useStoredPaymentMethod'],
-            'int' => ['conversionCount', 'conversionLimit'],
-        ];
-    }
 
     public function __construct(
         // Response-only fields
@@ -82,7 +61,7 @@ class PaymentLink implements DataTransferObject
         public readonly ?string $shopper = null,
         public readonly ?bool $useStoredPaymentMethod = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         // Normalize DebtorAccount object
         $this->debtorAccount = match (true) {
@@ -144,17 +123,7 @@ class PaymentLink implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
 
         // Validate status values
         if ($this->status !== null) {

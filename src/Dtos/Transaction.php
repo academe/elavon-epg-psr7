@@ -43,48 +43,6 @@ class Transaction implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => [
-                'total', 'totalRefunded', 'issuerTotal', 'tip', 'salesTax',
-            ],
-            'object' => [
-                'card', 'shopperStatement', 'shipTo', 'billTo', 'surcharge',
-                'shopperEmailAddress', 'shopperIpAddress', 'shopperLanguageTag', 'shopperTimeZone',
-            ],
-            'array' => [
-                'failures',
-            ],
-            'enum' => [
-                'state', 'type', 'processorDirective', 'source', 'paymentMethod',
-                'paymentMethodOrigin', 'paymentMethodQualifier', 'marketSegment',
-                'shopperInteraction', 'markupRateAnnotation',
-            ],
-            'string' => [
-                'id', 'description', 'customReference',
-                'createdAt', 'modifiedAt', 'authorizationExpiresAt', 'refundableUntil',
-                'href', 'merchant', 'processorAccount', 'account', 'terminal', 'forexAdvice', 'shopper', 'order',
-                'invoiceNumber', 'orderReference', 'shopperReference', 'purchaserReference',
-                'processorReference', 'issuerReference',
-                'shippingDate', 'credentialOnFileData',
-                'parentTransaction', 'hostedCard', 'hsmCard', 'storedCard',
-                'paymentLink', 'paymentSession',
-                'batch', 'manualBatch', 'processorBatchReference',
-                'conversionRate', 'markupRate', 'rateProviderName',
-            ],
-            'boolean' => [
-                'isAuthorized', 'isVoided', 'isRefunded', 'isReversed',
-                'isCaptured', 'isSettled', 'isPartiallyRefunded',
-            ],
-        ];
-    }
-
     public function __construct(
         // Primary transaction data
         public readonly ?Money $total = null,

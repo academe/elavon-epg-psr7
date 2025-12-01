@@ -17,21 +17,6 @@ class Address implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => [
-                'street1', 'street2', 'city', 'stateOrProvince',
-                'postalCode', 'country',
-            ],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $street1 = null,
         public readonly ?string $street2 = null,

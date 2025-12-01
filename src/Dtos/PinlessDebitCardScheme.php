@@ -22,20 +22,6 @@ class PinlessDebitCardScheme implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'enum' => ['cardScheme'],
-            'boolean' => ['isEnabled'],
-            'money' => ['threshold'],
-        ];
-    }
-
     public function __construct(
         public readonly ?CardScheme $cardScheme = null,
         public readonly ?bool $isEnabled = null,

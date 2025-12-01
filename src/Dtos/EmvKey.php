@@ -19,18 +19,6 @@ class EmvKey implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['rid', 'index', 'modulus', 'exponent', 'checksum'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $rid = null,
         public readonly ?string $index = null,

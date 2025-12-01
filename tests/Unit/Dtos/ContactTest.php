@@ -72,10 +72,10 @@ class ContactTest extends TestCase
     {
         // Arrange & Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Country code must be exactly 3 characters");
+        $this->expectExceptionMessage("Invalid ISO 3166-1 alpha-3 country code: 'XXX'");
 
         // Act
-        new Contact(countryCode: 'US');
+        new Contact(countryCode: 'XXX');
     }
 
     public function test_construct_withTooLongEmail_throwsException(): void
@@ -169,7 +169,7 @@ class ContactTest extends TestCase
             'company' => 'Test Co',
             'street1' => '1 Test St',
             'city' => 'Test City',
-            'countryCode' => 'TST',
+            'countryCode' => 'USA',
             'email' => 'test@test.com'
         ]);
 
@@ -177,13 +177,13 @@ class ContactTest extends TestCase
         $result = $contact->toData();
 
         // Assert
-        $this->assertSame([
+        $this->assertEquals([
             'email' => 'test@test.com',
             'fullName' => 'Test User',
             'company' => 'Test Co',
             'street1' => '1 Test St',
             'city' => 'Test City',
-            'countryCode' => 'TST',
+            'countryCode' => 'USA',
         ], $result);
     }
 

@@ -20,19 +20,6 @@ class CountAndTotal implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total'],
-            'int' => ['count'],
-        ];
-    }
-
     public function __construct(
         public readonly ?int $count = null,
         public readonly ?Money $total = null,

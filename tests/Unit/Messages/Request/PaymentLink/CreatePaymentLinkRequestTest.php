@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink\CreatePaymentLinkRequest;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -103,7 +104,7 @@ class CreatePaymentLinkRequestTest extends TestCase
         $paymentLink = new PaymentLink(
             total: Money::USD(30000),
             expiresAt: '2025-12-31T23:59:59Z',
-            customFields: ['invoiceNumber' => 'INV-12345', 'project' => 'Alpha'],
+            customFields: new CustomFields(['invoiceNumber' => 'INV-12345', 'project' => 'Alpha']),
         );
 
         $request = new CreatePaymentLinkRequest($paymentLink);

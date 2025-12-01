@@ -103,7 +103,7 @@ class StoredAchPaymentTest extends TestCase
 
         // Assert
         $this->assertSame('ach-payment-789', $storedAchPayment->customReference);
-        $this->assertSame(['customer_id' => 'cust123'], $storedAchPayment->customFields);
+        $this->assertSame(['customer_id' => 'cust123'], $storedAchPayment->customFields->all());
     }
 
     public function test_construct_withCustomReferenceTooLong_throwsException(): void

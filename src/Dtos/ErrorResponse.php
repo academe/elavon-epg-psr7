@@ -18,19 +18,6 @@ class ErrorResponse implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'int' => ['status'],
-            'array' => ['failures'],
-        ];
-    }
-
     /** @var ErrorDetail[] */
     public readonly array $failures;
 

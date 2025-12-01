@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -62,7 +63,7 @@ class PaymentLinkTest extends TestCase
             status: ['active'],
             useStoredPaymentMethod: true,
             customReference: 'CUST-REF-111',
-            customFields: ['field1' => 'value1'],
+            customFields: new CustomFields(['field1' => 'value1']),
         );
 
         // Assert
@@ -90,7 +91,7 @@ class PaymentLinkTest extends TestCase
         $this->assertSame(['active'], $paymentLink->status);
         $this->assertTrue($paymentLink->useStoredPaymentMethod);
         $this->assertSame('CUST-REF-111', $paymentLink->customReference);
-        $this->assertSame(['field1' => 'value1'], $paymentLink->customFields);
+        $this->assertSame(['field1' => 'value1'], $paymentLink->customFields->all());
     }
 
     public function test_construct_withMoneyObject_createsInstance(): void

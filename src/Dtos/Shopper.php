@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * Shopper data transfer object.
@@ -19,24 +20,6 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 class Shopper implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['primaryAddress'],
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'deletedAt', 'merchant',
-                'defaultStoredCard', 'defaultStoredAchPayment', 'fullName', 'description',
-                'company', 'primaryPhone', 'alternatePhone', 'fax', 'email', 'customReference',
-            ],
-            'array' => ['customFields'],
-        ];
-    }
 
     public function __construct(
         public readonly ?string $href = null,
@@ -56,7 +39,7 @@ class Shopper implements DataTransferObject
         public readonly ?string $fax = null,
         public readonly ?string $email = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -72,5 +55,7 @@ class Shopper implements DataTransferObject
         if ($this->email !== null && strlen($this->email) > 254) {
             throw new InvalidArgumentException('Email address cannot exceed 254 characters');
         }
+
+        // customFields validation is handled by CustomFields value object
     }
 }

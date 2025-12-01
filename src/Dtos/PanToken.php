@@ -22,20 +22,6 @@ class PanToken implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['reference', 'number', 'panToken'],
-            'bool' => ['success'],
-            'int' => ['cardExpirationMonth', 'cardExpirationYear'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $reference = null,
         public readonly ?string $number = null,

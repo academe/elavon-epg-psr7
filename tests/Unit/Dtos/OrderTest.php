@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\OrderItem;
 use Academe\Elavon\Epg\Psr7\Enums\OrderItemType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -72,7 +73,7 @@ class OrderTest extends TestCase
         $this->assertSame('PO-12345', $order->shopperReference);
         $this->assertSame('ORD-67890', $order->orderReference);
         $this->assertSame('CUST-REF-111', $order->customReference);
-        $this->assertSame(['field1' => 'value1'], $order->customFields);
+        $this->assertSame(['field1' => 'value1'], $order->customFields->all());
     }
 
     public function test_construct_withMoneyObject_createsInstance(): void
@@ -230,12 +231,12 @@ class OrderTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field names must not exceed 64 characters');
+        $this->expectExceptionMessage('Custom field name must not exceed 64 characters');
 
-        // Act
+        // Act - CustomFields validates the key length
         new Order(
             total: Money::USD(1000),
-            customFields: [$longKey => 'value'],
+            customFields: new CustomFields([$longKey => 'value']),
         );
     }
 
@@ -246,12 +247,12 @@ class OrderTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field values must not exceed 1024 characters');
+        $this->expectExceptionMessage('Custom field value for "field1" must not exceed 1024 characters');
 
-        // Act
+        // Act - CustomFields validates the value length
         new Order(
             total: Money::USD(1000),
-            customFields: ['field1' => $longValue],
+            customFields: new CustomFields(['field1' => $longValue]),
         );
     }
 
@@ -430,5 +431,167 @@ class OrderTest extends TestCase
         // Act & Assert
         $reflection = new \ReflectionProperty($order, 'total');
         $this->assertTrue($reflection->isReadOnly());
+    }
+
+    public function test_roundTrip_minimalOrder_toDataFromData_preservesData(): void
+    {
+        // Arrange - Create a minimal Order with just required fields
+        $order = new Order(
+            total: Money::USD(10000)
+        );
+
+        // Act - Serialize to data, then deserialize back
+        $data = $order->toData();
+        $restoredOrder = Order::fromData($data);
+
+        // Assert - Verify the restored object matches the original
+        $this->assertEquals($order->total->getAmount(), $restoredOrder->total->getAmount());
+        $this->assertEquals($order->total->getCurrency()->getCode(), $restoredOrder->total->getCurrency()->getCode());
+        $this->assertNull($restoredOrder->id);
+        $this->assertNull($restoredOrder->description);
+        $this->assertNull($restoredOrder->items);
+        $this->assertNull($restoredOrder->shipTo);
+    }
+
+    public function test_roundTrip_minimalOrder_toObjectArrayFromData_preservesData(): void
+    {
+        // Arrange - Create a minimal Order with just required fields
+        $order = new Order(
+            total: Money::USD(10000)
+        );
+
+        // Act - Serialize to object array (one level), then deserialize back
+        $objectArray = $order->toObjectArray();
+        $restoredOrder = Order::fromData($objectArray);
+
+        // Assert - Verify the restored object matches the original
+        $this->assertEquals($order->total->getAmount(), $restoredOrder->total->getAmount());
+        $this->assertEquals($order->total->getCurrency()->getCode(), $restoredOrder->total->getCurrency()->getCode());
+        $this->assertNull($restoredOrder->id);
+        $this->assertNull($restoredOrder->description);
+        $this->assertNull($restoredOrder->items);
+        $this->assertNull($restoredOrder->shipTo);
+    }
+
+    public function test_roundTrip_fullOrder_toDataFromData_preservesData(): void
+    {
+        // Arrange - Create a fully populated Order
+        $order = new Order(
+            total: Money::EUR(50000),
+            description: 'Full order test',
+            items: [
+                new OrderItem(
+                    total: Money::EUR(30000),
+                    description: 'Consulting services',
+                    type: OrderItemType::SERVICE,
+                ),
+                new OrderItem(
+                    total: Money::EUR(20000),
+                    description: 'Equipment',
+                    type: OrderItemType::GOODS,
+                ),
+            ],
+            shipTo: new Contact(
+                fullName: 'John Doe',
+                street1: '123 Main Street',
+                city: 'London',
+                countryCode: 'GBR',
+            ),
+            shopperEmailAddress: 'john.doe@example.com',
+            shopperReference: 'SHOPPER-REF-123',
+            orderReference: 'ORDER-REF-456',
+            customReference: 'CUSTOM-REF-789',
+            customFields: new CustomFields(['project' => 'Alpha', 'priority' => 'high']),
+        );
+
+        // Act - Serialize to data, then deserialize back
+        $data = $order->toData();
+        $restoredOrder = Order::fromData($data);
+
+        // Assert - Verify the restored object matches the original
+        $this->assertEquals($order->total->getAmount(), $restoredOrder->total->getAmount());
+        $this->assertEquals($order->total->getCurrency()->getCode(), $restoredOrder->total->getCurrency()->getCode());
+        $this->assertSame($order->description, $restoredOrder->description);
+        $this->assertSame($order->shopperEmailAddress, $restoredOrder->shopperEmailAddress);
+        $this->assertSame($order->shopperReference, $restoredOrder->shopperReference);
+        $this->assertSame($order->orderReference, $restoredOrder->orderReference);
+        $this->assertSame($order->customReference, $restoredOrder->customReference);
+        $this->assertEquals($order->customFields->all(), $restoredOrder->customFields->all());
+
+        // Verify items
+        $this->assertCount(2, $restoredOrder->items);
+        $this->assertEquals($order->items[0]->total->getAmount(), $restoredOrder->items[0]->total->getAmount());
+        $this->assertSame($order->items[0]->description, $restoredOrder->items[0]->description);
+        $this->assertSame($order->items[0]->type, $restoredOrder->items[0]->type);
+        $this->assertEquals($order->items[1]->total->getAmount(), $restoredOrder->items[1]->total->getAmount());
+        $this->assertSame($order->items[1]->description, $restoredOrder->items[1]->description);
+        $this->assertSame($order->items[1]->type, $restoredOrder->items[1]->type);
+
+        // Verify shipTo contact
+        $this->assertSame($order->shipTo->fullName, $restoredOrder->shipTo->fullName);
+        $this->assertSame($order->shipTo->street1, $restoredOrder->shipTo->street1);
+        $this->assertSame($order->shipTo->city, $restoredOrder->shipTo->city);
+        $this->assertSame($order->shipTo->countryCode, $restoredOrder->shipTo->countryCode);
+    }
+
+    public function test_roundTrip_fullOrder_toObjectArrayFromData_preservesData(): void
+    {
+        // Arrange - Create a fully populated Order
+        $order = new Order(
+            total: Money::EUR(50000),
+            description: 'Full order test',
+            items: [
+                new OrderItem(
+                    total: Money::EUR(30000),
+                    description: 'Consulting services',
+                    type: OrderItemType::SERVICE,
+                ),
+                new OrderItem(
+                    total: Money::EUR(20000),
+                    description: 'Equipment',
+                    type: OrderItemType::GOODS,
+                ),
+            ],
+            shipTo: new Contact(
+                fullName: 'John Doe',
+                street1: '123 Main Street',
+                city: 'London',
+                countryCode: 'GBR',
+            ),
+            shopperEmailAddress: 'john.doe@example.com',
+            shopperReference: 'SHOPPER-REF-123',
+            orderReference: 'ORDER-REF-456',
+            customReference: 'CUSTOM-REF-789',
+            customFields: new CustomFields(['project' => 'Alpha', 'priority' => 'high']),
+        );
+
+        // Act - Serialize to object array (one level), then deserialize back
+        $objectArray = $order->toObjectArray();
+        $restoredOrder = Order::fromData($objectArray);
+
+        // Assert - Verify the restored object matches the original
+        $this->assertEquals($order->total->getAmount(), $restoredOrder->total->getAmount());
+        $this->assertEquals($order->total->getCurrency()->getCode(), $restoredOrder->total->getCurrency()->getCode());
+        $this->assertSame($order->description, $restoredOrder->description);
+        $this->assertSame($order->shopperEmailAddress, $restoredOrder->shopperEmailAddress);
+        $this->assertSame($order->shopperReference, $restoredOrder->shopperReference);
+        $this->assertSame($order->orderReference, $restoredOrder->orderReference);
+        $this->assertSame($order->customReference, $restoredOrder->customReference);
+        $this->assertEquals($order->customFields->all(), $restoredOrder->customFields->all());
+
+        // Verify items - toObjectArray keeps objects, so fromData should handle them
+        $this->assertCount(2, $restoredOrder->items);
+        $this->assertEquals($order->items[0]->total->getAmount(), $restoredOrder->items[0]->total->getAmount());
+        $this->assertSame($order->items[0]->description, $restoredOrder->items[0]->description);
+        $this->assertSame($order->items[0]->type, $restoredOrder->items[0]->type);
+        $this->assertEquals($order->items[1]->total->getAmount(), $restoredOrder->items[1]->total->getAmount());
+        $this->assertSame($order->items[1]->description, $restoredOrder->items[1]->description);
+        $this->assertSame($order->items[1]->type, $restoredOrder->items[1]->type);
+
+        // Verify shipTo contact
+        $this->assertSame($order->shipTo->fullName, $restoredOrder->shipTo->fullName);
+        $this->assertSame($order->shipTo->street1, $restoredOrder->shipTo->street1);
+        $this->assertSame($order->shipTo->city, $restoredOrder->shipTo->city);
+        $this->assertSame($order->shipTo->countryCode, $restoredOrder->shipTo->countryCode);
     }
 }

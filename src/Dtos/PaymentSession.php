@@ -12,6 +12,7 @@ use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 
 /**
@@ -31,30 +32,6 @@ use Money\Money;
 class PaymentSession implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['salesTax', 'tip'],
-            'object' => ['billTo', 'shipTo', 'blik', 'debtorAccount', 'threeDSecure'],
-            'array' => ['allowedPaymentMethods', 'allowedPaymentMethodOrigins', 'previousTransactions', 'customFields'],
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'expiresAt', 'merchant', 'account', 'url',
-                'order', 'paymentLink', 'forexAdvice', 'surchargeAdvice', 'transaction',
-                'hostedCard', 'storedCard', 'hostedAchPayment', 'storedAchPayment',
-                'googlePayPayment', 'applePayPayment', 'pazePayment', 'shopper',
-                'shopperEmailAddress', 'returnUrl', 'cancelUrl', 'originUrl',
-                'defaultLanguageTag', 'shopperLanguageTag', 'createdBy', 'customReference',
-            ],
-            'enum' => ['hppType', 'shopperInteraction'],
-            'boolean' => ['doCreateTransaction', 'doCapture', 'doThreeDSecure', 'doReset', 'useStoredPaymentMethod'],
-        ];
-    }
 
     public function __construct(
         // Response-only fields
@@ -106,7 +83,7 @@ class PaymentSession implements DataTransferObject
         #[ArrayOf(Transaction::class)]
         public readonly ?array $previousTransactions = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
         /** @var array<PaymentMethod>|null */
         #[ArrayOf(PaymentMethod::class)]
         public readonly ?array $allowedPaymentMethods = null,
@@ -179,16 +156,6 @@ class PaymentSession implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
     }
 }

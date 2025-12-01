@@ -13,6 +13,7 @@ use Academe\Elavon\Epg\Psr7\Enums\HppType;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
@@ -299,12 +300,12 @@ class PaymentSessionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field names must not exceed 64 characters');
+        $this->expectExceptionMessage('Custom field name must not exceed 64 characters');
 
-        // Act
+        // Act - CustomFields validates the key length
         new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
-            customFields: [$longKey => 'value'],
+            customFields: new CustomFields([$longKey => 'value']),
         );
     }
 
@@ -315,12 +316,12 @@ class PaymentSessionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field values must not exceed 1024 characters');
+        $this->expectExceptionMessage('Custom field value for "field1" must not exceed 1024 characters');
 
-        // Act
+        // Act - CustomFields validates the value length
         new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
-            customFields: ['field1' => $longValue],
+            customFields: new CustomFields(['field1' => $longValue]),
         );
     }
 

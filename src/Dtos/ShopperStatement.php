@@ -18,18 +18,6 @@ class ShopperStatement implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['name', 'phone', 'url'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $phone = null,

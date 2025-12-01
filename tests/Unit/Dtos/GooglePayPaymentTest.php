@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 class GooglePayPaymentTest extends TestCase
@@ -25,7 +26,7 @@ class GooglePayPaymentTest extends TestCase
         $this->assertSame('test123', $googlepaypayment->id);
         $this->assertSame('2025-01-01T00:00:00Z', $googlepaypayment->createdAt);
         $this->assertSame('ref123', $googlepaypayment->customReference);
-        $this->assertSame(['key1' => 'value1'], $googlepaypayment->customFields);
+        $this->assertSame(['key1' => 'value1'], $googlepaypayment->customFields->all());
     }
 
     public function test_construct_withMinimalFields_createsInstance(): void
@@ -56,7 +57,7 @@ class GooglePayPaymentTest extends TestCase
         $googlepaypayment = new GooglePayPayment(
             id: 'test789',
             customReference: 'ref789',
-            customFields: ['field1' => 'val1'],
+            customFields: new CustomFields(['field1' => 'val1']),
         );
 
         $data = $googlepaypayment->toData();
@@ -84,12 +85,14 @@ class GooglePayPaymentTest extends TestCase
         $original = new GooglePayPayment(
             id: 'roundtrip123',
             customReference: 'ref_roundtrip',
-            customFields: ['test' => 'data'],
+            customFields: new CustomFields(['test' => 'data']),
         );
 
         $data = $original->toData();
         $restored = GooglePayPayment::fromData($data);
 
-        $this->assertEquals($original, $restored);
+        $this->assertEquals($original->id, $restored->id);
+        $this->assertEquals($original->customReference, $restored->customReference);
+        $this->assertEquals($original->customFields->all(), $restored->customFields->all());
     }
 }

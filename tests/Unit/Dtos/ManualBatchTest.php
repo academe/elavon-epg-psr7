@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +35,7 @@ class ManualBatchTest extends TestCase
             modifiedAt: '2025-01-02T00:00:00Z',
             merchant: 'https://api.example.com/merchants/m123',
             customReference: 'batch-2024-01',
-            customFields: ['purpose' => 'daily-settlement'],
+            customFields: new CustomFields(['purpose' => 'daily-settlement']),
         );
 
         // Assert
@@ -44,7 +45,7 @@ class ManualBatchTest extends TestCase
         $this->assertSame('2025-01-02T00:00:00Z', $manualBatch->modifiedAt);
         $this->assertSame('https://api.example.com/merchants/m123', $manualBatch->merchant);
         $this->assertSame('batch-2024-01', $manualBatch->customReference);
-        $this->assertSame(['purpose' => 'daily-settlement'], $manualBatch->customFields);
+        $this->assertSame(['purpose' => 'daily-settlement'], $manualBatch->customFields->all());
     }
 
     public function test_construct_withCustomReferenceTooLong_throwsException(): void
@@ -69,8 +70,8 @@ class ManualBatchTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Custom field name must not exceed 64 characters');
 
-        // Act
-        new ManualBatch(customFields: [$tooLongKey => 'value']);
+        // Act - CustomFields validates the key length
+        new ManualBatch(customFields: new CustomFields([$tooLongKey => 'value']));
     }
 
     public function test_construct_withCustomFieldValueTooLong_throwsException(): void
@@ -80,10 +81,10 @@ class ManualBatchTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field value must not exceed 1024 characters');
+        $this->expectExceptionMessage('Custom field value for "key" must not exceed 1024 characters');
 
-        // Act
-        new ManualBatch(customFields: ['key' => $tooLongValue]);
+        // Act - CustomFields validates the value length
+        new ManualBatch(customFields: new CustomFields(['key' => $tooLongValue]));
     }
 
     public function test_fromData_withValidData_createsInstance(): void
@@ -110,7 +111,7 @@ class ManualBatchTest extends TestCase
         $this->assertSame('2025-01-16T12:00:00Z', $manualBatch->modifiedAt);
         $this->assertSame('https://api.example.com/merchants/m456', $manualBatch->merchant);
         $this->assertSame('ref-789', $manualBatch->customReference);
-        $this->assertSame(['status' => 'closed'], $manualBatch->customFields);
+        $this->assertSame(['status' => 'closed'], $manualBatch->customFields->all());
     }
 
     public function test_toData_withAllFields_serializesCorrectly(): void
@@ -120,7 +121,7 @@ class ManualBatchTest extends TestCase
             href: 'https://api.example.com/manual-batches/mb789',
             id: 'mb789',
             customReference: 'test-ref',
-            customFields: ['key' => 'value'],
+            customFields: new CustomFields(['key' => 'value']),
         );
 
         // Act

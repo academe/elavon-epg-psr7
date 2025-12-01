@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * Google Pay Payment data transfer object.
@@ -21,20 +22,6 @@ class GooglePayPayment implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['card', 'verificationResults'],
-            'string' => ['href', 'id', 'createdAt', 'expiresAt', 'merchant', 'processorAccount', 'account', 'token', 'customReference'],
-            'array' => ['customFields'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,
@@ -46,7 +33,7 @@ class GooglePayPayment implements DataTransferObject
         public readonly ?string $token = null,
         public readonly ?Card $card = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
         public readonly ?VerificationResults $verificationResults = null,
     ) {
     }

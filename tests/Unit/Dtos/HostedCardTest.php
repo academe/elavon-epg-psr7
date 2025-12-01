@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -125,10 +126,10 @@ class HostedCardTest extends TestCase
     public function test_construct_withCustomFields_createsInstance(): void
     {
         // Arrange
-        $customFields = [
+        $customFields = new CustomFields([
             'field1' => 'value1',
             'field2' => 'value2',
-        ];
+        ]);
 
         // Act
         $hostedCard = new HostedCard(
@@ -136,14 +137,14 @@ class HostedCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $hostedCard->customFields);
+        $this->assertSame($customFields->all(), $hostedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldKeyAt64Characters_isValid(): void
     {
         // Arrange
         $maxKey = str_repeat('a', 64);
-        $customFields = [$maxKey => 'value'];
+        $customFields = new CustomFields([$maxKey => 'value']);
 
         // Act
         $hostedCard = new HostedCard(
@@ -151,28 +152,27 @@ class HostedCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $hostedCard->customFields);
+        $this->assertSame($customFields->all(), $hostedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldKeyTooLong_throwsException(): void
     {
         // Arrange
         $tooLongKey = str_repeat('a', 65);
-        $customFields = [$tooLongKey => 'value'];
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Custom field name must not exceed 64 characters');
 
-        // Act
-        new HostedCard(customFields: $customFields);
+        // Act - CustomFields validates the key length
+        new HostedCard(customFields: new CustomFields([$tooLongKey => 'value']));
     }
 
     public function test_construct_withCustomFieldValueAt1024Characters_isValid(): void
     {
         // Arrange
         $maxValue = str_repeat('a', 1024);
-        $customFields = ['key' => $maxValue];
+        $customFields = new CustomFields(['key' => $maxValue]);
 
         // Act
         $hostedCard = new HostedCard(
@@ -180,21 +180,20 @@ class HostedCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $hostedCard->customFields);
+        $this->assertSame($customFields->all(), $hostedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldValueTooLong_throwsException(): void
     {
         // Arrange
         $tooLongValue = str_repeat('a', 1025);
-        $customFields = ['key' => $tooLongValue];
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field value must not exceed 1024 characters');
+        $this->expectExceptionMessage('Custom field value for "key" must not exceed 1024 characters');
 
-        // Act
-        new HostedCard(customFields: $customFields);
+        // Act - CustomFields validates the value length
+        new HostedCard(customFields: new CustomFields(['key' => $tooLongValue]));
     }
 
     public function test_fromData_withCardData_createsInstance(): void
@@ -321,10 +320,10 @@ class HostedCardTest extends TestCase
     public function test_toData_withCustomFields_returnsArray(): void
     {
         // Arrange
-        $customFields = [
+        $customFields = new CustomFields([
             'orderNumber' => 'ORD-12345',
             'customerType' => 'premium',
-        ];
+        ]);
         $hostedCard = new HostedCard(
             id: 'hc111',
             customFields: $customFields,
@@ -335,7 +334,7 @@ class HostedCardTest extends TestCase
 
         // Assert
         $this->assertEquals([
-            'customFields' => $customFields,
+            'customFields' => $customFields->all(),
             'id' => 'hc111',
         ], $array);
     }

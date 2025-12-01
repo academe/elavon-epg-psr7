@@ -18,18 +18,6 @@ class Failure implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['code', 'description', 'field'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $code = null,
         public readonly ?string $description = null,

@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\HppType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * PaymentMethodSession data transfer object.
@@ -22,27 +23,6 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 class PaymentMethodSession implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['threeDSecure', 'billTo'],
-            'enum' => ['hppType'],
-            'array' => ['customFields'],
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'expiresAt',
-                'merchant', 'account', 'url', 'paymentMethodLink', 'storedCard',
-                'shopper', 'returnUrl', 'cancelUrl', 'originUrl',
-                'defaultLanguageTag', 'shopperLanguageTag', 'customReference',
-            ],
-            'bool' => ['doThreeDSecure'],
-        ];
-    }
 
     public function __construct(
         // Response-only fields
@@ -69,7 +49,7 @@ class PaymentMethodSession implements DataTransferObject
         public readonly ?ThreeDSecure $threeDSecure = null,
         public readonly ?Contact $billTo = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -108,16 +88,6 @@ class PaymentMethodSession implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
     }
 }

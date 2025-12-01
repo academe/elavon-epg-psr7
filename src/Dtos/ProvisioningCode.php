@@ -19,18 +19,6 @@ class ProvisioningCode implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['terminal', 'code', 'expiresAt'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $terminal = null,
         public readonly ?string $code = null,

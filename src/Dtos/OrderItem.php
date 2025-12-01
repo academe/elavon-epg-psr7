@@ -20,21 +20,6 @@ class OrderItem implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total', 'unitPrice'],
-            'string' => ['description', 'customReference'],
-            'int' => ['quantity'],
-            'enum' => ['type'],
-        ];
-    }
-
     public function __construct(
         public readonly ?Money $total = null,
         public readonly ?string $description = null,

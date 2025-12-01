@@ -5,19 +5,23 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Concerns;
 
 use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
-use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
 use Money\Money;
 use Money\Parser\DecimalMoneyParser;
+use BackedEnum;
+use ReflectionClass;
+use ReflectionNamedType;
+use ReflectionUnionType;
+use ReflectionParameter;
 
 /**
  * Trait for data-driven serialization and deserialization of DTOs.
  *
  * Provides reusable implementations of fromData(), toData(), and toObjectArray()
- * based on property type definitions from getPropertyTypes().
+ * using reflection to inspect constructor parameters and property types.
  */
 trait SerializesData
 {
@@ -33,7 +37,7 @@ trait SerializesData
      */
     public static function fromData(mixed $data): static
     {
-        $constructor = (new \ReflectionClass(static::class))->getConstructor();
+        $constructor = (new ReflectionClass(static::class))->getConstructor();
 
         if ($constructor === null) {
             return new static();
@@ -49,12 +53,12 @@ trait SerializesData
             $type = $param->getType();
             $typeName = null;
 
-            if ($type instanceof \ReflectionNamedType) {
+            if ($type instanceof ReflectionNamedType) {
                 $typeName = $type->getName();
-            } elseif ($type instanceof \ReflectionUnionType) {
+            } elseif ($type instanceof ReflectionUnionType) {
                 // Find the first non-null, non-builtin type
                 foreach ($type->getTypes() as $unionType) {
-                    if ($unionType instanceof \ReflectionNamedType && !$unionType->isBuiltin() && $unionType->getName() !== 'null') {
+                    if ($unionType instanceof ReflectionNamedType && !$unionType->isBuiltin() && $unionType->getName() !== 'null') {
                         $typeName = $unionType->getName();
                         break;
                     }
@@ -62,7 +66,7 @@ trait SerializesData
                 // If no class type found, check for builtin types
                 if ($typeName === null) {
                     foreach ($type->getTypes() as $unionType) {
-                        if ($unionType instanceof \ReflectionNamedType && $unionType->isBuiltin() && $unionType->getName() !== 'null') {
+                        if ($unionType instanceof ReflectionNamedType && $unionType->isBuiltin() && $unionType->getName() !== 'null') {
                             $typeName = $unionType->getName();
                             break;
                         }
@@ -144,12 +148,12 @@ trait SerializesData
     /**
      * Parse enum value from string.
      *
-     * @template T of \BackedEnum
+     * @template T of BackedEnum
      * @param mixed $value
      * @param class-string<T> $enumClass
      * @return T|null
      */
-    private static function parseEnumValue(mixed $value, string $enumClass): ?\BackedEnum
+    private static function parseEnumValue(mixed $value, string $enumClass): ?BackedEnum
     {
         if ($value instanceof $enumClass) {
             return $value;
@@ -167,9 +171,9 @@ trait SerializesData
     }
 
     // Reflection helper to get constructor parameter by name.
-    protected static function getConstructorArg(string $property): ?\ReflectionParameter
+    protected static function getConstructorArg(string $property): ?ReflectionParameter
     {
-        $constructor = (new \ReflectionClass(static::class))->getConstructor();
+        $constructor = (new ReflectionClass(static::class))->getConstructor();
 
         foreach ($constructor->getParameters() as $param) {
             if ($param->getName() === $property) {
@@ -197,7 +201,7 @@ trait SerializesData
     /**
      * Gets the ArrayOf attribute from a reflection parameter.
      */
-    protected static function getArrayOfAttributeFromParam(\ReflectionParameter $param): ?ArrayOf
+    protected static function getArrayOfAttributeFromParam(ReflectionParameter $param): ?ArrayOf
     {
         $attributes = $param->getAttributes(ArrayOf::class);
 
@@ -215,7 +219,7 @@ trait SerializesData
      */
     protected static function getArrayOfAttributes(): array
     {
-        $constructor = (new \ReflectionClass(static::class))->getConstructor();
+        $constructor = (new ReflectionClass(static::class))->getConstructor();
 
         if ($constructor === null) {
             return [];
@@ -235,34 +239,22 @@ trait SerializesData
     /**
      * Returns a shallow array of all non-null properties.
      *
-     * Unlike toArray(), this does not recurse into nested objects - it returns
+     * Unlike toData(), this does not recurse into nested objects - it returns
      * the actual object instances, arrays, enums, etc. as-is.
      *
      * @return array<string, mixed>
      */
     public function toObjectArray(): array
     {
-        /** @var DataTransferObject $class */
-        $class = static::class;
-        $propertyTypes = $class::getPropertyTypes();
-
+        $reflection = new ReflectionClass(static::class);
         $data = [];
 
-        // Build complete property list from type definitions
-        $allProperties = array_merge(
-            $propertyTypes['money'] ?? [],
-            $propertyTypes['object'] ?? [],
-            $propertyTypes['array'] ?? [],
-            $propertyTypes['enum'] ?? [],
-            $propertyTypes['string'] ?? [],
-            $propertyTypes['boolean'] ?? [],
-            $propertyTypes['int'] ?? []
-        );
+        foreach ($reflection->getProperties() as $property) {
+            $name = $property->getName();
+            $value = $this->$name;
 
-        // Collect all non-null properties
-        foreach ($allProperties as $property) {
-            if ($this->$property !== null) {
-                $data[$property] = $this->$property;
+            if ($value !== null) {
+                $data[$name] = $value;
             }
         }
 
@@ -280,7 +272,7 @@ trait SerializesData
      */
     public function toData(): mixed
     {
-        $reflection = new \ReflectionClass(static::class);
+        $reflection = new ReflectionClass(static::class);
         $data = [];
 
         foreach ($reflection->getProperties() as $property) {
@@ -315,7 +307,7 @@ trait SerializesData
         }
 
         // Backed enums - convert to their value
-        if ($value instanceof \BackedEnum) {
+        if ($value instanceof BackedEnum) {
             return $value->value;
         }
 
@@ -341,7 +333,7 @@ trait SerializesData
      *
      * Uses reflection to determine the enum class from the constructor parameter type.
      *
-     * @template T of \BackedEnum
+     * @template T of BackedEnum
      * @param T|string|null $value
      * @param string $fieldName Constructor parameter name to get enum type from
      * @return T|null
@@ -354,7 +346,7 @@ trait SerializesData
         }
 
         // Use reflection to get the enum class from the constructor parameter
-        $reflection = new \ReflectionClass(static::class);
+        $reflection = new ReflectionClass(static::class);
         $constructor = $reflection->getConstructor();
 
         if ($constructor === null) {
@@ -365,12 +357,12 @@ trait SerializesData
         foreach ($constructor->getParameters() as $param) {
             if ($param->getName() === $fieldName) {
                 $type = $param->getType();
-                if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
                     $enumClass = $type->getName();
-                } elseif ($type instanceof \ReflectionUnionType) {
+                } elseif ($type instanceof ReflectionUnionType) {
                     // Handle union types like EnumType|string|null
                     foreach ($type->getTypes() as $unionType) {
-                        if ($unionType instanceof \ReflectionNamedType && !$unionType->isBuiltin()) {
+                        if ($unionType instanceof ReflectionNamedType && !$unionType->isBuiltin()) {
                             $typeName = $unionType->getName();
                             if (enum_exists($typeName)) {
                                 $enumClass = $typeName;

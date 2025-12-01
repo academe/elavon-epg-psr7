@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 
 /**
  * HsmCard data transfer object.
@@ -25,23 +26,6 @@ class HsmCard implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['card', 'accountEntryMode', 'deviceInteraction'],
-            'array' => ['customFields'],
-            'string' => [
-                'id', 'createdAt', 'modifiedAt', 'expiresAt',
-                'merchant', 'processorAccount', 'terminal', 'customReference',
-            ],
-        ];
-    }
-
     public function __construct(
         // Response-only fields
         public readonly ?string $id = null,
@@ -57,7 +41,7 @@ class HsmCard implements DataTransferObject
         public readonly mixed $accountEntryMode = null,
         public readonly mixed $deviceInteraction = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
         $this->validate();
     }
@@ -74,16 +58,6 @@ class HsmCard implements DataTransferObject
             throw new InvalidArgumentException('Custom reference must not exceed 255 characters');
         }
 
-        // Validate customFields
-        if ($this->customFields !== null) {
-            foreach ($this->customFields as $key => $value) {
-                if (strlen($key) > 64) {
-                    throw new InvalidArgumentException('Custom field names must not exceed 64 characters');
-                }
-                if (strlen($value) > 1024) {
-                    throw new InvalidArgumentException('Custom field values must not exceed 1024 characters');
-                }
-            }
-        }
+        // customFields validation is handled by CustomFields value object
     }
 }

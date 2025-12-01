@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 
 /**
@@ -17,25 +18,6 @@ use Money\Money;
 class SurchargeAdvice implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total', 'surchargeTotal', 'adjustedTotal'],
-            'string' => [
-                'href', 'id', 'createdAt', 'expiresAt', 'merchant', 'processorAccount',
-                'hsmCard', 'googlePayPayment', 'applePayPayment', 'pazePayment',
-                'panToken', 'maskedNumber', 'last4', 'bin', 'panFingerprint',
-                'surchargeRate', 'customReference',
-            ],
-            'array' => ['customFields'],
-        ];
-    }
 
     public function __construct(
         public readonly ?string $href = null,
@@ -58,7 +40,7 @@ class SurchargeAdvice implements DataTransferObject
         public readonly ?Money $surchargeTotal = null,
         public readonly ?Money $adjustedTotal = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
     }
 }

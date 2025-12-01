@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard\CreateHostedCardRequest;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -126,10 +127,10 @@ class CreateHostedCardRequestTest extends TestCase
         );
         $hostedCard = new HostedCard(
             card: $card,
-            customFields: [
+            customFields: new CustomFields([
                 'orderId' => 'ORD-12345',
                 'customerId' => 'CUST-67890',
-            ],
+            ]),
         );
         $request = new CreateHostedCardRequest($hostedCard);
 

@@ -18,19 +18,6 @@ class Surcharge implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['unadjustedTotal', 'unadjustedRefundableTotal', 'surchargeTotal'],
-            'string' => ['rate'],
-        ];
-    }
-
     public function __construct(
         public readonly ?Money $unadjustedTotal = null,
         public readonly ?Money $unadjustedRefundableTotal = null,

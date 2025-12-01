@@ -21,26 +21,6 @@ class Account implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'object' => ['autoSettleAt'],
-            'array' => ['processorAccounts'],
-            'string' => [
-                'href', 'id', 'createdAt', 'modifiedAt', 'merchant',
-                'name', 'description', 'tradeName', 'businessAddress',
-                'businessPhone', 'businessEmail', 'businessWebsite',
-                'planList', 'salesTaxEntry', 'signatureVerification',
-                'logoUrl',
-            ],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

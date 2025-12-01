@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink\UpdatePaymentLinkRequest;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 class UpdatePaymentLinkRequestTest extends TestCase
@@ -49,7 +50,7 @@ class UpdatePaymentLinkRequestTest extends TestCase
     {
         $paymentLink = new PaymentLink(
             doCancel: false,
-            customFields: ['status' => 'active'],
+            customFields: new CustomFields(['status' => 'active']),
         );
 
         $request = new UpdatePaymentLinkRequest('pl789', $paymentLink);
@@ -64,7 +65,7 @@ class UpdatePaymentLinkRequestTest extends TestCase
         $paymentLink = new PaymentLink(
             doCancel: true,
             customReference: 'CANCELLED-123',
-            customFields: ['reason' => 'Customer request'],
+            customFields: new CustomFields(['reason' => 'Customer request']),
         );
 
         $request = new UpdatePaymentLinkRequest('pl999', $paymentLink);

@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Money\Money;
 
 /**
@@ -19,26 +20,6 @@ use Money\Money;
 class ForexAdvice implements DataTransferObject
 {
     use SerializesData;
-
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total', 'issuerTotal'],
-            'string' => [
-                'href', 'id', 'createdAt', 'expiresAt', 'merchant', 'processorAccount',
-                'account', 'storedCard', 'hostedCard', 'hsmCard', 'cardNumber',
-                'panToken', 'maskedNumber', 'last4', 'bin', 'panFingerprint',
-                'conversionRate', 'markupRate', 'rateProviderName', 'customReference',
-            ],
-            'array' => ['customFields'],
-            'enum' => ['markupRateAnnotation', 'shopperInteraction'],
-        ];
-    }
 
     public function __construct(
         public readonly ?string $href = null,
@@ -65,7 +46,7 @@ class ForexAdvice implements DataTransferObject
         public readonly ?string $rateProviderName = null,
         public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?string $customReference = null,
-        public readonly ?array $customFields = null,
+        public readonly ?CustomFields $customFields = null,
     ) {
     }
 }

@@ -20,22 +20,6 @@ class Terminal implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => [
-                'id', 'merchant', 'processorAccount', 'processorReference',
-                'hostLastUpdatedEmvKeysAt', 'provisionedAt', 'transactedAt',
-            ],
-            'enum' => ['terminalType'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $id = null,
         public readonly ?string $merchant = null,

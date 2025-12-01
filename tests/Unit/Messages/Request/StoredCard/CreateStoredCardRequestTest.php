@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard\CreateStoredCardRequest;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -146,10 +147,10 @@ class CreateStoredCardRequestTest extends TestCase
         $storedCard = new StoredCard(
             shopper: 'https://api.example.com/shoppers/s123',
             hostedCard: 'https://api.example.com/hosted-cards/hc123',
-            customFields: [
+            customFields: new CustomFields([
                 'subscriptionPlan' => 'premium',
                 'autoRenew' => 'true',
-            ],
+            ]),
         );
         $request = new CreateStoredCardRequest($storedCard);
 

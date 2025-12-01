@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PazePayment;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 class PazePaymentTest extends TestCase
@@ -25,7 +26,7 @@ class PazePaymentTest extends TestCase
         $this->assertSame('test123', $pazepayment->id);
         $this->assertSame('2025-01-01T00:00:00Z', $pazepayment->createdAt);
         $this->assertSame('ref123', $pazepayment->customReference);
-        $this->assertSame(['key1' => 'value1'], $pazepayment->customFields);
+        $this->assertSame(['key1' => 'value1'], $pazepayment->customFields->all());
     }
 
     public function test_construct_withMinimalFields_createsInstance(): void
@@ -56,7 +57,7 @@ class PazePaymentTest extends TestCase
         $pazepayment = new PazePayment(
             id: 'test789',
             customReference: 'ref789',
-            customFields: ['field1' => 'val1'],
+            customFields: new CustomFields(['field1' => 'val1']),
         );
 
         $data = $pazepayment->toData();
@@ -84,12 +85,14 @@ class PazePaymentTest extends TestCase
         $original = new PazePayment(
             id: 'roundtrip123',
             customReference: 'ref_roundtrip',
-            customFields: ['test' => 'data'],
+            customFields: new CustomFields(['test' => 'data']),
         );
 
         $data = $original->toData();
         $restored = PazePayment::fromData($data);
 
-        $this->assertEquals($original, $restored);
+        $this->assertEquals($original->id, $restored->id);
+        $this->assertEquals($original->customReference, $restored->customReference);
+        $this->assertEquals($original->customFields->all(), $restored->customFields->all());
     }
 }

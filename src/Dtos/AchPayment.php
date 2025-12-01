@@ -22,22 +22,6 @@ class AchPayment implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'enum' => ['achAccountType'],
-            'string' => [
-                'bankRoutingNumber', 'bankAccountNumber', 'bankAccountToken',
-                'achFingerprint', 'last4', 'accountName',
-            ],
-        ];
-    }
-
     public function __construct(
         public readonly AchAccountType $achAccountType,
         public readonly string $accountName,

@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Enums\CredentialOnFileType;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -149,10 +150,10 @@ class StoredCardTest extends TestCase
     public function test_construct_withCustomFields_createsInstance(): void
     {
         // Arrange
-        $customFields = [
+        $customFields = new CustomFields([
             'subscriptionId' => 'sub-789',
             'tier' => 'gold',
-        ];
+        ]);
 
         // Act
         $storedCard = new StoredCard(
@@ -160,14 +161,14 @@ class StoredCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $storedCard->customFields);
+        $this->assertSame($customFields->all(), $storedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldKeyAt64Characters_isValid(): void
     {
         // Arrange
         $maxKey = str_repeat('a', 64);
-        $customFields = [$maxKey => 'value'];
+        $customFields = new CustomFields([$maxKey => 'value']);
 
         // Act
         $storedCard = new StoredCard(
@@ -175,28 +176,27 @@ class StoredCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $storedCard->customFields);
+        $this->assertSame($customFields->all(), $storedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldKeyTooLong_throwsException(): void
     {
         // Arrange
         $tooLongKey = str_repeat('a', 65);
-        $customFields = [$tooLongKey => 'value'];
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Custom field name must not exceed 64 characters');
 
-        // Act
-        new StoredCard(customFields: $customFields);
+        // Act - CustomFields validates the key length
+        new StoredCard(customFields: new CustomFields([$tooLongKey => 'value']));
     }
 
     public function test_construct_withCustomFieldValueAt1024Characters_isValid(): void
     {
         // Arrange
         $maxValue = str_repeat('a', 1024);
-        $customFields = ['key' => $maxValue];
+        $customFields = new CustomFields(['key' => $maxValue]);
 
         // Act
         $storedCard = new StoredCard(
@@ -204,21 +204,20 @@ class StoredCardTest extends TestCase
         );
 
         // Assert
-        $this->assertSame($customFields, $storedCard->customFields);
+        $this->assertSame($customFields->all(), $storedCard->customFields->all());
     }
 
     public function test_construct_withCustomFieldValueTooLong_throwsException(): void
     {
         // Arrange
         $tooLongValue = str_repeat('a', 1025);
-        $customFields = ['key' => $tooLongValue];
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom field value must not exceed 1024 characters');
+        $this->expectExceptionMessage('Custom field value for "key" must not exceed 1024 characters');
 
-        // Act
-        new StoredCard(customFields: $customFields);
+        // Act - CustomFields validates the value length
+        new StoredCard(customFields: new CustomFields(['key' => $tooLongValue]));
     }
 
     public function test_construct_withAllCredentialOnFileTypes_createsInstance(): void
@@ -379,10 +378,10 @@ class StoredCardTest extends TestCase
     public function test_toData_withCustomFields_returnsArray(): void
     {
         // Arrange
-        $customFields = [
+        $customFields = new CustomFields([
             'membershipLevel' => 'platinum',
             'accountType' => 'business',
-        ];
+        ]);
         $storedCard = new StoredCard(
             id: 'sc222',
             customFields: $customFields,
@@ -393,7 +392,7 @@ class StoredCardTest extends TestCase
 
         // Assert
         $this->assertEquals([
-            'customFields' => $customFields,
+            'customFields' => $customFields->all(),
             'id' => 'sc222',
         ], $array);
     }

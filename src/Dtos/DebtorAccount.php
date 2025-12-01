@@ -18,18 +18,6 @@ class DebtorAccount implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['dateOfBirth', 'accountNumber', 'postalCode', 'lastName'],
-        ];
-    }
-
     // dateOfBirth: YYYYMMDD format
     public function __construct(
         public readonly ?string $dateOfBirth = null,

@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\StoredCard;
 use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard\UpdateStoredCardRequest;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -62,7 +63,7 @@ class UpdateStoredCardRequestTest extends TestCase
         // Arrange
         $updates = new StoredCard(
             customReference: 'order-789',
-            customFields: ['tier' => 'platinum'],
+            customFields: new CustomFields(['tier' => 'platinum']),
         );
         $request = new UpdateStoredCardRequest('sc789', $updates);
 
@@ -79,10 +80,10 @@ class UpdateStoredCardRequestTest extends TestCase
         // Arrange
         $updates = new StoredCard(
             customReference: 'subscription-123',
-            customFields: [
+            customFields: new CustomFields([
                 'planType' => 'annual',
                 'autoRenew' => 'yes',
-            ],
+            ]),
         );
         $request = new UpdateStoredCardRequest('sc999', $updates);
 
@@ -145,7 +146,7 @@ class UpdateStoredCardRequestTest extends TestCase
         // Arrange
         $updates = new StoredCard(
             customReference: 'get-updates-test',
-            customFields: ['key' => 'value'],
+            customFields: new CustomFields(['key' => 'value']),
         );
         $request = new UpdateStoredCardRequest('sc555', $updates);
 

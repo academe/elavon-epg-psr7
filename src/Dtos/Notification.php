@@ -23,21 +23,6 @@ class Notification implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => [
-                'href', 'id', 'merchant', 'createdAt', 'resource', 'customReference',
-            ],
-            'enum' => ['eventType', 'resourceType'],
-        ];
-    }
-
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,

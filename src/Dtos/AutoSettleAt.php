@@ -17,18 +17,6 @@ class AutoSettleAt implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['time', 'timeZoneId'],
-        ];
-    }
-
     // time: 24-hour format (e.g., "23:00"), timeZoneId: IANA timezone (e.g., "Europe/Berlin")
     public function __construct(
         public readonly ?string $time = null,

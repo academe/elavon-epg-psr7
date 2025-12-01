@@ -26,22 +26,6 @@ class PaymentLinkEvent implements DataTransferObject
     // Normalized properties (enums)
     public readonly ?PaymentLinkEventType $type;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'enum' => ['type'],
-            'string' => [
-                'href', 'id', 'merchant', 'paymentLink',
-                'createdAt', 'createdBy', 'transaction', 'shopperEmailAddress',
-            ],
-        ];
-    }
-
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,

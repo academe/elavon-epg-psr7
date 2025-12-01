@@ -18,19 +18,6 @@ class BillingInterval implements DataTransferObject
 {
     use SerializesData;
 
-    /**
-     * Get property type definitions for this DTO.
-     *
-     * @return array<string, array<string>>
-     */
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'string' => ['timeUnit'],
-            'int' => ['count'],
-        ];
-    }
-
     public function __construct(
         public readonly string|TimeUnit $timeUnit,
         public readonly int $count,
