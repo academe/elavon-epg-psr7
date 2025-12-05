@@ -18,10 +18,10 @@ use Psr\Http\Message\StreamFactoryInterface;
  *
  * This overwrites an existing order with new data.
  *
- * Example usage with ElavonApiRequest decorator:
+ * Example usage with ElavonApiFactory:
  * ```php
  * use Academe\Elavon\Epg\Psr7\Messages\Request\UpdateOrderRequest;
- * use Academe\Elavon\Epg\Psr7\Support\ElavonApiRequest;
+ * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  * use Academe\Elavon\Epg\Psr7\Dtos\Order;
  *
  * // Build the updated order
@@ -34,19 +34,21 @@ use Psr\Http\Message\StreamFactoryInterface;
  * $request = (new UpdateOrderRequest('order123', $order))->build();
  *
  * // Add Elavon API headers, environment, and authentication
- * $elavonRequest = ElavonApiRequest::create($request)
- *     ->withSandbox()
+ * $factory = ElavonApiFactory::configure()
+ *     ->withRegion('eu')
+ *     ->withEnvironment('sandbox')
  *     ->withAuthentication($merchantAlias, $apiKey);
  *
  * // Send the request
- * $response = $httpClient->sendRequest($elavonRequest);
+ * $apiRequest = $factory->apply($request);
+ * $response = $httpClient->sendRequest($apiRequest);
  * ```
  *
  * Note: This class builds the base request but does NOT add:
  * - Elavon API headers (Accept, Accept-Version)
  * - Environment configuration (sandbox, production, custom base URI)
  * - Authentication headers (Authorization)
- * Use the ElavonApiRequest decorator to add these via fluent interface.
+ * Use the ElavonApiFactory to add these.
  */
 class UpdateOrderRequest
 {

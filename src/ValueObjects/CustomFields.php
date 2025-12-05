@@ -65,7 +65,7 @@ class CustomFields implements ValueObject, ArrayAccess, Countable, IteratorAggre
      *
      * @return array<string, string>
      */
-    public function toData(): mixed
+    public function toData(): array
     {
         return $this->fields;
     }

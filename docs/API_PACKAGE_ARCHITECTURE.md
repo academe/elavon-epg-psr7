@@ -102,7 +102,7 @@ src/
 │           ├── TransactionResponse.php
 │           └── TransactionListResponse.php
 ├── Support/                     # Helper classes
-│   ├── ElavonApiRequest.php     # API request decorator
+│   ├── ElavonApiFactory.php     # API request factory
 │   ├── Psr17Factory.php         # Built-in PSR-17 factory
 │   ├── Request.php              # Built-in PSR-7 request
 │   ├── Response.php             # Built-in PSR-7 response
@@ -456,78 +456,62 @@ class CreateTransactionRequest
 }
 ```
 
-### API Request Decorator
+### API Request Factory
 
-The decorator pattern adds API-specific headers without modifying request classes:
+The factory pattern applies API-specific headers to requests:
 
 ```php
-class ElavonApiRequest implements RequestInterface
+class ElavonApiFactory
 {
-    public const ENVIRONMENT_PRODUCTION = 'https://api.convergepay.com';
-    public const ENVIRONMENT_UAT = 'https://uat.api.converge.eu.elavonaws.com';
+    public const REGION_EU = 'eu';
+    public const REGION_US = 'us';
+    public const ENV_PRODUCTION = 'production';
+    public const ENV_UAT = 'uat';
 
-    private function __construct(
-        private RequestInterface $request,
-        private string $apiVersion = '1',
-        private ?string $username = null,
-        private ?string $password = null,
-    ) {
-        // Add default headers
-        $this->request = $request
-            ->withHeader('Accept', 'application/json;charset=UTF-8')
-            ->withHeader('Accept-Version', $this->apiVersion);
+    private ?string $region = null;
+    private ?string $environment = null;
+    private ?string $username = null;
+    private ?string $password = null;
 
-        // Add auth if provided
-        if ($this->username && $this->password) {
-            $this->request = $this->request->withHeader(
+    public static function configure(): static
+    {
+        return new static();
+    }
+
+    public function apply(RequestInterface $request): RequestInterface
+    {
+        // Add Accept header
+        if (!$request->hasHeader('Accept')) {
+            $request = $request->withHeader('Accept', 'application/json;charset=UTF-8');
+        }
+
+        // Add Accept-Version header
+        $request = $request->withHeader('Accept-Version', '1');
+
+        // Add Content-Type for requests with body
+        if (!$request->hasHeader('Content-Type') && $request->getBody()->getSize() > 0) {
+            $request = $request->withHeader('Content-Type', 'application/json');
+        }
+
+        // Add authentication if configured
+        if ($this->username !== null && $this->password !== null) {
+            $request = $request->withHeader(
                 'Authorization',
                 'Basic ' . base64_encode("{$this->username}:{$this->password}")
             );
         }
+
+        // Replace base URI if configured
+        if ($this->region && $this->environment) {
+            $request = $this->replaceBaseUri($request);
+        }
+
+        return $request;
     }
 
-    // Factory method
-    public static function create(RequestInterface $request): static
-    {
-        return new static($request);
-    }
-
-    // Fluent configuration
-    public function withAuthentication(string $username, string $password): static
-    {
-        $new = clone $this;
-        $new->username = $username;
-        $new->password = $password;
-        $new->request = $this->request->withHeader(
-            'Authorization',
-            'Basic ' . base64_encode("{$username}:{$password}")
-        );
-        return $new;
-    }
-
-    public function withSandbox(): static
-    {
-        return $this->withBaseUri(self::ENVIRONMENT_UAT);
-    }
-
-    public function withProduction(): static
-    {
-        return $this->withBaseUri(self::ENVIRONMENT_PRODUCTION);
-    }
-
-    public function withBaseUri(string $baseUri): static
-    {
-        $new = clone $this;
-        $currentUri = $this->request->getUri();
-        $newUri = (new Uri($baseUri))->withPath($currentUri->getPath());
-        $new->request = $this->request->withUri($newUri);
-        return $new;
-    }
-
-    // Delegate all RequestInterface methods to decorated request
-    public function getMethod(): string { return $this->request->getMethod(); }
-    public function getUri(): UriInterface { return $this->request->getUri(); }
-    // ... etc
+    public function withRegion(string $region): static { ... }
+    public function withEnvironment(string $env): static { ... }
+    public function withAuthentication(string $username, string $password): static { ... }
 }
 ```
 
@@ -544,12 +528,14 @@ $request = new CreateTransactionRequest([
     ],
 ]);
 
-// Decorate with API config
-$apiRequest = ElavonApiRequest::create($request->build())
-    ->withSandbox()
+// Configure factory with API settings
+$factory = ElavonApiFactory::configure()
+    ->withRegion('eu')
+    ->withEnvironment('sandbox')
     ->withAuthentication($merchantAlias, $apiSecret);
 
-// Send with any PSR-18 client
+// Apply factory to request and send
+$apiRequest = $factory->apply($request->build());
 $response = $httpClient->sendRequest($apiRequest);
 
 // Parse response
@@ -816,10 +802,12 @@ class IntegrationTest extends TestCase
             'card' => ['number' => '4111111111111111', ...],
         ]);
 
-        $apiRequest = ApiRequest::create($request->build())
-            ->withSandbox()
+        $factory = ElavonApiFactory::configure()
+            ->withRegion('eu')
+            ->withEnvironment('sandbox')
             ->withAuthentication($this->merchantAlias, $this->apiSecret);
 
+        $apiRequest = $factory->apply($request->build());
         $response = $this->httpClient->sendRequest($apiRequest);
         $result = TransactionResponse::fromPsr7Response($response);
 
@@ -909,16 +897,17 @@ One response class per unique response structure:
 // Error response → ErrorResponse (shared)
 ```
 
-#### 9. Create API Request Decorator
+#### 9. Create API Request Factory
 
 Configure authentication, base URI, and API-specific headers:
 
 ```php
-class MyApiRequest implements RequestInterface
+class MyApiFactory
 {
     public function withAuthentication(string $apiKey): static { ... }
-    public function withSandbox(): static { ... }
-    public function withProduction(): static { ... }
+    public function withRegion(string $region): static { ... }
+    public function withEnvironment(string $env): static { ... }
+    public function apply(RequestInterface $request): RequestInterface { ... }
 }
 ```
 
@@ -942,7 +931,7 @@ class MyApiRequest implements RequestInterface
 - [ ] DTOs for all API schemas
 - [ ] Request classes for all API operations
 - [ ] Response classes with error handling
-- [ ] API request decorator for auth/headers
+- [ ] API request factory for auth/headers
 - [ ] Built-in PSR-7/PSR-17 implementations (optional)
 - [ ] Unit tests for serialization roundtrips
 - [ ] Integration tests against sandbox

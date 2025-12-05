@@ -18,7 +18,7 @@ use Psr\Http\Message\RequestInterface;
  * - Elavon API headers (Accept, Accept-Version)
  * - Environment configuration (sandbox, production, custom base URI)
  * - Authentication headers (Authorization)
- * Use the ElavonApiRequest decorator to add these via fluent interface.
+ * Use the ElavonApiFactory to add these.
  */
 class RetrieveProcessorAccountRequest
 {
