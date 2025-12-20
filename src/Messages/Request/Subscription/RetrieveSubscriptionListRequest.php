@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Retrieve Subscription List Request.
@@ -46,17 +46,16 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrieveSubscriptionListRequest
 {
+    use HasPsr17Factories;
+
     /**
      * @param string|null $pageToken Page token for pagination
-     * @param int|null $limit Maximum number of items to return (default varies by endpoint)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param int|null $limit Maximum number of items to return (default varies by endpoint)     *
      * @throws InvalidArgumentException When validation fails
      */
     public function __construct(
         private readonly ?string $pageToken = null,
-        private readonly ?int $limit = null,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly ?int $limit = null
     ) {
         if ($this->limit !== null && $this->limit < 1) {
             throw new InvalidArgumentException('Limit must be at least 1');
@@ -71,7 +70,7 @@ class RetrieveSubscriptionListRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build query string
         $queryParams = [];

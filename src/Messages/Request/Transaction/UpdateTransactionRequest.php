@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Transaction Request.
@@ -47,19 +47,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateTransactionRequest
 {
+    use HasPsr17Factories;
+
     /**
      * @param string $transactionId Transaction ID to update
-     * @param Transaction|array<string, mixed> $updates Partial transaction data (only fields to update)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Transaction|array<string, mixed> $updates Partial transaction data (only fields to update)     *
      * @throws InvalidArgumentException When transaction ID is empty
      */
     public function __construct(
         private readonly string $transactionId,
-        private readonly Transaction|array $updates,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        private readonly Transaction|array $updates
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -76,8 +73,8 @@ class UpdateTransactionRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Normalize to Transaction object
         $updates = $this->updates instanceof Transaction

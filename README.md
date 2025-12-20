@@ -86,9 +86,31 @@ if ($response->isSuccessful()) {
 }
 ```
 
+### Using DTOs (fromData)
+
+You can create DTOs explicitly from array data using `fromData()`:
+
+```php
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+
+$transaction = Transaction::fromData([
+    'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+    'card' => [
+        'number' => '4111111111111111',
+        'securityCode' => '123',
+        'expirationMonth' => 12,
+        'expirationYear' => 2025,
+        'holderName' => 'John Doe',
+    ],
+    'description' => 'Order #12345',
+]);
+
+$request = new CreateTransactionRequest($transaction);
+```
+
 ### Using Value Objects (Type-Safe)
 
-For stronger typing, use DTOs and value objects instead of arrays:
+For full type safety, construct DTOs with typed value objects:
 
 ```php
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;

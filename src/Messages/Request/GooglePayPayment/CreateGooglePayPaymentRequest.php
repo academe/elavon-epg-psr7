@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\GooglePayPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class CreateGooglePayPaymentRequest
 {
+    use HasPsr17Factories;
+
     private readonly GooglePayPayment $googlePayPayment;
 
     public function __construct(
-        GooglePayPayment|array $googlePayPayment,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        GooglePayPayment|array $googlePayPayment
     ) {
         $this->googlePayPayment = match (true) {
             $googlePayPayment instanceof GooglePayPayment => $googlePayPayment,
@@ -27,8 +27,8 @@ class CreateGooglePayPaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = $this->googlePayPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);

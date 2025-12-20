@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HsmCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HsmCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create HsmCard Request.
@@ -18,12 +18,12 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateHsmCardRequest
 {
+    use HasPsr17Factories;
+
     private readonly HsmCard $hsmCard;
 
     public function __construct(
-        HsmCard|array $hsmCard,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        HsmCard|array $hsmCard
     ) {
         $this->hsmCard = match (true) {
             $hsmCard instanceof HsmCard => $hsmCard,
@@ -35,8 +35,8 @@ class CreateHsmCardRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = $this->hsmCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);

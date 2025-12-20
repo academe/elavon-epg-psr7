@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Order;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
-use Psr\Http\Message\RequestFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -41,15 +40,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrieveOrderRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $orderId Order ID to retrieve
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $orderId Order ID to retrieve     *
      * @throws InvalidArgumentException When order ID is empty
      */
     public function __construct(
-        private readonly string $orderId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $orderId
     ) {
         if (empty($this->orderId)) {
             throw new InvalidArgumentException('Order ID cannot be empty');
@@ -64,7 +62,7 @@ class RetrieveOrderRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
         return $requestFactory

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Plan;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Retrieve Plan Request.
@@ -41,15 +41,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrievePlanRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $planId Plan ID to retrieve
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $planId Plan ID to retrieve     *
      * @throws InvalidArgumentException When plan ID is empty
      */
     public function __construct(
-        private readonly string $planId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $planId
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
@@ -64,7 +63,7 @@ class RetrievePlanRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
         return $requestFactory

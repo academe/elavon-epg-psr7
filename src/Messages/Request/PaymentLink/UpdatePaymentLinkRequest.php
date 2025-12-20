@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update PaymentLink Request.
@@ -53,21 +53,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdatePaymentLinkRequest
 {
+    use HasPsr17Factories;
+
     private readonly PaymentLink $paymentLink;
 
     /**
      * @param string $paymentLinkId PaymentLink Resource ID to update
-     * @param PaymentLink|array<string, mixed> $paymentLink PaymentLink data or array (only fields to update)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param PaymentLink|array<string, mixed> $paymentLink PaymentLink data or array (only fields to update)     *
      * @throws InvalidArgumentException When payment link ID is empty or data is invalid
      */
     public function __construct(
         private readonly string $paymentLinkId,
-        PaymentLink|array $paymentLink,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        PaymentLink|array $paymentLink
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
@@ -88,8 +85,8 @@ class UpdatePaymentLinkRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment link to JSON
         $data = $this->paymentLink->toData();

@@ -122,14 +122,14 @@ class CreateTransactionRequestTest extends TestCase
         $requestFactory = new Psr17Factory();
         $streamFactory = new Psr17Factory();
 
-        $request = new CreateTransactionRequest(
+        $request = (new CreateTransactionRequest(
             transaction: [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
             ],
-            requestFactory: $requestFactory,
-            streamFactory: $streamFactory,
-        );
+        ))
+        ->withRequestFactory($requestFactory)
+        ->withStreamFactory($streamFactory);
 
         // Act
         $psr7Request = $request->build();

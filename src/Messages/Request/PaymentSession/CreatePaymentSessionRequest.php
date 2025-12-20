@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentSession;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create PaymentSession Request.
@@ -55,19 +55,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreatePaymentSessionRequest
 {
+    use HasPsr17Factories;
+
     private readonly PaymentSession $paymentSession;
 
     /**
-     * @param PaymentSession|array<string, mixed> $paymentSession PaymentSession data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param PaymentSession|array<string, mixed> $paymentSession PaymentSession data or array     *
      * @throws InvalidArgumentException When payment session data is invalid
      */
     public function __construct(
-        PaymentSession|array $paymentSession,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        PaymentSession|array $paymentSession
     ) {
         // Normalize to PaymentSession object
         $this->paymentSession = match (true) {
@@ -87,8 +84,8 @@ class CreatePaymentSessionRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment session to JSON
         $data = $this->paymentSession->toData();

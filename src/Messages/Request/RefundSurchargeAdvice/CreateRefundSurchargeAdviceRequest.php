@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\RefundSurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Refund Surcharge Advice Request.
@@ -50,19 +50,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateRefundSurchargeAdviceRequest
 {
+    use HasPsr17Factories;
+
     private readonly RefundSurchargeAdvice $refundSurchargeAdvice;
 
     /**
-     * @param RefundSurchargeAdvice|array<string, mixed> $refundSurchargeAdvice Refund surcharge advice data
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-7 stream factory (uses built-in if null)
-     *
+     * @param RefundSurchargeAdvice|array<string, mixed> $refundSurchargeAdvice Refund surcharge advice data     *
      * @throws InvalidArgumentException When refund surcharge advice data is invalid
      */
     public function __construct(
-        RefundSurchargeAdvice|array $refundSurchargeAdvice,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        RefundSurchargeAdvice|array $refundSurchargeAdvice
     ) {
         // Normalize to RefundSurchargeAdvice object
         $this->refundSurchargeAdvice = match (true) {
@@ -97,8 +94,8 @@ class CreateRefundSurchargeAdviceRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize to JSON
         $data = $this->refundSurchargeAdvice->toData();

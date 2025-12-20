@@ -6,19 +6,19 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ApplePayPaymentSession;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ApplePayPaymentSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class CreateApplePayPaymentSessionRequest
 {
+    use HasPsr17Factories;
+
     private readonly ApplePayPaymentSession $applePayPaymentSession;
 
     public function __construct(
-        ApplePayPaymentSession|array $applePayPaymentSession,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        ApplePayPaymentSession|array $applePayPaymentSession
     ) {
         $this->applePayPaymentSession = match (true) {
             $applePayPaymentSession instanceof ApplePayPaymentSession => $applePayPaymentSession,
@@ -32,8 +32,8 @@ class CreateApplePayPaymentSessionRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = $this->applePayPaymentSession->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);

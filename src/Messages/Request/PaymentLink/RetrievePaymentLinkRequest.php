@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Retrieve PaymentLink Request.
@@ -41,15 +41,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrievePaymentLinkRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $paymentLinkId PaymentLink Resource ID
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $paymentLinkId PaymentLink Resource ID     *
      * @throws InvalidArgumentException When payment link ID is empty
      */
     public function __construct(
-        private readonly string $paymentLinkId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $paymentLinkId
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
@@ -64,7 +63,7 @@ class RetrievePaymentLinkRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
         return $requestFactory

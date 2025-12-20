@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ManualBatch;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Manual Batch Request.
@@ -53,19 +53,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateManualBatchRequest
 {
+    use HasPsr17Factories;
+
     private readonly ManualBatch $manualBatch;
 
     /**
-     * @param ManualBatch|array<string, mixed> $manualBatch Manual batch data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param ManualBatch|array<string, mixed> $manualBatch Manual batch data or array     *
      * @throws InvalidArgumentException When manual batch data is invalid
      */
     public function __construct(
-        ManualBatch|array $manualBatch,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        ManualBatch|array $manualBatch
     ) {
         // Normalize to ManualBatch object
         $this->manualBatch = match (true) {
@@ -82,8 +79,8 @@ class CreateManualBatchRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize manual batch to JSON
         $data = $this->manualBatch->toData();

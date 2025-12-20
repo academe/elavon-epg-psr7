@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodSession;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create PaymentMethodSession Request.
@@ -18,19 +18,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreatePaymentMethodSessionRequest
 {
+    use HasPsr17Factories;
+
     private readonly PaymentMethodSession $paymentMethodSession;
 
     /**
-     * @param PaymentMethodSession|array<string, mixed> $paymentMethodSession PaymentMethodSession data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param PaymentMethodSession|array<string, mixed> $paymentMethodSession PaymentMethodSession data or array     *
      * @throws InvalidArgumentException When payment method session data is invalid
      */
     public function __construct(
-        PaymentMethodSession|array $paymentMethodSession,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        PaymentMethodSession|array $paymentMethodSession
     ) {
         // Normalize to PaymentMethodSession object
         $this->paymentMethodSession = match (true) {
@@ -47,8 +44,8 @@ class CreatePaymentMethodSessionRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment method session to JSON
         $data = $this->paymentMethodSession->toData();

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Delete Shopper Request.
@@ -41,15 +41,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class DeleteShopperRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $storedCardId shopper ID to delete
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $storedCardId shopper ID to delete     *
      * @throws InvalidArgumentException When stored card ID is empty
      */
     public function __construct(
-        private readonly string $storedCardId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $storedCardId
     ) {
         if (empty($this->storedCardId)) {
             throw new InvalidArgumentException('shopper ID cannot be empty');
@@ -64,7 +63,7 @@ class DeleteShopperRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 DELETE request
         return $requestFactory

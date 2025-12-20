@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Shopper;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Shopper Request.
@@ -54,19 +54,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateShopperRequest
 {
+    use HasPsr17Factories;
+
     private readonly Shopper $shopper;
 
     /**
-     * @param Shopper|array<string, mixed> $shopper shopper data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Shopper|array<string, mixed> $shopper shopper data or array     *
      * @throws InvalidArgumentException When stored card data is invalid
      */
     public function __construct(
-        Shopper|array $shopper,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        Shopper|array $shopper
     ) {
         // Normalize to Shopper object
         $this->shopper = match (true) {
@@ -83,8 +80,8 @@ class CreateShopperRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize stored card to JSON
         $data = $this->shopper->toData();

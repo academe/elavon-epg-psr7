@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Shopper;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Shopper Request.
@@ -52,21 +52,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateShopperRequest
 {
+    use HasPsr17Factories;
+
     private readonly Shopper $updates;
 
     /**
      * @param string $shopperId shopper ID to update
-     * @param Shopper|array<string, mixed> $updates Update data (partial stored card)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Shopper|array<string, mixed> $updates Update data (partial stored card)     *
      * @throws InvalidArgumentException When stored card ID is empty or updates are invalid
      */
     public function __construct(
         private readonly string $shopperId,
-        Shopper|array $updates,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        Shopper|array $updates
     ) {
         if (empty($this->shopperId)) {
             throw new InvalidArgumentException('shopper ID cannot be empty');
@@ -87,8 +84,8 @@ class UpdateShopperRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize updates to JSON
         $data = $this->updates->toData();

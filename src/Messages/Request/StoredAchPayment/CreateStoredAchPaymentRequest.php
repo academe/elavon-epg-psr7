@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Stored ACH Payment Request.
@@ -55,19 +55,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateStoredAchPaymentRequest
 {
+    use HasPsr17Factories;
+
     private readonly StoredAchPayment $storedAchPayment;
 
     /**
-     * @param StoredAchPayment|array<string, mixed> $storedAchPayment Stored ACH payment data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param StoredAchPayment|array<string, mixed> $storedAchPayment Stored ACH payment data or array     *
      * @throws InvalidArgumentException When stored ACH payment data is invalid
      */
     public function __construct(
-        StoredAchPayment|array $storedAchPayment,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        StoredAchPayment|array $storedAchPayment
     ) {
         // Normalize to StoredAchPayment object
         $this->storedAchPayment = match (true) {
@@ -86,8 +83,8 @@ class CreateStoredAchPaymentRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize stored ACH payment to JSON
         $data = $this->storedAchPayment->toData();

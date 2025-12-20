@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Hosted ACH Payment Request.
@@ -58,19 +58,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateHostedAchPaymentRequest
 {
+    use HasPsr17Factories;
+
     private readonly HostedAchPayment $hostedAchPayment;
 
     /**
-     * @param HostedAchPayment|array<string, mixed> $hostedAchPayment Hosted ACH payment data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param HostedAchPayment|array<string, mixed> $hostedAchPayment Hosted ACH payment data or array     *
      * @throws InvalidArgumentException When hosted ACH payment data is invalid
      */
     public function __construct(
-        HostedAchPayment|array $hostedAchPayment,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        HostedAchPayment|array $hostedAchPayment
     ) {
         // Normalize to HostedAchPayment object
         $this->hostedAchPayment = match (true) {
@@ -89,8 +86,8 @@ class CreateHostedAchPaymentRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize hosted ACH payment to JSON
         $data = $this->hostedAchPayment->toData();

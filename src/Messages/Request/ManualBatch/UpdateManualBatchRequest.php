@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ManualBatch;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Manual Batch Request.
@@ -52,21 +52,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateManualBatchRequest
 {
+    use HasPsr17Factories;
+
     private readonly ManualBatch $updates;
 
     /**
      * @param string $manualBatchId Manual batch ID to update
-     * @param ManualBatch|array<string, mixed> $updates Update data (partial manual batch)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param ManualBatch|array<string, mixed> $updates Update data (partial manual batch)     *
      * @throws InvalidArgumentException When manual batch ID is empty or updates are invalid
      */
     public function __construct(
         private readonly string $manualBatchId,
-        ManualBatch|array $updates,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        ManualBatch|array $updates
     ) {
         if (empty($this->manualBatchId)) {
             throw new InvalidArgumentException('Manual batch ID cannot be empty');
@@ -87,8 +84,8 @@ class UpdateManualBatchRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize updates to JSON
         $data = $this->updates->toData();

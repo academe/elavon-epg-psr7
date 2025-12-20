@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\TotalAdjustment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\TotalAdjustment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Total Adjustment Request.
@@ -26,19 +26,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateTotalAdjustmentRequest
 {
+    use HasPsr17Factories;
+
     private readonly TotalAdjustment $totalAdjustment;
 
     /**
-     * @param TotalAdjustment|array<string, mixed> $totalAdjustment Total adjustment data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param TotalAdjustment|array<string, mixed> $totalAdjustment Total adjustment data or array     *
      * @throws InvalidArgumentException When total adjustment data is invalid
      */
     public function __construct(
-        TotalAdjustment|array $totalAdjustment,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        TotalAdjustment|array $totalAdjustment
     ) {
         // Normalize to TotalAdjustment object
         $this->totalAdjustment = match (true) {
@@ -55,8 +52,8 @@ class CreateTotalAdjustmentRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize total adjustment to JSON
         $data = $this->totalAdjustment->toData();

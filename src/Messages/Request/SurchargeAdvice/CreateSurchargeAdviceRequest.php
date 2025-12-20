@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\SurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Surcharge Advice Request.
@@ -50,19 +50,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateSurchargeAdviceRequest
 {
+    use HasPsr17Factories;
+
     private readonly SurchargeAdvice $surchargeAdvice;
 
     /**
-     * @param SurchargeAdvice|array<string, mixed> $surchargeAdvice Surcharge advice data
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param SurchargeAdvice|array<string, mixed> $surchargeAdvice Surcharge advice data     *
      * @throws InvalidArgumentException When surcharge advice data is invalid
      */
     public function __construct(
-        SurchargeAdvice|array $surchargeAdvice,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        SurchargeAdvice|array $surchargeAdvice
     ) {
         // Normalize to SurchargeAdvice object
         $this->surchargeAdvice = match (true) {
@@ -93,8 +90,8 @@ class CreateSurchargeAdviceRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize to JSON
         $data = $this->surchargeAdvice->toData();

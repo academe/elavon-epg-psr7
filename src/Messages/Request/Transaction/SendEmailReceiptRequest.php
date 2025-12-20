@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class SendEmailReceiptRequest
 {
+    use HasPsr17Factories;
+
     public function __construct(
         private readonly string $transactionId,
-        private readonly string $shopperEmailAddress,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        private readonly string $shopperEmailAddress
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -29,8 +29,8 @@ class SendEmailReceiptRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = ['shopperEmailAddress' => $this->shopperEmailAddress];
         $json = json_encode($data, JSON_THROW_ON_ERROR);

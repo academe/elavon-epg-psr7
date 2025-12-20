@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Stored Card Request.
@@ -52,21 +52,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateStoredCardRequest
 {
+    use HasPsr17Factories;
+
     private readonly StoredCard $updates;
 
     /**
      * @param string $storedCardId Stored card ID to update
-     * @param StoredCard|array<string, mixed> $updates Update data (partial stored card)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param StoredCard|array<string, mixed> $updates Update data (partial stored card)     *
      * @throws InvalidArgumentException When stored card ID is empty or updates are invalid
      */
     public function __construct(
         private readonly string $storedCardId,
-        StoredCard|array $updates,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        StoredCard|array $updates
     ) {
         if (empty($this->storedCardId)) {
             throw new InvalidArgumentException('Stored card ID cannot be empty');
@@ -87,8 +84,8 @@ class UpdateStoredCardRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize updates to JSON
         $data = $this->updates->toData();

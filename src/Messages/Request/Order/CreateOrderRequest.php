@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Order;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Order Request.
@@ -54,19 +54,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateOrderRequest
 {
+    use HasPsr17Factories;
+
     private readonly Order $order;
 
     /**
-     * @param Order|array<string, mixed> $order Order data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Order|array<string, mixed> $order Order data or array     *
      * @throws InvalidArgumentException When order data is invalid
      */
     public function __construct(
-        Order|array $order,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        Order|array $order
     ) {
         // Normalize to Order object
         $this->order = match (true) {
@@ -86,8 +83,8 @@ class CreateOrderRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize order to JSON
         $data = $this->order->toData();

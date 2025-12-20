@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create PaymentMethodLink Request.
@@ -21,19 +21,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreatePaymentMethodLinkRequest
 {
+    use HasPsr17Factories;
+
     private readonly PaymentMethodLink $paymentMethodLink;
 
     /**
-     * @param PaymentMethodLink|array<string, mixed> $paymentMethodLink PaymentMethodLink data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param PaymentMethodLink|array<string, mixed> $paymentMethodLink PaymentMethodLink data or array     *
      * @throws InvalidArgumentException When payment method link data is invalid
      */
     public function __construct(
-        PaymentMethodLink|array $paymentMethodLink,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        PaymentMethodLink|array $paymentMethodLink
     ) {
         // Normalize to PaymentMethodLink object
         $this->paymentMethodLink = match (true) {
@@ -53,8 +50,8 @@ class CreatePaymentMethodLinkRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment method link to JSON
         $data = $this->paymentMethodLink->toData();

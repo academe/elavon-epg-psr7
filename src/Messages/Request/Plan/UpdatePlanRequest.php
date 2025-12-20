@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Plan;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Plan;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Plan Request.
@@ -54,21 +54,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdatePlanRequest
 {
+    use HasPsr17Factories;
+
     private readonly Plan $plan;
 
     /**
      * @param string $planId Plan ID to update
-     * @param Plan|array<string, mixed> $plan Updated plan data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Plan|array<string, mixed> $plan Updated plan data or array     *
      * @throws InvalidArgumentException When plan ID is empty or plan data is invalid
      */
     public function __construct(
         private readonly string $planId,
-        Plan|array $plan,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        Plan|array $plan
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
@@ -89,8 +86,8 @@ class UpdatePlanRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize plan to JSON
         $data = $this->plan->toData();

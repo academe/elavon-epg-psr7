@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Create Hosted Card Request.
@@ -57,19 +57,16 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class CreateHostedCardRequest
 {
+    use HasPsr17Factories;
+
     private readonly HostedCard $hostedCard;
 
     /**
-     * @param HostedCard|array<string, mixed> $hostedCard Hosted card data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param HostedCard|array<string, mixed> $hostedCard Hosted card data or array     *
      * @throws InvalidArgumentException When hosted card data is invalid
      */
     public function __construct(
-        HostedCard|array $hostedCard,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        HostedCard|array $hostedCard
     ) {
         // Normalize to HostedCard object
         $this->hostedCard = match (true) {
@@ -88,8 +85,8 @@ class CreateHostedCardRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize hosted card to JSON
         $data = $this->hostedCard->toData();

@@ -6,20 +6,20 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class UpdateHostedCardRequest
 {
+    use HasPsr17Factories;
+
     private readonly HostedCard $hostedCard;
 
     public function __construct(
         private readonly string $hostedCardId,
-        HostedCard|array $hostedCard,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        HostedCard|array $hostedCard
     ) {
         if (empty($this->hostedCardId)) {
             throw new InvalidArgumentException('HostedCard ID cannot be empty');
@@ -33,8 +33,8 @@ class UpdateHostedCardRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = $this->hostedCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);

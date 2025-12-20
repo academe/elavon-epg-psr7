@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Stored ACH Payment Request.
@@ -58,21 +58,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateStoredAchPaymentRequest
 {
+    use HasPsr17Factories;
+
     private readonly StoredAchPayment $updates;
 
     /**
      * @param string $storedAchPaymentId Stored ACH payment ID to update
-     * @param StoredAchPayment|array<string, mixed> $updates Update data (partial stored ACH payment)
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param StoredAchPayment|array<string, mixed> $updates Update data (partial stored ACH payment)     *
      * @throws InvalidArgumentException When stored ACH payment ID is empty or updates are invalid
      */
     public function __construct(
         private readonly string $storedAchPaymentId,
-        StoredAchPayment|array $updates,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        StoredAchPayment|array $updates
     ) {
         if (empty($this->storedAchPaymentId)) {
             throw new InvalidArgumentException('Stored ACH payment ID cannot be empty');
@@ -93,8 +90,8 @@ class UpdateStoredAchPaymentRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize updates to JSON
         $data = $this->updates->toData();

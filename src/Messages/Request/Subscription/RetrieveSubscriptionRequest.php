@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Retrieve Subscription Request.
@@ -41,15 +41,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrieveSubscriptionRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $subscriptionId Subscription ID to retrieve
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $subscriptionId Subscription ID to retrieve     *
      * @throws InvalidArgumentException When subscription ID is empty
      */
     public function __construct(
-        private readonly string $subscriptionId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $subscriptionId
     ) {
         if (empty($this->subscriptionId)) {
             throw new InvalidArgumentException('Subscription ID cannot be empty');
@@ -64,7 +63,7 @@ class RetrieveSubscriptionRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
         return $requestFactory

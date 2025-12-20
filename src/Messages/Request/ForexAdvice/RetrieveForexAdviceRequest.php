@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\ForexAdvice;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Retrieve Forex Advice Request.
@@ -41,15 +41,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class RetrieveForexAdviceRequest
 {
+    use HasPsr17Factories;
+
     /**
-     * @param string $forexAdviceId Forex advice ID to retrieve
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     *
+     * @param string $forexAdviceId Forex advice ID to retrieve     *
      * @throws InvalidArgumentException When forex advice ID is empty
      */
     public function __construct(
-        private readonly string $forexAdviceId,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
+        private readonly string $forexAdviceId
     ) {
         if (empty($this->forexAdviceId)) {
             throw new InvalidArgumentException('Forex advice ID cannot be empty');
@@ -64,7 +63,7 @@ class RetrieveForexAdviceRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
         return $requestFactory

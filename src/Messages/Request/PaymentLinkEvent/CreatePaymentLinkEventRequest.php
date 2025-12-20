@@ -6,19 +6,19 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLinkEvent;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLinkEvent;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class CreatePaymentLinkEventRequest
 {
+    use HasPsr17Factories;
+
     private readonly PaymentLinkEvent $paymentLinkEvent;
 
     public function __construct(
-        PaymentLinkEvent|array $paymentLinkEvent,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        PaymentLinkEvent|array $paymentLinkEvent
     ) {
         $this->paymentLinkEvent = match (true) {
             $paymentLinkEvent instanceof PaymentLinkEvent => $paymentLinkEvent,
@@ -30,8 +30,8 @@ class CreatePaymentLinkEventRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         $data = $this->paymentLinkEvent->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);

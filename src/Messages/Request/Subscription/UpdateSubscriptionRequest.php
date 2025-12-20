@@ -6,10 +6,10 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Subscription;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
  * Update Subscription Request.
@@ -55,21 +55,18 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class UpdateSubscriptionRequest
 {
+    use HasPsr17Factories;
+
     private readonly Subscription $subscription;
 
     /**
      * @param string $subscriptionId Subscription ID to update
-     * @param Subscription|array<string, mixed> $subscription Updated subscription data or array
-     * @param RequestFactoryInterface|null $requestFactory PSR-17 request factory (uses built-in if null)
-     * @param StreamFactoryInterface|null $streamFactory PSR-17 stream factory (uses built-in if null)
-     *
+     * @param Subscription|array<string, mixed> $subscription Updated subscription data or array     *
      * @throws InvalidArgumentException When subscription ID is empty or subscription data is invalid
      */
     public function __construct(
         private readonly string $subscriptionId,
-        Subscription|array $subscription,
-        private readonly ?RequestFactoryInterface $requestFactory = null,
-        private readonly ?StreamFactoryInterface $streamFactory = null,
+        Subscription|array $subscription
     ) {
         if (empty($this->subscriptionId)) {
             throw new InvalidArgumentException('Subscription ID cannot be empty');
@@ -90,8 +87,8 @@ class UpdateSubscriptionRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->requestFactory ?? new Psr17Factory();
-        $streamFactory = $this->streamFactory ?? new Psr17Factory();
+        $requestFactory = $this->getRequestFactory();
+        $streamFactory = $this->getStreamFactory();
 
         // Serialize subscription to JSON
         $data = $this->subscription->toData();
