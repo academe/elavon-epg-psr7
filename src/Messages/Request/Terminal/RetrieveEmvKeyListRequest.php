@@ -48,7 +48,6 @@ class RetrieveEmvKeyListRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build URI with query parameters
         $uri = '/terminals/' . $this->terminalId . '/emv-keys';
@@ -57,7 +56,7 @@ class RetrieveEmvKeyListRequest
         }
 
         // Build PSR-7 GET request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

@@ -84,17 +84,15 @@ class CreatePaymentLinkRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment link to JSON
         $data = $this->paymentLink->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/payment-links')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**

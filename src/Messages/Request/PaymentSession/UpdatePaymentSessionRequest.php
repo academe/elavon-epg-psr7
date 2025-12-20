@@ -84,17 +84,15 @@ class UpdatePaymentSessionRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment session to JSON
         $data = $this->paymentSession->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request (update uses POST, not PUT/PATCH)
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/payment-sessions/' . $this->paymentSessionId)
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**

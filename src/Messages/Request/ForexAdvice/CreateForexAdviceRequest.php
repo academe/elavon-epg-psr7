@@ -95,17 +95,15 @@ class CreateForexAdviceRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize to JSON
         $data = $this->forexAdvice->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/forex-advices')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**

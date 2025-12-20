@@ -30,15 +30,13 @@ class CreatePaymentLinkEventRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         $data = $this->paymentLinkEvent->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/payment-link-events')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     public function getPaymentLinkEvent(): PaymentLinkEvent

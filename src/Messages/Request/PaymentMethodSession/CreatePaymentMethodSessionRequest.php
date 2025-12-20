@@ -44,17 +44,15 @@ class CreatePaymentMethodSessionRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize payment method session to JSON
         $data = $this->paymentMethodSession->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/payment-method-sessions')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**

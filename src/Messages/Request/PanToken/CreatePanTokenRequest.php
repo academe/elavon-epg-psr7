@@ -27,15 +27,13 @@ class CreatePanTokenRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         $data = array_map(fn($token) => $token->toData(), $this->panTokens);
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/pan-tokens')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     public function getPanTokens(): array

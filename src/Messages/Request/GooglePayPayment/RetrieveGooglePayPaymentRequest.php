@@ -23,9 +23,8 @@ class RetrieveGooglePayPaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', '/google-pay-payments/' . $this->googlePayPaymentId);
     }
 

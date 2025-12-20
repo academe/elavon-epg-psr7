@@ -24,14 +24,13 @@ class RetrieveShopperStoredCardsRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
         $uri = '/shoppers/' . $this->shopperId . '/stored-cards';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

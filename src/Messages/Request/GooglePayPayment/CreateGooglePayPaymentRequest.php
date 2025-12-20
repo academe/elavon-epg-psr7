@@ -27,15 +27,13 @@ class CreateGooglePayPaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         $data = $this->googlePayPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/google-pay-payments')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     public function getGooglePayPayment(): GooglePayPayment

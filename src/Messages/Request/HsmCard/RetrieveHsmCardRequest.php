@@ -23,9 +23,8 @@ class RetrieveHsmCardRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', '/hsm-cards/' . $this->hsmCardId);
     }
 

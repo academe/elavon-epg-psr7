@@ -73,8 +73,6 @@ class UpdateTransactionRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Normalize to Transaction object
         $updates = $this->updates instanceof Transaction
@@ -85,11 +83,11 @@ class UpdateTransactionRequest
         $body = json_encode($updates->toData(), JSON_THROW_ON_ERROR);
 
         // Create request stream
-        $stream = $streamFactory->createStream($body);
+        $stream = $this->getStreamFactory()->createStream($body);
 
         // Build PSR-7 request
         // Note: PATCH is used for partial updates
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('PATCH', '/transactions/' . $this->transactionId)
             ->withBody($stream);
     }

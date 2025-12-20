@@ -23,9 +23,8 @@ class RetrieveApplePayPaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', '/apple-pay-payments/' . $this->applePayPaymentId);
     }
 

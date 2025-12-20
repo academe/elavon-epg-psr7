@@ -62,7 +62,6 @@ class RetrieveBatchListRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build URI with query parameters
         $uri = '/batches';
@@ -71,7 +70,7 @@ class RetrieveBatchListRequest
         }
 
         // Build PSR-7 GET request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

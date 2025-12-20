@@ -62,7 +62,6 @@ class RetrieveStoredCardListRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build URI with query parameters
         $uri = '/stored-cards';
@@ -71,7 +70,7 @@ class RetrieveStoredCardListRequest
         }
 
         // Build PSR-7 GET request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

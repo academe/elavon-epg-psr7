@@ -23,9 +23,8 @@ class RetrievePazePaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', '/paze-payments/' . $this->pazePaymentId);
     }
 

@@ -34,7 +34,6 @@ class RetrievePaymentMethodLinkListRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build URI with query parameters
         $uri = '/payment-method-links';
@@ -43,7 +42,7 @@ class RetrievePaymentMethodLinkListRequest
         }
 
         // Build PSR-7 GET request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

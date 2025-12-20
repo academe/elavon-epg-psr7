@@ -27,15 +27,13 @@ class CreateApplePayPaymentRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         $data = $this->applePayPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/apple-pay-payments')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     public function getApplePayPayment(): ApplePayPayment

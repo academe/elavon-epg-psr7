@@ -63,10 +63,9 @@ class DeleteStoredAchPaymentRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 DELETE request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('DELETE', '/stored-ach-payments/' . $this->storedAchPaymentId);
     }
 

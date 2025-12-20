@@ -29,15 +29,12 @@ class SendEmailReceiptRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
-
         $data = ['shopperEmailAddress' => $this->shopperEmailAddress];
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/transactions/' . $this->transactionId . '/email-receipt-requests')
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     public function getTransactionId(): string

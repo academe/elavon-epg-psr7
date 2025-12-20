@@ -19,14 +19,13 @@ class RetrievePaymentLinkEventListRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
         $uri = '/payment-link-events';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

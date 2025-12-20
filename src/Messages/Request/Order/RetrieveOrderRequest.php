@@ -62,10 +62,9 @@ class RetrieveOrderRequest
     public function build(): RequestInterface
     {
         // Use built-in factory if none provided
-        $requestFactory = $this->getRequestFactory();
 
         // Build PSR-7 GET request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', '/orders/' . $this->orderId);
     }
 

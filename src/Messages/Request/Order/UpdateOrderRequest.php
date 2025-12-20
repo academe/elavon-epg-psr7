@@ -84,17 +84,15 @@ class UpdateOrderRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize order to JSON
         $data = $this->order->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/orders/' . $this->orderId)
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**

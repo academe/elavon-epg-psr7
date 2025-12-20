@@ -24,14 +24,13 @@ class RetrieveTotalAdjustmentListRequest
 
     public function build(): RequestInterface
     {
-        $requestFactory = $this->getRequestFactory();
 
         $uri = '/transactions/' . $this->transactionId . '/total-adjustments';
         if (!empty($this->queryParams)) {
             $uri .= '?' . http_build_query($this->queryParams);
         }
 
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('GET', $uri);
     }
 

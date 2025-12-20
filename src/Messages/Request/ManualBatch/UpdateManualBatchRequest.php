@@ -84,17 +84,15 @@ class UpdateManualBatchRequest
     public function build(): RequestInterface
     {
         // Use built-in factories if none provided
-        $requestFactory = $this->getRequestFactory();
-        $streamFactory = $this->getStreamFactory();
 
         // Serialize updates to JSON
         $data = $this->updates->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request (API uses POST for updates)
-        return $requestFactory
+        return $this->getRequestFactory()
             ->createRequest('POST', '/manual-batches/' . $this->manualBatchId)
-            ->withBody($streamFactory->createStream($json));
+            ->withBody($this->getStreamFactory()->createStream($json));
     }
 
     /**
