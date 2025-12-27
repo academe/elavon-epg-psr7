@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\ManualBatch;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * Manual Batch Response.
@@ -32,76 +30,25 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ManualBatchResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?ManualBatch $manualBatch;
+    public readonly ?ManualBatch $manualBatch;
 
     /**
-     * @param ResponseInterface $response PSR-7 HTTP response
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(private readonly ResponseInterface $response)
+    public function __construct(array $data, int $statusCode)
     {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->manualBatch = $this->parseSuccessResponse();
+            $this->manualBatch = ManualBatch::fromData($data);
             $this->error = null;
         } else {
             $this->manualBatch = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a ManualBatchResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 HTTP response
-     * @return static
-     */
-    public static function fromPsr7Response(ResponseInterface $response): static
-    {
-        return new static($response);
-    }
-
-    /**
-     * Gets the manual batch from a successful response.
-     *
-     * @return ManualBatch|null Manual batch on success, null on error
-     */
-    public function getManualBatch(): ?ManualBatch
-    {
-        return $this->manualBatch;
-    }
-
-    /**
-     * Gets the PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
-     * Parses a successful response into a ManualBatch object.
-     *
-     * @return ManualBatch
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    private function parseSuccessResponse(): ManualBatch
-    {
-        $data = $this->parseJsonBody();
-        return ManualBatch::fromData($data);
-    }
-
 }

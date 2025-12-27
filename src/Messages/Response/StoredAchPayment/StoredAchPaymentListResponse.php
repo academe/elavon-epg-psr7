@@ -6,8 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Response\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * Stored ACH Payment List Response.
@@ -38,72 +37,35 @@ use Psr\Http\Message\ResponseInterface;
  */
 class StoredAchPaymentListResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?array $storedAchPayments;
-    private readonly ?string $nextPage;
-    private readonly ?string $firstPage;
+    /** @var array<StoredAchPayment>|null */
+    public readonly ?array $storedAchPayments;
+    public readonly ?string $nextPage;
+    public readonly ?string $firstPage;
 
     /**
-     * @param ResponseInterface $response PSR-7 HTTP response
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      * @throws InvalidArgumentException When response format is invalid
      */
-    public function __construct(private readonly ResponseInterface $response)
+    public function __construct(array $data, int $statusCode)
     {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $data = $this->parseSuccessResponse();
-            $this->storedAchPayments = $data['items'];
-            $this->nextPage = $data['next'];
-            $this->firstPage = $data['first'];
+            $parsed = $this->parseSuccessData($data);
+            $this->storedAchPayments = $parsed['items'];
+            $this->nextPage = $parsed['next'];
+            $this->firstPage = $parsed['first'];
             $this->error = null;
         } else {
             $this->storedAchPayments = null;
             $this->nextPage = null;
             $this->firstPage = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
-    }
-
-    /**
-     * Creates a StoredAchPaymentListResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 HTTP response
-     * @return static
-     */
-    public static function fromPsr7Response(ResponseInterface $response): static
-    {
-        return new static($response);
-    }
-
-    /**
-     * Gets the stored ACH payments from a successful response.
-     *
-     * @return array<StoredAchPayment>|null Array of stored ACH payments on success, null on error
-     */
-    public function getStoredAchPayments(): ?array
-    {
-        return $this->storedAchPayments;
-    }
-
-    /**
-     * Gets the URL for the next page of results.
-     *
-     * @return string|null URL if more pages exist, null otherwise
-     */
-    public function getNextPage(): ?string
-    {
-        return $this->nextPage;
-    }
-
-    /**
-     * Gets the URL for the first page of results.
-     *
-     * @return string|null URL if available, null otherwise
-     */
-    public function getFirstPage(): ?string
-    {
-        return $this->firstPage;
     }
 
     /**
@@ -115,37 +77,14 @@ class StoredAchPaymentListResponse
     {
         return $this->nextPage !== null;
     }
-
-    /**
-     * Gets the PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
     /**
      * Parses a successful response into a paginated list of stored ACH payments.
      *
      * @return array{items: array<StoredAchPayment>, next: string|null, first: string|null}
      * @throws InvalidArgumentException When response cannot be parsed
      */
-    private function parseSuccessResponse(): array
+    private function parseSuccessData(array $data): array
     {
-        $data = $this->parseJsonBody();
-
         // Validate structure
         if (!isset($data['items']) || !is_array($data['items'])) {
             throw new InvalidArgumentException('Response must contain an "items" array');
@@ -160,7 +99,6 @@ class StoredAchPaymentListResponse
 
             $storedAchPayments[] = StoredAchPayment::fromData($itemData);
         }
-
         return [
             'items' => $storedAchPayments,
             'next' => isset($data['next']) ? (string) $data['next'] : null,

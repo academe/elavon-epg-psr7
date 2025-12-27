@@ -46,10 +46,10 @@ class ManualBatchResponseTest extends TestCase
         // Assert
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->hasError());
-        $this->assertInstanceOf(ManualBatch::class, $response->getManualBatch());
-        $this->assertSame('mb123', $response->getManualBatch()->id);
-        $this->assertSame('batch-2024-01', $response->getManualBatch()->customReference);
-        $this->assertSame(201, $response->getStatusCode());
+        $this->assertInstanceOf(ManualBatch::class, $response->manualBatch);
+        $this->assertSame('mb123', $response->manualBatch->id);
+        $this->assertSame('batch-2024-01', $response->manualBatch->customReference);
+        $this->assertSame(201, $response->statusCode);
     }
 
     public function test_fromPsr7Response_withErrorResponse_parsesError(): void
@@ -69,8 +69,8 @@ class ManualBatchResponseTest extends TestCase
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getManualBatch());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(400, $response->getError()->status);
+        $this->assertNull($response->manualBatch);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(400, $response->error->status);
     }
 }

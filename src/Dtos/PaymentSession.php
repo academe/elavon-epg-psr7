@@ -13,6 +13,7 @@ use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Money\Money;
 
 /**
@@ -63,7 +64,7 @@ class PaymentSession implements DataTransferObject
         public readonly ?string $shopper = null,
         public readonly ?DebtorAccount $debtorAccount = null,
         public readonly ?ThreeDSecure $threeDSecure = null,
-        public readonly ?string $shopperEmailAddress = null,
+        public readonly ?EmailAddress $shopperEmailAddress = null,
         public readonly ?Contact $billTo = null,
         public readonly ?Contact $shipTo = null,
         public readonly ?HppType $hppType = null,
@@ -101,11 +102,6 @@ class PaymentSession implements DataTransferObject
      */
     private function validate(): void
     {
-        // Validate shopperEmailAddress length
-        if ($this->shopperEmailAddress !== null && strlen($this->shopperEmailAddress) > 254) {
-            throw new InvalidArgumentException('Shopper email address must not exceed 254 characters');
-        }
-
         // Validate returnUrl length and pattern
         if ($this->returnUrl !== null) {
             if (strlen($this->returnUrl) > 2048) {

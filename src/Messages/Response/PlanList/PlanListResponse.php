@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\PlanList;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PlanList;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * PlanList Response.
@@ -19,83 +17,24 @@ use Psr\Http\Message\ResponseInterface;
  */
 class PlanListResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?PlanList $planList;
+    public readonly ?PlanList $planList;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from the API
-     *
-     * @throws InvalidArgumentException When response cannot be parsed
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
-        // Parse response based on status code
+    public function __construct(array $data, int $statusCode)
+    {
+        $this->statusCode = $statusCode;
+
         if ($this->isSuccessful()) {
-            $this->planList = $this->parseSuccessResponse();
+            $this->planList = PlanList::fromData($data);
             $this->error = null;
         } else {
             $this->planList = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a PlanListResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 response
-     *
-     * @return self
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
-    /**
-     * Gets the parsed PlanList object.
-     *
-     * Only available for successful responses (2xx status codes).
-     *
-     * @return PlanList|null Returns null if response was an error
-     */
-    public function getPlanList(): ?PlanList
-    {
-        return $this->planList;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
-     * Gets the original PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Parses a successful response into a PlanList object.
-     *
-     * @return PlanList
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    private function parseSuccessResponse(): PlanList
-    {
-        $data = $this->parseJsonBody();
-        return PlanList::fromData($data);
-    }
-
 }

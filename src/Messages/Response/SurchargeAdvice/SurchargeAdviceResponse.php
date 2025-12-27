@@ -6,8 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Response\SurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -34,77 +33,35 @@ use Psr\Http\Message\ResponseInterface;
  */
 class SurchargeAdviceResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?SurchargeAdvice $surchargeAdvice;
+    public readonly ?SurchargeAdvice $surchargeAdvice;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from surcharge advice operation
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    public function __construct(array $data, int $statusCode) {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->surchargeAdvice = $this->parseSuccessResponse();
+            $this->surchargeAdvice = SurchargeAdvice::fromData($data);
             $this->error = null;
         } else {
             $this->surchargeAdvice = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates instance from PSR-7 response.
-     *
-     * @param ResponseInterface $response
-     * @return self
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
-    /**
-     * Gets the surcharge advice data (null if error response).
-     *
-     * @return SurchargeAdvice|null
-     */
-    public function getSurchargeAdvice(): ?SurchargeAdvice
-    {
-        return $this->surchargeAdvice;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
     /**
      * Gets the underlying PSR-7 response.
      *
      * @return ResponseInterface
      */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     /**
      * Parses successful response body into SurchargeAdvice DTO.
      *
      * @return SurchargeAdvice
      * @throws InvalidArgumentException
      */
-    private function parseSuccessResponse(): SurchargeAdvice
-    {
-        $data = $this->parseJsonBody();
-        return SurchargeAdvice::fromData($data);
-    }
-
 }

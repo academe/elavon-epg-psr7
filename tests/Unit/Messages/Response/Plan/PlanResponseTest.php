@@ -29,15 +29,15 @@ class PlanResponseTest extends TestCase
         $response = $this->createMockResponse(201, $responseData);
 
         // Act
-        $planResponse = new PlanResponse($response);
+        $planResponse = PlanResponse::fromPsr7Response($response);
 
         // Assert
         $this->assertTrue($planResponse->isSuccessful());
-        $this->assertNull($planResponse->getError());
-        $this->assertInstanceOf(Plan::class, $planResponse->getPlan());
-        $this->assertSame('plan123', $planResponse->getPlan()->id);
-        $this->assertSame('Monthly License', $planResponse->getPlan()->name);
-        $this->assertSame(201, $planResponse->getStatusCode());
+        $this->assertNull($planResponse->error);
+        $this->assertInstanceOf(Plan::class, $planResponse->plan);
+        $this->assertSame('plan123', $planResponse->plan->id);
+        $this->assertSame('Monthly License', $planResponse->plan->name);
+        $this->assertSame(201, $planResponse->statusCode);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -51,13 +51,13 @@ class PlanResponseTest extends TestCase
         $response = $this->createMockResponse(400, $errorData);
 
         // Act
-        $planResponse = new PlanResponse($response);
+        $planResponse = PlanResponse::fromPsr7Response($response);
 
         // Assert
         $this->assertFalse($planResponse->isSuccessful());
-        $this->assertNull($planResponse->getPlan());
-        $this->assertNotNull($planResponse->getError());
-        $this->assertSame(400, $planResponse->getStatusCode());
+        $this->assertNull($planResponse->plan);
+        $this->assertNotNull($planResponse->error);
+        $this->assertSame(400, $planResponse->statusCode);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -75,7 +75,7 @@ class PlanResponseTest extends TestCase
         $this->expectExceptionMessage('Response body is empty');
 
         // Act
-        new PlanResponse($response);
+        PlanResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -93,7 +93,7 @@ class PlanResponseTest extends TestCase
         $this->expectExceptionMessage('Failed to decode JSON response');
 
         // Act
-        new PlanResponse($response);
+        PlanResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -112,28 +112,8 @@ class PlanResponseTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(PlanResponse::class, $planResponse);
-        $this->assertSame('plan456', $planResponse->getPlan()->id);
+        $this->assertSame('plan456', $planResponse->plan->id);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        // Arrange
-        $responseData = [
-            'id' => 'plan789',
-            'name' => 'Test',
-            'billingInterval' => ['timeUnit' => 'month', 'count' => 1],
-            'total' => ['amount' => '10.00', 'currencyCode' => 'USD'],
-        ];
-        $response = $this->createMockResponse(200, $responseData);
-        $planResponse = new PlanResponse($response);
-
-        // Act
-        $result = $planResponse->getPsr7Response();
-
-        // Assert
-        $this->assertSame($response, $result);
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

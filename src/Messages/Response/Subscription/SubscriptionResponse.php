@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Subscription;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * Subscription Response.
@@ -19,83 +17,26 @@ use Psr\Http\Message\ResponseInterface;
  */
 class SubscriptionResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?Subscription $subscription;
+    public readonly ?Subscription $subscription;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from the API
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      *
      * @throws InvalidArgumentException When response cannot be parsed
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    public function __construct(array $data, int $statusCode) {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->subscription = $this->parseSuccessResponse();
+            $this->subscription = Subscription::fromData($data);
             $this->error = null;
         } else {
             $this->subscription = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a SubscriptionResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 response
-     *
-     * @return self
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
-    /**
-     * Gets the parsed Subscription object.
-     *
-     * Only available for successful responses (2xx status codes).
-     *
-     * @return Subscription|null Returns null if response was an error
-     */
-    public function getSubscription(): ?Subscription
-    {
-        return $this->subscription;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
-     * Gets the original PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Parses a successful response into a Subscription object.
-     *
-     * @return Subscription
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    private function parseSuccessResponse(): Subscription
-    {
-        $data = $this->parseJsonBody();
-        return Subscription::fromData($data);
-    }
-
 }

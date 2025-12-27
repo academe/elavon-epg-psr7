@@ -14,6 +14,7 @@ use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethodOrigin;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
@@ -194,12 +195,12 @@ class PaymentSessionTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Shopper email address must not exceed 254 characters');
+        $this->expectExceptionMessage('cannot exceed 254 characters');
 
         // Act
         new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
-            shopperEmailAddress: $longEmail,
+            shopperEmailAddress: new EmailAddress($longEmail),
         );
     }
 
@@ -398,7 +399,7 @@ class PaymentSessionTest extends TestCase
         $paymentSession = new PaymentSession(
             order: 'https://api.example.com/orders/ord123',
             salesTax: Money::EUR(1250),
-            shopperEmailAddress: 'test@example.com',
+            shopperEmailAddress: new EmailAddress('test@example.com'),
             returnUrl: 'https://merchant.com/return',
             customReference: 'TEST-REF',
         );

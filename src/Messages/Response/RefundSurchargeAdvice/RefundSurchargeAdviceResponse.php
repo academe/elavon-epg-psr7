@@ -6,8 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Response\RefundSurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -34,77 +33,35 @@ use Psr\Http\Message\ResponseInterface;
  */
 class RefundSurchargeAdviceResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?RefundSurchargeAdvice $refundSurchargeAdvice;
+    public readonly ?RefundSurchargeAdvice $refundSurchargeAdvice;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from refund surcharge advice operation
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    public function __construct(array $data, int $statusCode) {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->refundSurchargeAdvice = $this->parseSuccessResponse();
+            $this->refundSurchargeAdvice = RefundSurchargeAdvice::fromData($data);
             $this->error = null;
         } else {
             $this->refundSurchargeAdvice = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates instance from PSR-7 response.
-     *
-     * @param ResponseInterface $response
-     * @return self
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
-    /**
-     * Gets the refund surcharge advice data (null if error response).
-     *
-     * @return RefundSurchargeAdvice|null
-     */
-    public function getRefundSurchargeAdvice(): ?RefundSurchargeAdvice
-    {
-        return $this->refundSurchargeAdvice;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
     /**
      * Gets the underlying PSR-7 response.
      *
      * @return ResponseInterface
      */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     /**
      * Parses successful response body into RefundSurchargeAdvice DTO.
      *
      * @return RefundSurchargeAdvice
      * @throws InvalidArgumentException
      */
-    private function parseSuccessResponse(): RefundSurchargeAdvice
-    {
-        $data = $this->parseJsonBody();
-        return RefundSurchargeAdvice::fromData($data);
-    }
-
 }

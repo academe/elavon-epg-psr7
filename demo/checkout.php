@@ -26,6 +26,7 @@ if (!class_exists(\Academe\Elavon\Epg\Psr7\Dtos\Order::class)) {
 use Academe\Elavon\Epg\Psr7\Dtos\Contact;
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentSession;
+use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\CreateOrderRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentSession\CreatePaymentSessionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Order\OrderResponse;
@@ -56,11 +57,11 @@ $apiFactory = ElavonApiFactory::configure()
 
 try {
     // Step 1: Create an Order
-    $order = new Order(
-        total: ['amount' => $amount, 'currencyCode' => $currency],
-        description: $description,
-        shopperEmailAddress: $email,
-    );
+    $order = Order::fromData([
+        'total' => ['amount' => $amount, 'currencyCode' => $currency],
+        'description' => $description,
+        'shopperEmailAddress' => $email,
+    ]);
 
     $orderRequest = (new CreateOrderRequest($order))->build();
     $orderRequest = $apiFactory->apply($orderRequest);
@@ -69,10 +70,10 @@ try {
     $orderResponse = OrderResponse::fromPsr7Response($orderHttpResponse);
 
     if ($orderResponse->hasError()) {
-        throw new RuntimeException('Order creation failed: ' . $orderResponse->getError()->getMessage());
+        throw new RuntimeException('Order creation failed: ' . $orderResponse->error->getMessage());
     }
 
-    $orderData = $orderResponse->getOrder();
+    $orderData = $orderResponse->order;
     $orderHref = $orderData->href ?? null;
 
     if (!$orderHref) {
@@ -87,8 +88,8 @@ try {
         cancelUrl: $config['demo_url'] . '/cancel.php',
         doThreeDSecure: true,
         doCreateTransaction: true,
-        shopperEmailAddress: $email,
-        billTo: new Contact(fullName: $customerName, email: $email),
+        shopperEmailAddress: new EmailAddress($email),
+        billTo: new Contact(fullName: $customerName, email: new EmailAddress($email)),
     );
 
     $sessionRequest = (new CreatePaymentSessionRequest($paymentSession))->build();
@@ -98,10 +99,10 @@ try {
     $sessionResponse = PaymentSessionResponse::fromPsr7Response($sessionHttpResponse);
 
     if ($sessionResponse->hasError()) {
-        throw new RuntimeException('PaymentSession creation failed: ' . $sessionResponse->getError()->getMessage());
+        throw new RuntimeException('PaymentSession creation failed: ' . $sessionResponse->error->getMessage());
     }
 
-    $sessionData = $sessionResponse->getPaymentSession();
+    $sessionData = $sessionResponse->paymentSession;
     $hppUrl = $sessionData->url ?? null;
     $sessionId = $sessionData->id ?? null;
 

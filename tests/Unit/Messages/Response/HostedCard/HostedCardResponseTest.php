@@ -45,14 +45,14 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 201);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->hasError());
-        $this->assertInstanceOf(HostedCard::class, $response->getHostedCard());
-        $this->assertSame('hc123', $response->getHostedCard()->id);
-        $this->assertSame('2025-01-31T23:59:59Z', $response->getHostedCard()->expiresAt);
+        $this->assertInstanceOf(HostedCard::class, $response->hostedCard);
+        $this->assertSame('hc123', $response->hostedCard->id);
+        $this->assertSame('2025-01-31T23:59:59Z', $response->hostedCard->expiresAt);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -67,14 +67,14 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 400);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getHostedCard());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(400, $response->getError()->status);
+        $this->assertNull($response->hostedCard);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(400, $response->error->status);
     }
 
     public function test_construct_with201StatusCode_isSuccessful(): void
@@ -87,11 +87,11 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 201);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
-        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame(201, $response->statusCode);
     }
 
     public function test_construct_with200StatusCode_isSuccessful(): void
@@ -104,11 +104,11 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->statusCode);
     }
 
     public function test_getHostedCard_parsesNestedCard(): void
@@ -127,10 +127,10 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $hostedCard = $response->getHostedCard();
+        $hostedCard = $response->hostedCard;
         $this->assertNotNull($hostedCard->card);
         $this->assertSame('5555', $hostedCard->card->last4);
         $this->assertSame('555555', $hostedCard->card->bin);
@@ -151,10 +151,10 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $hostedCard = $response->getHostedCard();
+        $hostedCard = $response->hostedCard;
         $this->assertSame('order-123', $hostedCard->customReference);
         $this->assertSame('ORD-456', $hostedCard->customFields['orderId']);
         $this->assertSame('CUST-789', $hostedCard->customFields['customerId']);
@@ -171,7 +171,7 @@ class HostedCardResponseTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(HostedCardResponse::class, $response);
-        $this->assertSame('hc222', $response->getHostedCard()->id);
+        $this->assertSame('hc222', $response->hostedCard->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -181,22 +181,9 @@ class HostedCardResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 201);
 
         // Act
-        $response = new HostedCardResponse($psrResponse);
+        $response = HostedCardResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame(201, $response->getStatusCode());
-    }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        // Arrange
-        $responseBody = json_encode(['id' => 'hc444']);
-        $psrResponse = $this->createMockResponse($responseBody, 200);
-
-        // Act
-        $response = new HostedCardResponse($psrResponse);
-
-        // Assert
-        $this->assertSame($psrResponse, $response->getPsr7Response());
+        $this->assertSame(201, $response->statusCode);
     }
 }

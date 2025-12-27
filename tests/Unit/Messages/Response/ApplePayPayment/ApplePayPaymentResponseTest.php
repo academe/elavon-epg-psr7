@@ -33,13 +33,12 @@ class ApplePayPaymentResponseTest extends TestCase
             'customReference' => 'ref123',
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 201);
-        $response = new ApplePayPaymentResponse($psr7Response);
+        $response = new ApplePayPaymentResponse($responseData, 201);
 
         $this->assertTrue($response->isSuccessful());
-        $this->assertInstanceOf(ApplePayPayment::class, $response->getApplePayPayment());
-        $this->assertSame('payment_123', $response->getApplePayPayment()->id);
-        $this->assertNull($response->getError());
+        $this->assertInstanceOf(ApplePayPayment::class, $response->applePayPayment);
+        $this->assertSame('payment_123', $response->applePayPayment->id);
+        $this->assertNull($response->error);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -51,13 +50,12 @@ class ApplePayPaymentResponseTest extends TestCase
             ],
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($errorData), 401);
-        $response = new ApplePayPaymentResponse($psr7Response);
+        $response = new ApplePayPaymentResponse($errorData, 401);
 
         $this->assertFalse($response->isSuccessful());
-        $this->assertNull($response->getApplePayPayment());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(401, $response->getError()->status);
+        $this->assertNull($response->applePayPayment);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(401, $response->error->status);
     }
 
     public function test_fromPsr7Response_factoryMethod(): void
@@ -68,26 +66,15 @@ class ApplePayPaymentResponseTest extends TestCase
         $response = ApplePayPaymentResponse::fromPsr7Response($psr7Response);
 
         $this->assertInstanceOf(ApplePayPaymentResponse::class, $response);
-        $this->assertSame('payment_456', $response->getApplePayPayment()->id);
+        $this->assertSame('payment_456', $response->applePayPayment->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
     {
         $responseData = ['id' => 'payment_789'];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 201);
-        $response = new ApplePayPaymentResponse($psr7Response);
+        $response = new ApplePayPaymentResponse($responseData, 201);
 
-        $this->assertSame(201, $response->getStatusCode());
-    }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = ['id' => 'payment_000'];
-
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new ApplePayPaymentResponse($psr7Response);
-
-        $this->assertSame($psr7Response, $response->getPsr7Response());
+        $this->assertSame(201, $response->statusCode);
     }
 }

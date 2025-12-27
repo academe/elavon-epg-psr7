@@ -104,12 +104,12 @@ class OpayoIntegrationTest extends TestCase
 
         // Assert - Check for errors first
         if ($response->hasError()) {
-            $error = $response->getError();
+            $error = $response->error;
 
             $this->fail(
                 sprintf(
                     "API returned error (HTTP %d): %s\nError code: %s\nFull response: %s",
-                    $response->getStatusCode(),
+                    $response->statusCode,
                     $error->getMessage(),
                     $error->getCode(),
                     (string) $psr7Response->getBody()
@@ -122,11 +122,11 @@ class OpayoIntegrationTest extends TestCase
             $response->isSuccessful(),
             sprintf(
                 'Expected successful response (2xx), got %d',
-                $response->getStatusCode()
+                $response->statusCode
             )
         );
 
-        $transaction = $response->getTransaction();
+        $transaction = $response->transaction;
         $this->assertNotNull($transaction, 'Transaction should not be null for successful response');
 
         // Verify transaction properties
@@ -213,11 +213,11 @@ class OpayoIntegrationTest extends TestCase
 
         // Assert - Check for errors first (authentication, etc.)
         if ($response->hasError()) {
-            $error = $response->getError();
+            $error = $response->error;
             $this->fail(
                 sprintf(
                     "API returned error (HTTP %d): %s\nError code: %s\nFull response: %s",
-                    $response->getStatusCode(),
+                    $response->statusCode,
                     $error->getMessage(),
                     $error->getCode(),
                     (string) $psr7Response->getBody()
@@ -227,7 +227,7 @@ class OpayoIntegrationTest extends TestCase
 
         // The HTTP request might still be successful even if the transaction is declined
         // We care about the transaction state, not necessarily the HTTP status
-        $transaction = $response->getTransaction();
+        $transaction = $response->transaction;
         $this->assertNotNull($transaction, 'Transaction should not be null even for declined card');
 
         $this->assertSame(

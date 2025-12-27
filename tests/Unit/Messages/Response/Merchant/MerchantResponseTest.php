@@ -29,11 +29,11 @@ class MerchantResponseTest extends TestCase
         $merchantResponse = MerchantResponse::fromPsr7Response($response);
 
         $this->assertTrue($merchantResponse->isSuccessful());
-        $this->assertNull($merchantResponse->getError());
-        $this->assertInstanceOf(Merchant::class, $merchantResponse->getMerchant());
-        $this->assertSame('test123', $merchantResponse->getMerchant()->id);
-        $this->assertSame('Test Company Ltd', $merchantResponse->getMerchant()->legalName);
-        $this->assertTrue($merchantResponse->getMerchant()->isDemo);
+        $this->assertNull($merchantResponse->error);
+        $this->assertInstanceOf(Merchant::class, $merchantResponse->merchant);
+        $this->assertSame('test123', $merchantResponse->merchant->id);
+        $this->assertSame('Test Company Ltd', $merchantResponse->merchant->legalName);
+        $this->assertTrue($merchantResponse->merchant->isDemo);
     }
 
     public function test_fromPsr7Response_withErrorResponse_parsesError(): void
@@ -49,10 +49,10 @@ class MerchantResponseTest extends TestCase
         $merchantResponse = MerchantResponse::fromPsr7Response($response);
 
         $this->assertFalse($merchantResponse->isSuccessful());
-        $this->assertNull($merchantResponse->getMerchant());
-        $this->assertInstanceOf(ErrorResponse::class, $merchantResponse->getError());
-        $this->assertSame(404, $merchantResponse->getError()->status);
-        $this->assertSame('The requested merchant does not exist', $merchantResponse->getError()->getMessage());
+        $this->assertNull($merchantResponse->merchant);
+        $this->assertInstanceOf(ErrorResponse::class, $merchantResponse->error);
+        $this->assertSame(404, $merchantResponse->error->status);
+        $this->assertSame('The requested merchant does not exist', $merchantResponse->error->getMessage());
     }
 
     public function test_fromPsr7Response_withEmptyBody_throwsException(): void
@@ -90,17 +90,8 @@ class MerchantResponseTest extends TestCase
         $response = $this->createMockResponse(201, ['id' => 'test']);
         $merchantResponse = MerchantResponse::fromPsr7Response($response);
 
-        $this->assertSame(201, $merchantResponse->getStatusCode());
+        $this->assertSame(201, $merchantResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $response = $this->createMockResponse(200, ['id' => 'test']);
-        $merchantResponse = MerchantResponse::fromPsr7Response($response);
-
-        $this->assertSame($response, $merchantResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

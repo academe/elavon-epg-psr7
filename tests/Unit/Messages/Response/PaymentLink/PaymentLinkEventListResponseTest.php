@@ -34,18 +34,17 @@ class PaymentLinkEventListResponseTest extends TestCase
             'first' => 'https://api.example.com/payment-links/pl123/payment-link-events',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkEventListResponse($response);
+        $listResponse = new PaymentLinkEventListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getError());
-        $this->assertIsArray($listResponse->getPaymentLinkEvents());
-        $this->assertCount(2, $listResponse->getPaymentLinkEvents());
-        $this->assertInstanceOf(PaymentLinkEvent::class, $listResponse->getPaymentLinkEvents()[0]);
-        $this->assertSame('e1', $listResponse->getPaymentLinkEvents()[0]->id);
-        $this->assertSame(PaymentLinkEventType::PAYMENT, $listResponse->getPaymentLinkEvents()[0]->type);
-        $this->assertSame('e2', $listResponse->getPaymentLinkEvents()[1]->id);
-        $this->assertSame(PaymentLinkEventType::REMINDER_SENT, $listResponse->getPaymentLinkEvents()[1]->type);
+        $this->assertNull($listResponse->error);
+        $this->assertIsArray($listResponse->paymentLinkEvents);
+        $this->assertCount(2, $listResponse->paymentLinkEvents);
+        $this->assertInstanceOf(PaymentLinkEvent::class, $listResponse->paymentLinkEvents[0]);
+        $this->assertSame('e1', $listResponse->paymentLinkEvents[0]->id);
+        $this->assertSame(PaymentLinkEventType::PAYMENT, $listResponse->paymentLinkEvents[0]->type);
+        $this->assertSame('e2', $listResponse->paymentLinkEvents[1]->id);
+        $this->assertSame(PaymentLinkEventType::REMINDER_SENT, $listResponse->paymentLinkEvents[1]->type);
     }
 
     public function test_construct_withPaginationLinks_parsesPagination(): void
@@ -56,11 +55,10 @@ class PaymentLinkEventListResponseTest extends TestCase
             'first' => 'https://api.example.com/payment-links/pl123/payment-link-events',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkEventListResponse($response);
+        $listResponse = new PaymentLinkEventListResponse($responseData, 200);
 
-        $this->assertSame('https://api.example.com/payment-links/pl123/payment-link-events?offset=50', $listResponse->getNext());
-        $this->assertSame('https://api.example.com/payment-links/pl123/payment-link-events', $listResponse->getFirst());
+        $this->assertSame('https://api.example.com/payment-links/pl123/payment-link-events?offset=50', $listResponse->nextPage);
+        $this->assertSame('https://api.example.com/payment-links/pl123/payment-link-events', $listResponse->firstPage);
         $this->assertTrue($listResponse->hasMorePages());
     }
 
@@ -76,10 +74,9 @@ class PaymentLinkEventListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkEventListResponse($response);
+        $listResponse = new PaymentLinkEventListResponse($responseData, 200);
 
-        $this->assertNull($listResponse->getNext());
+        $this->assertNull($listResponse->nextPage);
         $this->assertFalse($listResponse->hasMorePages());
     }
 
@@ -96,13 +93,12 @@ class PaymentLinkEventListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $listResponse = new PaymentLinkEventListResponse($response);
+        $listResponse = new PaymentLinkEventListResponse($errorData, 404);
 
         $this->assertFalse($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getPaymentLinkEvents());
-        $this->assertNotNull($listResponse->getError());
-        $this->assertSame('Payment link not found', $listResponse->getError()->getMessage());
+        $this->assertNull($listResponse->paymentLinkEvents);
+        $this->assertNotNull($listResponse->error);
+        $this->assertSame('Payment link not found', $listResponse->error->getMessage());
     }
 
     public function test_construct_withMissingItemsArray_throwsException(): void
@@ -116,7 +112,7 @@ class PaymentLinkEventListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new PaymentLinkEventListResponse($response);
+        PaymentLinkEventListResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -135,7 +131,7 @@ class PaymentLinkEventListResponseTest extends TestCase
         $listResponse = PaymentLinkEventListResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(PaymentLinkEventListResponse::class, $listResponse);
-        $this->assertCount(1, $listResponse->getPaymentLinkEvents());
+        $this->assertCount(1, $listResponse->paymentLinkEvents);
     }
 
     private function createMockResponse(int $statusCode, array $data): ResponseInterface

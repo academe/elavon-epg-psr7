@@ -32,16 +32,15 @@ class PaymentLinkListResponseTest extends TestCase
             'first' => 'https://api.example.com/payment-links',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkListResponse($response);
+        $listResponse = new PaymentLinkListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getError());
-        $this->assertIsArray($listResponse->getPaymentLinks());
-        $this->assertCount(2, $listResponse->getPaymentLinks());
-        $this->assertInstanceOf(PaymentLink::class, $listResponse->getPaymentLinks()[0]);
-        $this->assertSame('pl1', $listResponse->getPaymentLinks()[0]->id);
-        $this->assertSame('pl2', $listResponse->getPaymentLinks()[1]->id);
+        $this->assertNull($listResponse->error);
+        $this->assertIsArray($listResponse->paymentLinks);
+        $this->assertCount(2, $listResponse->paymentLinks);
+        $this->assertInstanceOf(PaymentLink::class, $listResponse->paymentLinks[0]);
+        $this->assertSame('pl1', $listResponse->paymentLinks[0]->id);
+        $this->assertSame('pl2', $listResponse->paymentLinks[1]->id);
     }
 
     public function test_construct_withPaginationLinks_parsesPagination(): void
@@ -52,11 +51,10 @@ class PaymentLinkListResponseTest extends TestCase
             'first' => 'https://api.example.com/payment-links',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkListResponse($response);
+        $listResponse = new PaymentLinkListResponse($responseData, 200);
 
-        $this->assertSame('https://api.example.com/payment-links?offset=50', $listResponse->getNext());
-        $this->assertSame('https://api.example.com/payment-links', $listResponse->getFirst());
+        $this->assertSame('https://api.example.com/payment-links?offset=50', $listResponse->nextPage);
+        $this->assertSame('https://api.example.com/payment-links', $listResponse->firstPage);
         $this->assertTrue($listResponse->hasMorePages());
     }
 
@@ -72,10 +70,9 @@ class PaymentLinkListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new PaymentLinkListResponse($response);
+        $listResponse = new PaymentLinkListResponse($responseData, 200);
 
-        $this->assertNull($listResponse->getNext());
+        $this->assertNull($listResponse->nextPage);
         $this->assertFalse($listResponse->hasMorePages());
     }
 
@@ -92,13 +89,12 @@ class PaymentLinkListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(400, $errorData);
-        $listResponse = new PaymentLinkListResponse($response);
+        $listResponse = new PaymentLinkListResponse($errorData, 400);
 
         $this->assertFalse($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getPaymentLinks());
-        $this->assertNotNull($listResponse->getError());
-        $this->assertSame('Invalid request parameters', $listResponse->getError()->getMessage());
+        $this->assertNull($listResponse->paymentLinks);
+        $this->assertNotNull($listResponse->error);
+        $this->assertSame('Invalid request parameters', $listResponse->error->getMessage());
     }
 
     public function test_construct_withMissingItemsArray_throwsException(): void
@@ -112,7 +108,7 @@ class PaymentLinkListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new PaymentLinkListResponse($response);
+        PaymentLinkListResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -131,7 +127,7 @@ class PaymentLinkListResponseTest extends TestCase
         $listResponse = PaymentLinkListResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(PaymentLinkListResponse::class, $listResponse);
-        $this->assertCount(1, $listResponse->getPaymentLinks());
+        $this->assertCount(1, $listResponse->paymentLinks);
     }
 
     private function createMockResponse(int $statusCode, array $data): ResponseInterface

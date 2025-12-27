@@ -29,6 +29,8 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\PaymentSession\PaymentSessionRespo
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 use GuzzleHttp\Client;
+use Money\Currencies\ISOCurrencies;
+use Money\Formatter\DecimalMoneyFormatter;
 
 $config = require __DIR__ . '/config.php';
 
@@ -71,9 +73,9 @@ if ($sessionId) {
             $sessionResponse = PaymentSessionResponse::fromPsr7Response($response);
 
             if ($sessionResponse->hasError()) {
-                $verificationError = 'Failed to verify payment: ' . $sessionResponse->getError()->getMessage();
+                $verificationError = 'Failed to verify payment: ' . $sessionResponse->error->getMessage();
             } else {
-                $paymentSession = $sessionResponse->getPaymentSession();
+                $paymentSession = $sessionResponse->paymentSession;
                 $isVerified = true;
 
                 // If a transaction exists, fetch its details
@@ -89,7 +91,7 @@ if ($sessionId) {
                     $transactionResponse = TransactionResponse::fromPsr7Response($txnResponse);
 
                     if (!$transactionResponse->hasError()) {
-                        $transaction = $transactionResponse->getTransaction();
+                        $transaction = $transactionResponse->transaction;
                     }
                 }
             }
@@ -284,7 +286,7 @@ if ($isVerified && $paymentSession) {
 
         <div class="detail-row">
             <div class="detail-label">Email</div>
-            <div class="detail-value"><?= htmlspecialchars($paymentSession->shopperEmailAddress ?? 'N/A') ?></div>
+            <div class="detail-value"><?= htmlspecialchars((string) ($paymentSession->shopperEmailAddress ?? 'N/A')) ?></div>
         </div>
 
         <?php if ($paymentSession->billTo): ?>
@@ -309,9 +311,14 @@ if ($isVerified && $paymentSession) {
             <div class="detail-value"><?= htmlspecialchars($transaction->type?->value ?? 'N/A') ?></div>
         </div>
         <?php if ($transaction->total): ?>
+        <?php
+            $currencies = new ISOCurrencies();
+            $moneyFormatter = new DecimalMoneyFormatter($currencies);
+            $formattedAmount = $moneyFormatter->format($transaction->total) . ' ' . $transaction->total->getCurrency()->getCode();
+        ?>
         <div class="detail-row">
             <div class="detail-label">Amount</div>
-            <div class="detail-value"><?= htmlspecialchars($transaction->total->amount ?? 'N/A') ?> <?= htmlspecialchars($transaction->total->currencyCode ?? '') ?></div>
+            <div class="detail-value"><?= htmlspecialchars($formattedAmount) ?></div>
         </div>
         <?php endif; ?>
         <?php if ($transaction->card): ?>

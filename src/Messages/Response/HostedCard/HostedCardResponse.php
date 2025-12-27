@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * Hosted Card Response.
@@ -33,76 +31,25 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HostedCardResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?HostedCard $hostedCard;
+    public readonly ?HostedCard $hostedCard;
 
     /**
-     * @param ResponseInterface $response PSR-7 HTTP response
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(private readonly ResponseInterface $response)
+    public function __construct(array $data, int $statusCode)
     {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->hostedCard = $this->parseSuccessResponse();
+            $this->hostedCard = HostedCard::fromData($data);
             $this->error = null;
         } else {
             $this->hostedCard = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a HostedCardResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 HTTP response
-     * @return static
-     */
-    public static function fromPsr7Response(ResponseInterface $response): static
-    {
-        return new static($response);
-    }
-
-    /**
-     * Gets the hosted card from a successful response.
-     *
-     * @return HostedCard|null Hosted card on success, null on error
-     */
-    public function getHostedCard(): ?HostedCard
-    {
-        return $this->hostedCard;
-    }
-
-    /**
-     * Gets the PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
-     * Parses a successful response into a HostedCard object.
-     *
-     * @return HostedCard
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    private function parseSuccessResponse(): HostedCard
-    {
-        $data = $this->parseJsonBody();
-        return HostedCard::fromData($data);
-    }
-
 }

@@ -50,15 +50,15 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->hasError());
-        $this->assertCount(2, $response->getStoredCards());
-        $this->assertInstanceOf(StoredCard::class, $response->getStoredCards()[0]);
-        $this->assertSame('sc1', $response->getStoredCards()[0]->id);
-        $this->assertSame('sc2', $response->getStoredCards()[1]->id);
+        $this->assertCount(2, $response->storedCards);
+        $this->assertInstanceOf(StoredCard::class, $response->storedCards[0]);
+        $this->assertSame('sc1', $response->storedCards[0]->id);
+        $this->assertSame('sc2', $response->storedCards[1]->id);
     }
 
     public function test_construct_withEmptyList_returnsEmptyArray(): void
@@ -72,11 +72,11 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertIsArray($response->getStoredCards());
-        $this->assertCount(0, $response->getStoredCards());
+        $this->assertIsArray($response->storedCards);
+        $this->assertCount(0, $response->storedCards);
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -91,10 +91,10 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/stored-cards?page=2', $response->getNextPage());
+        $this->assertSame('https://api.example.com/stored-cards?page=2', $response->nextPage);
         $this->assertTrue($response->hasMorePages());
     }
 
@@ -109,10 +109,10 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertNull($response->getNextPage());
+        $this->assertNull($response->nextPage);
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -127,10 +127,10 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/stored-cards?page=1', $response->getFirstPage());
+        $this->assertSame('https://api.example.com/stored-cards?page=1', $response->firstPage);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -145,13 +145,13 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 401);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getStoredCards());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
+        $this->assertNull($response->storedCards);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
     }
 
     public function test_construct_withMissingItems_throwsException(): void
@@ -169,7 +169,7 @@ class StoredCardListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new StoredCardListResponse($psrResponse);
+        StoredCardListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withNonArrayItems_throwsException(): void
@@ -187,7 +187,7 @@ class StoredCardListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new StoredCardListResponse($psrResponse);
+        StoredCardListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withInvalidItemFormat_throwsException(): void
@@ -208,7 +208,7 @@ class StoredCardListResponseTest extends TestCase
         $this->expectExceptionMessage('Item at index 1 is not an array');
 
         // Act
-        new StoredCardListResponse($psrResponse);
+        StoredCardListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -221,7 +221,7 @@ class StoredCardListResponseTest extends TestCase
         $this->expectExceptionMessage('Response body is empty');
 
         // Act
-        new StoredCardListResponse($psrResponse);
+        StoredCardListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -234,7 +234,7 @@ class StoredCardListResponseTest extends TestCase
         $this->expectExceptionMessage('Failed to decode JSON response');
 
         // Act
-        new StoredCardListResponse($psrResponse);
+        StoredCardListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -252,7 +252,7 @@ class StoredCardListResponseTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(StoredCardListResponse::class, $response);
-        $this->assertCount(1, $response->getStoredCards());
+        $this->assertCount(1, $response->storedCards);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -266,29 +266,11 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        // Arrange
-        $responseBody = json_encode([
-            'items' => [['id' => 'sc1', 'shopper' => 'https://api.example.com/shoppers/s1']],
-            'next' => null,
-            'first' => 'https://api.example.com/stored-cards?page=1',
-        ]);
-        $psrResponse = $this->createMockResponse($responseBody, 200);
-
-        // Act
-        $response = new StoredCardListResponse($psrResponse);
-
-        // Assert
-        $this->assertSame($psrResponse, $response->getPsr7Response());
-    }
-
     public function test_construct_withoutPaginationLinks_setsThemToNull(): void
     {
         // Arrange
@@ -299,11 +281,11 @@ class StoredCardListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new StoredCardListResponse($psrResponse);
+        $response = StoredCardListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertNull($response->getNextPage());
-        $this->assertNull($response->getFirstPage());
+        $this->assertNull($response->nextPage);
+        $this->assertNull($response->firstPage);
         $this->assertFalse($response->hasMorePages());
     }
 }

@@ -32,16 +32,15 @@ class OrderListResponseTest extends TestCase
             'first' => 'https://api.example.com/orders',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getError());
-        $this->assertIsArray($listResponse->getOrders());
-        $this->assertCount(2, $listResponse->getOrders());
-        $this->assertInstanceOf(Order::class, $listResponse->getOrders()[0]);
-        $this->assertSame('ord123', $listResponse->getOrders()[0]->id);
-        $this->assertSame('ord456', $listResponse->getOrders()[1]->id);
+        $this->assertNull($listResponse->error);
+        $this->assertIsArray($listResponse->orders);
+        $this->assertCount(2, $listResponse->orders);
+        $this->assertInstanceOf(Order::class, $listResponse->orders[0]);
+        $this->assertSame('ord123', $listResponse->orders[0]->id);
+        $this->assertSame('ord456', $listResponse->orders[1]->id);
     }
 
     public function test_construct_withEmptyItems_parsesSuccessfully(): void
@@ -50,12 +49,11 @@ class OrderListResponseTest extends TestCase
             'items' => [],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertIsArray($listResponse->getOrders());
-        $this->assertCount(0, $listResponse->getOrders());
+        $this->assertIsArray($listResponse->orders);
+        $this->assertCount(0, $listResponse->orders);
     }
 
     public function test_construct_withPaginationLinks_storesLinks(): void
@@ -68,11 +66,10 @@ class OrderListResponseTest extends TestCase
             'first' => 'https://api.example.com/orders?page=1',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($responseData, 200);
 
-        $this->assertSame('https://api.example.com/orders?page=2', $listResponse->getNext());
-        $this->assertSame('https://api.example.com/orders?page=1', $listResponse->getFirst());
+        $this->assertSame('https://api.example.com/orders?page=2', $listResponse->nextPage);
+        $this->assertSame('https://api.example.com/orders?page=1', $listResponse->firstPage);
         $this->assertTrue($listResponse->hasMorePages());
     }
 
@@ -84,10 +81,9 @@ class OrderListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($responseData, 200);
 
-        $this->assertNull($listResponse->getNext());
+        $this->assertNull($listResponse->nextPage);
         $this->assertFalse($listResponse->hasMorePages());
     }
 
@@ -104,13 +100,12 @@ class OrderListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(401, $errorData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($errorData, 401);
 
         $this->assertFalse($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getOrders());
-        $this->assertNotNull($listResponse->getError());
-        $this->assertSame('Unauthorized access', $listResponse->getError()->getMessage());
+        $this->assertNull($listResponse->orders);
+        $this->assertNotNull($listResponse->error);
+        $this->assertSame('Unauthorized access', $listResponse->error->getMessage());
     }
 
     public function test_construct_withMissingItemsKey_throwsException(): void
@@ -124,7 +119,7 @@ class OrderListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new OrderListResponse($response);
+        OrderListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withNonArrayItems_throwsException(): void
@@ -138,7 +133,7 @@ class OrderListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new OrderListResponse($response);
+        OrderListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidItemData_throwsException(): void
@@ -155,7 +150,7 @@ class OrderListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Item at index 1 is not an array');
 
-        new OrderListResponse($response);
+        OrderListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -170,7 +165,7 @@ class OrderListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new OrderListResponse($response);
+        OrderListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -185,7 +180,7 @@ class OrderListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new OrderListResponse($response);
+        OrderListResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -200,7 +195,7 @@ class OrderListResponseTest extends TestCase
         $listResponse = OrderListResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(OrderListResponse::class, $listResponse);
-        $this->assertCount(1, $listResponse->getOrders());
+        $this->assertCount(1, $listResponse->orders);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -211,24 +206,10 @@ class OrderListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
+        $listResponse = new OrderListResponse($responseData, 200);
 
-        $this->assertSame(200, $listResponse->getStatusCode());
+        $this->assertSame(200, $listResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'items' => [],
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new OrderListResponse($response);
-
-        $this->assertSame($response, $listResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

@@ -35,14 +35,13 @@ class ShopperListResponseTest extends TestCase
             'first' => 'first_page_token',
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new ShopperListResponse($psr7Response);
+        $response = new ShopperListResponse($responseData, 200);
 
         $this->assertTrue($response->isSuccessful());
-        $this->assertCount(2, $response->getShoppers());
-        $this->assertInstanceOf(Shopper::class, $response->getShoppers()[0]);
-        $this->assertSame('shopper_001', $response->getShoppers()[0]->id);
-        $this->assertNull($response->getError());
+        $this->assertCount(2, $response->shoppers);
+        $this->assertInstanceOf(Shopper::class, $response->shoppers[0]);
+        $this->assertSame('shopper_001', $response->shoppers[0]->id);
+        $this->assertNull($response->error);
     }
 
     public function test_parsesPaginationLinks(): void
@@ -53,11 +52,10 @@ class ShopperListResponseTest extends TestCase
             'first' => 'first_token',
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new ShopperListResponse($psr7Response);
+        $response = new ShopperListResponse($responseData, 200);
 
-        $this->assertSame('next_token', $response->getNext());
-        $this->assertSame('first_token', $response->getFirst());
+        $this->assertSame('next_token', $response->nextPage);
+        $this->assertSame('first_token', $response->firstPage);
         $this->assertTrue($response->hasMorePages());
     }
 
@@ -69,12 +67,11 @@ class ShopperListResponseTest extends TestCase
             'first' => null,
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new ShopperListResponse($psr7Response);
+        $response = new ShopperListResponse($responseData, 200);
 
         $this->assertTrue($response->isSuccessful());
-        $this->assertCount(0, $response->getShoppers());
-        $this->assertNull($response->getNext());
+        $this->assertCount(0, $response->shoppers);
+        $this->assertNull($response->nextPage);
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -87,12 +84,11 @@ class ShopperListResponseTest extends TestCase
             ],
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($errorData), 401);
-        $response = new ShopperListResponse($psr7Response);
+        $response = new ShopperListResponse($errorData, 401);
 
         $this->assertFalse($response->isSuccessful());
-        $this->assertNull($response->getShoppers());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(401, $response->getError()->status);
+        $this->assertNull($response->shoppers);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(401, $response->error->status);
     }
 }

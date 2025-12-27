@@ -6,8 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Response\ForexAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -34,77 +33,35 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ForexAdviceResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?ForexAdvice $forexAdvice;
+    public readonly ?ForexAdvice $forexAdvice;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from forex advice operation
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    public function __construct(array $data, int $statusCode) {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->forexAdvice = $this->parseSuccessResponse();
+            $this->forexAdvice = ForexAdvice::fromData($data);
             $this->error = null;
         } else {
             $this->forexAdvice = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates instance from PSR-7 response.
-     *
-     * @param ResponseInterface $response
-     * @return self
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
-    /**
-     * Gets the forex advice data (null if error response).
-     *
-     * @return ForexAdvice|null
-     */
-    public function getForexAdvice(): ?ForexAdvice
-    {
-        return $this->forexAdvice;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
     /**
      * Gets the underlying PSR-7 response.
      *
      * @return ResponseInterface
      */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     /**
      * Parses successful response body into ForexAdvice DTO.
      *
      * @return ForexAdvice
      * @throws InvalidArgumentException
      */
-    private function parseSuccessResponse(): ForexAdvice
-    {
-        $data = $this->parseJsonBody();
-        return ForexAdvice::fromData($data);
-    }
-
 }

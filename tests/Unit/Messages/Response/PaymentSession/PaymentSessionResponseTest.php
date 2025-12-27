@@ -27,15 +27,14 @@ class PaymentSessionResponseTest extends TestCase
             'doCreateTransaction' => true,
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
+        $paymentSessionResponse = new PaymentSessionResponse($responseData, 200);
 
         $this->assertTrue($paymentSessionResponse->isSuccessful());
-        $this->assertNull($paymentSessionResponse->getError());
-        $this->assertInstanceOf(PaymentSession::class, $paymentSessionResponse->getPaymentSession());
-        $this->assertSame('ps123', $paymentSessionResponse->getPaymentSession()->id);
-        $this->assertSame('https://api.example.com/orders/ord123', $paymentSessionResponse->getPaymentSession()->order);
-        $this->assertSame('https://merchant.com/return', $paymentSessionResponse->getPaymentSession()->returnUrl);
+        $this->assertNull($paymentSessionResponse->error);
+        $this->assertInstanceOf(PaymentSession::class, $paymentSessionResponse->paymentSession);
+        $this->assertSame('ps123', $paymentSessionResponse->paymentSession->id);
+        $this->assertSame('https://api.example.com/orders/ord123', $paymentSessionResponse->paymentSession->order);
+        $this->assertSame('https://merchant.com/return', $paymentSessionResponse->paymentSession->returnUrl);
     }
 
     public function test_construct_withSuccessResponseAndContacts_parsesPaymentSession(): void
@@ -59,11 +58,10 @@ class PaymentSessionResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
+        $paymentSessionResponse = new PaymentSessionResponse($responseData, 200);
 
         $this->assertTrue($paymentSessionResponse->isSuccessful());
-        $paymentSession = $paymentSessionResponse->getPaymentSession();
+        $paymentSession = $paymentSessionResponse->paymentSession;
         $this->assertNotNull($paymentSession->billTo);
         $this->assertSame('John Doe', $paymentSession->billTo->fullName);
         $this->assertNotNull($paymentSession->shipTo);
@@ -81,11 +79,10 @@ class PaymentSessionResponseTest extends TestCase
             'allowedPaymentMethodOrigins' => ['Card', 'Apple Pay', 'Google Pay'],
         ];
 
-        $response = $this->createMockResponse(201, $responseData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
+        $paymentSessionResponse = new PaymentSessionResponse($responseData, 201);
 
         $this->assertTrue($paymentSessionResponse->isSuccessful());
-        $paymentSession = $paymentSessionResponse->getPaymentSession();
+        $paymentSession = $paymentSessionResponse->paymentSession;
         $this->assertIsArray($paymentSession->allowedPaymentMethods);
         $this->assertCount(2, $paymentSession->allowedPaymentMethods);
         $this->assertIsArray($paymentSession->allowedPaymentMethodOrigins);
@@ -105,13 +102,12 @@ class PaymentSessionResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
+        $paymentSessionResponse = new PaymentSessionResponse($errorData, 404);
 
         $this->assertFalse($paymentSessionResponse->isSuccessful());
-        $this->assertNull($paymentSessionResponse->getPaymentSession());
-        $this->assertNotNull($paymentSessionResponse->getError());
-        $this->assertSame('Payment session not found', $paymentSessionResponse->getError()->getMessage());
+        $this->assertNull($paymentSessionResponse->paymentSession);
+        $this->assertNotNull($paymentSessionResponse->error);
+        $this->assertSame('Payment session not found', $paymentSessionResponse->error->getMessage());
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -126,7 +122,7 @@ class PaymentSessionResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new PaymentSessionResponse($response);
+        PaymentSessionResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -141,7 +137,7 @@ class PaymentSessionResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new PaymentSessionResponse($response);
+        PaymentSessionResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withJsonArray_throwsException(): void
@@ -156,7 +152,7 @@ class PaymentSessionResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
-        new PaymentSessionResponse($response);
+        PaymentSessionResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -170,7 +166,7 @@ class PaymentSessionResponseTest extends TestCase
         $paymentSessionResponse = PaymentSessionResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(PaymentSessionResponse::class, $paymentSessionResponse);
-        $this->assertSame('ps999', $paymentSessionResponse->getPaymentSession()->id);
+        $this->assertSame('ps999', $paymentSessionResponse->paymentSession->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -180,25 +176,10 @@ class PaymentSessionResponseTest extends TestCase
             'order' => 'https://api.example.com/orders/ord111',
         ];
 
-        $response = $this->createMockResponse(201, $responseData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
+        $paymentSessionResponse = new PaymentSessionResponse($responseData, 201);
 
-        $this->assertSame(201, $paymentSessionResponse->getStatusCode());
+        $this->assertSame(201, $paymentSessionResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'id' => 'ps222',
-            'order' => 'https://api.example.com/orders/ord222',
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $paymentSessionResponse = new PaymentSessionResponse($response);
-
-        $this->assertSame($response, $paymentSessionResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

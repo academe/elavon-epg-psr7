@@ -30,16 +30,15 @@ class AccountListResponseTest extends TestCase
             'first' => 'https://api.eu.elavonpayments.com/accounts',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getError());
-        $this->assertIsArray($listResponse->getAccounts());
-        $this->assertCount(2, $listResponse->getAccounts());
-        $this->assertContainsOnlyInstancesOf(Account::class, $listResponse->getAccounts());
-        $this->assertSame('account1', $listResponse->getAccounts()[0]->id);
-        $this->assertSame('account2', $listResponse->getAccounts()[1]->id);
+        $this->assertNull($listResponse->error);
+        $this->assertIsArray($listResponse->accounts);
+        $this->assertCount(2, $listResponse->accounts);
+        $this->assertContainsOnlyInstancesOf(Account::class, $listResponse->accounts);
+        $this->assertSame('account1', $listResponse->accounts[0]->id);
+        $this->assertSame('account2', $listResponse->accounts[1]->id);
     }
 
     public function test_construct_withPaginationLinks_parsesPagination(): void
@@ -52,12 +51,11 @@ class AccountListResponseTest extends TestCase
             'first' => 'https://api.eu.elavonpayments.com/accounts',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->hasMorePages());
-        $this->assertSame('https://api.eu.elavonpayments.com/accounts?pageToken=abc', $listResponse->getNext());
-        $this->assertSame('https://api.eu.elavonpayments.com/accounts', $listResponse->getFirst());
+        $this->assertSame('https://api.eu.elavonpayments.com/accounts?pageToken=abc', $listResponse->nextPage);
+        $this->assertSame('https://api.eu.elavonpayments.com/accounts', $listResponse->firstPage);
     }
 
     public function test_construct_withoutNextLink_hasNoMorePages(): void
@@ -69,11 +67,10 @@ class AccountListResponseTest extends TestCase
             'first' => 'https://api.eu.elavonpayments.com/accounts',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
         $this->assertFalse($listResponse->hasMorePages());
-        $this->assertNull($listResponse->getNext());
+        $this->assertNull($listResponse->nextPage);
     }
 
     public function test_construct_withEmptyItems_parsesEmptyList(): void
@@ -83,12 +80,11 @@ class AccountListResponseTest extends TestCase
             'first' => 'https://api.eu.elavonpayments.com/accounts',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertIsArray($listResponse->getAccounts());
-        $this->assertCount(0, $listResponse->getAccounts());
+        $this->assertIsArray($listResponse->accounts);
+        $this->assertCount(0, $listResponse->accounts);
         $this->assertFalse($listResponse->hasMorePages());
     }
 
@@ -115,11 +111,10 @@ class AccountListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $accounts = $listResponse->getAccounts();
+        $accounts = $listResponse->accounts;
         $this->assertCount(1, $accounts);
         $account = $accounts[0];
         $this->assertSame('f9g699w9v43r9gcp77y2bxq4rjcx', $account->id);
@@ -143,13 +138,12 @@ class AccountListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(401, $errorData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($errorData, 401);
 
         $this->assertFalse($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getAccounts());
-        $this->assertNotNull($listResponse->getError());
-        $this->assertSame('Authentication required', $listResponse->getError()->getMessage());
+        $this->assertNull($listResponse->accounts);
+        $this->assertNotNull($listResponse->error);
+        $this->assertSame('Authentication required', $listResponse->error->getMessage());
     }
 
     public function test_construct_withMissingItemsArray_throwsException(): void
@@ -163,7 +157,7 @@ class AccountListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new AccountListResponse($response);
+        AccountListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidItemType_throwsException(): void
@@ -179,7 +173,7 @@ class AccountListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Item at index 0 is not an array');
 
-        new AccountListResponse($response);
+        AccountListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -194,7 +188,7 @@ class AccountListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new AccountListResponse($response);
+        AccountListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -209,7 +203,7 @@ class AccountListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new AccountListResponse($response);
+        AccountListResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -224,7 +218,7 @@ class AccountListResponseTest extends TestCase
         $listResponse = AccountListResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(AccountListResponse::class, $listResponse);
-        $this->assertSame('account789', $listResponse->getAccounts()[0]->id);
+        $this->assertSame('account789', $listResponse->accounts[0]->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -233,24 +227,10 @@ class AccountListResponseTest extends TestCase
             'items' => [],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
+        $listResponse = new AccountListResponse($responseData, 200);
 
-        $this->assertSame(200, $listResponse->getStatusCode());
+        $this->assertSame(200, $listResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'items' => [],
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new AccountListResponse($response);
-
-        $this->assertSame($response, $listResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

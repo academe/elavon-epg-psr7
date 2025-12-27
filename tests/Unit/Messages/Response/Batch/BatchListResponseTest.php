@@ -56,16 +56,15 @@ class BatchListResponseTest extends TestCase
             'first' => 'https://api.converge.eu.elavon.net/batches',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getError());
-        $this->assertIsArray($listResponse->getBatches());
-        $this->assertCount(2, $listResponse->getBatches());
-        $this->assertInstanceOf(Batch::class, $listResponse->getBatches()[0]);
-        $this->assertSame('batch123', $listResponse->getBatches()[0]->id);
-        $this->assertSame('batch456', $listResponse->getBatches()[1]->id);
+        $this->assertNull($listResponse->error);
+        $this->assertIsArray($listResponse->batches);
+        $this->assertCount(2, $listResponse->batches);
+        $this->assertInstanceOf(Batch::class, $listResponse->batches[0]);
+        $this->assertSame('batch123', $listResponse->batches[0]->id);
+        $this->assertSame('batch456', $listResponse->batches[1]->id);
     }
 
     public function test_construct_withEmptyItems_parsesSuccessfully(): void
@@ -74,12 +73,11 @@ class BatchListResponseTest extends TestCase
             'items' => [],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($responseData, 200);
 
         $this->assertTrue($listResponse->isSuccessful());
-        $this->assertIsArray($listResponse->getBatches());
-        $this->assertCount(0, $listResponse->getBatches());
+        $this->assertIsArray($listResponse->batches);
+        $this->assertCount(0, $listResponse->batches);
     }
 
     public function test_construct_withPaginationLinks_storesLinks(): void
@@ -95,11 +93,10 @@ class BatchListResponseTest extends TestCase
             'first' => 'https://api.converge.eu.elavon.net/batches?page=1',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($responseData, 200);
 
-        $this->assertSame('https://api.converge.eu.elavon.net/batches?page=2', $listResponse->getNext());
-        $this->assertSame('https://api.converge.eu.elavon.net/batches?page=1', $listResponse->getFirst());
+        $this->assertSame('https://api.converge.eu.elavon.net/batches?page=2', $listResponse->nextPage);
+        $this->assertSame('https://api.converge.eu.elavon.net/batches?page=1', $listResponse->firstPage);
         $this->assertTrue($listResponse->hasMorePages());
     }
 
@@ -114,10 +111,9 @@ class BatchListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($responseData, 200);
 
-        $this->assertNull($listResponse->getNext());
+        $this->assertNull($listResponse->nextPage);
         $this->assertFalse($listResponse->hasMorePages());
     }
 
@@ -134,13 +130,12 @@ class BatchListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(401, $errorData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($errorData, 401);
 
         $this->assertFalse($listResponse->isSuccessful());
-        $this->assertNull($listResponse->getBatches());
-        $this->assertNotNull($listResponse->getError());
-        $this->assertSame('Unauthorized access', $listResponse->getError()->getMessage());
+        $this->assertNull($listResponse->batches);
+        $this->assertNotNull($listResponse->error);
+        $this->assertSame('Unauthorized access', $listResponse->error->getMessage());
     }
 
     public function test_construct_withMissingItemsKey_throwsException(): void
@@ -154,7 +149,7 @@ class BatchListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new BatchListResponse($response);
+        BatchListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withNonArrayItems_throwsException(): void
@@ -168,7 +163,7 @@ class BatchListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response must contain an "items" array');
 
-        new BatchListResponse($response);
+        BatchListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidItemData_throwsException(): void
@@ -185,7 +180,7 @@ class BatchListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Item at index 1 is not an array');
 
-        new BatchListResponse($response);
+        BatchListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -200,7 +195,7 @@ class BatchListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new BatchListResponse($response);
+        BatchListResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -215,7 +210,7 @@ class BatchListResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new BatchListResponse($response);
+        BatchListResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -230,7 +225,7 @@ class BatchListResponseTest extends TestCase
         $listResponse = BatchListResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(BatchListResponse::class, $listResponse);
-        $this->assertCount(1, $listResponse->getBatches());
+        $this->assertCount(1, $listResponse->batches);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -241,24 +236,10 @@ class BatchListResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
+        $listResponse = new BatchListResponse($responseData, 200);
 
-        $this->assertSame(200, $listResponse->getStatusCode());
+        $this->assertSame(200, $listResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'items' => [],
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $listResponse = new BatchListResponse($response);
-
-        $this->assertSame($response, $listResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\StoredAchPayment;
 
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -19,42 +18,29 @@ use Psr\Http\Message\ResponseInterface;
  */
 class DeleteStoredAchPaymentResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly bool $deleted;
+    public readonly bool $deleted;
 
     /**
-     * @param ResponseInterface $response PSR-7 response from the API
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      *
      * @throws InvalidArgumentException When response cannot be parsed
      */
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    public function __construct(array $data, int $statusCode) {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
             // 204 No Content indicates successful deletion
-            $this->deleted = $this->response->getStatusCode() === 204;
+            $this->deleted = $this->statusCode === 204;
             $this->error = null;
         } else {
             $this->deleted = false;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a DeleteStoredAchPaymentResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 response
-     *
-     * @return self
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    public static function fromPsr7Response(ResponseInterface $response): self
-    {
-        return new self($response);
-    }
-
     /**
      * Checks if the stored ACH payment was successfully deleted.
      *
@@ -64,24 +50,9 @@ class DeleteStoredAchPaymentResponse
     {
         return $this->deleted;
     }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
     /**
      * Gets the original PSR-7 response.
      *
      * @return ResponseInterface
      */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
 }

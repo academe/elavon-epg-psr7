@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
 /**
  * Stored ACH Payment Response.
@@ -33,76 +31,25 @@ use Psr\Http\Message\ResponseInterface;
  */
 class StoredAchPaymentResponse
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?StoredAchPayment $storedAchPayment;
+    public readonly ?StoredAchPayment $storedAchPayment;
 
     /**
-     * @param ResponseInterface $response PSR-7 HTTP response
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
      */
-    public function __construct(private readonly ResponseInterface $response)
+    public function __construct(array $data, int $statusCode)
     {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->storedAchPayment = $this->parseSuccessResponse();
+            $this->storedAchPayment = StoredAchPayment::fromData($data);
             $this->error = null;
         } else {
             $this->storedAchPayment = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
     }
-
-    /**
-     * Creates a StoredAchPaymentResponse from a PSR-7 response.
-     *
-     * @param ResponseInterface $response PSR-7 HTTP response
-     * @return static
-     */
-    public static function fromPsr7Response(ResponseInterface $response): static
-    {
-        return new static($response);
-    }
-
-    /**
-     * Gets the stored ACH payment from a successful response.
-     *
-     * @return StoredAchPayment|null Stored ACH payment on success, null on error
-     */
-    public function getStoredAchPayment(): ?StoredAchPayment
-    {
-        return $this->storedAchPayment;
-    }
-
-    /**
-     * Gets the PSR-7 response.
-     *
-     * @return ResponseInterface
-     */
-    public function getPsr7Response(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * Gets the HTTP status code.
-     *
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
-     * Parses a successful response into a StoredAchPayment object.
-     *
-     * @return StoredAchPayment
-     * @throws InvalidArgumentException When response cannot be parsed
-     */
-    private function parseSuccessResponse(): StoredAchPayment
-    {
-        $data = $this->parseJsonBody();
-        return StoredAchPayment::fromData($data);
-    }
-
 }

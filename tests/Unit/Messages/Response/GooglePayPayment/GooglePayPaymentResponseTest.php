@@ -33,13 +33,12 @@ class GooglePayPaymentResponseTest extends TestCase
             'customReference' => 'ref123',
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 201);
-        $response = new GooglePayPaymentResponse($psr7Response);
+        $response = new GooglePayPaymentResponse($responseData, 201);
 
         $this->assertTrue($response->isSuccessful());
-        $this->assertInstanceOf(GooglePayPayment::class, $response->getGooglePayPayment());
-        $this->assertSame('payment_123', $response->getGooglePayPayment()->id);
-        $this->assertNull($response->getError());
+        $this->assertInstanceOf(GooglePayPayment::class, $response->googlePayPayment);
+        $this->assertSame('payment_123', $response->googlePayPayment->id);
+        $this->assertNull($response->error);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -51,13 +50,12 @@ class GooglePayPaymentResponseTest extends TestCase
             ],
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($errorData), 401);
-        $response = new GooglePayPaymentResponse($psr7Response);
+        $response = new GooglePayPaymentResponse($errorData, 401);
 
         $this->assertFalse($response->isSuccessful());
-        $this->assertNull($response->getGooglePayPayment());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(401, $response->getError()->status);
+        $this->assertNull($response->googlePayPayment);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(401, $response->error->status);
     }
 
     public function test_fromPsr7Response_factoryMethod(): void
@@ -68,26 +66,15 @@ class GooglePayPaymentResponseTest extends TestCase
         $response = GooglePayPaymentResponse::fromPsr7Response($psr7Response);
 
         $this->assertInstanceOf(GooglePayPaymentResponse::class, $response);
-        $this->assertSame('payment_456', $response->getGooglePayPayment()->id);
+        $this->assertSame('payment_456', $response->googlePayPayment->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
     {
         $responseData = ['id' => 'payment_789'];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 201);
-        $response = new GooglePayPaymentResponse($psr7Response);
+        $response = new GooglePayPaymentResponse($responseData, 201);
 
-        $this->assertSame(201, $response->getStatusCode());
-    }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = ['id' => 'payment_000'];
-
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new GooglePayPaymentResponse($psr7Response);
-
-        $this->assertSame($psr7Response, $response->getPsr7Response());
+        $this->assertSame(201, $response->statusCode);
     }
 }

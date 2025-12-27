@@ -26,15 +26,14 @@ class PaymentLinkResponseTest extends TestCase
             'status' => ['active'],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $paymentLinkResponse = new PaymentLinkResponse($response);
+        $paymentLinkResponse = new PaymentLinkResponse($responseData, 200);
 
         $this->assertTrue($paymentLinkResponse->isSuccessful());
-        $this->assertNull($paymentLinkResponse->getError());
-        $this->assertInstanceOf(PaymentLink::class, $paymentLinkResponse->getPaymentLink());
-        $this->assertSame('pl123', $paymentLinkResponse->getPaymentLink()->id);
-        $this->assertSame('10000', $paymentLinkResponse->getPaymentLink()->total->getAmount());
-        $this->assertSame('Test payment link', $paymentLinkResponse->getPaymentLink()->description);
+        $this->assertNull($paymentLinkResponse->error);
+        $this->assertInstanceOf(PaymentLink::class, $paymentLinkResponse->paymentLink);
+        $this->assertSame('pl123', $paymentLinkResponse->paymentLink->id);
+        $this->assertSame('10000', $paymentLinkResponse->paymentLink->total->getAmount());
+        $this->assertSame('Test payment link', $paymentLinkResponse->paymentLink->description);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -50,13 +49,12 @@ class PaymentLinkResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $paymentLinkResponse = new PaymentLinkResponse($response);
+        $paymentLinkResponse = new PaymentLinkResponse($errorData, 404);
 
         $this->assertFalse($paymentLinkResponse->isSuccessful());
-        $this->assertNull($paymentLinkResponse->getPaymentLink());
-        $this->assertNotNull($paymentLinkResponse->getError());
-        $this->assertSame('Payment link not found', $paymentLinkResponse->getError()->getMessage());
+        $this->assertNull($paymentLinkResponse->paymentLink);
+        $this->assertNotNull($paymentLinkResponse->error);
+        $this->assertSame('Payment link not found', $paymentLinkResponse->error->getMessage());
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -71,7 +69,7 @@ class PaymentLinkResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new PaymentLinkResponse($response);
+        PaymentLinkResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -86,7 +84,7 @@ class PaymentLinkResponseTest extends TestCase
         $paymentLinkResponse = PaymentLinkResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(PaymentLinkResponse::class, $paymentLinkResponse);
-        $this->assertSame('pl456', $paymentLinkResponse->getPaymentLink()->id);
+        $this->assertSame('pl456', $paymentLinkResponse->paymentLink->id);
     }
 
     public function test_getStatusCode_returnsStatusCode(): void
@@ -97,26 +95,10 @@ class PaymentLinkResponseTest extends TestCase
             'expiresAt' => '2025-12-31T23:59:59Z',
         ];
 
-        $response = $this->createMockResponse(201, $responseData);
-        $paymentLinkResponse = new PaymentLinkResponse($response);
+        $paymentLinkResponse = new PaymentLinkResponse($responseData, 201);
 
-        $this->assertSame(201, $paymentLinkResponse->getStatusCode());
+        $this->assertSame(201, $paymentLinkResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'id' => 'pl999',
-            'total' => ['amount' => '75.00', 'currencyCode' => 'USD'],
-            'expiresAt' => '2025-12-31T23:59:59Z',
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $paymentLinkResponse = new PaymentLinkResponse($response);
-
-        $this->assertSame($response, $paymentLinkResponse->getPsr7Response());
-    }
-
     private function createMockResponse(int $statusCode, array $data): ResponseInterface
     {
         $response = $this->createMock(ResponseInterface::class);

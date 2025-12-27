@@ -13,9 +13,9 @@ use Psr\Http\Message\StreamInterface;
 
 class OrderResponseTest extends TestCase
 {
-    public function test_construct_withSuccessResponse_parsesOrder(): void
+    public function test_construct_withSuccessData_parsesOrder(): void
     {
-        $responseData = [
+        $data = [
             'id' => 'ord123',
             'href' => 'https://api.example.com/orders/ord123',
             'total' => ['amount' => '100.00', 'currencyCode' => 'USD'],
@@ -23,20 +23,19 @@ class OrderResponseTest extends TestCase
             'createdAt' => '2025-11-19T10:00:00Z',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $orderResponse = new OrderResponse($response);
+        $orderResponse = new OrderResponse($data, 200);
 
         $this->assertTrue($orderResponse->isSuccessful());
-        $this->assertNull($orderResponse->getError());
-        $this->assertInstanceOf(Order::class, $orderResponse->getOrder());
-        $this->assertSame('ord123', $orderResponse->getOrder()->id);
-        $this->assertSame('10000', $orderResponse->getOrder()->total->getAmount());
-        $this->assertSame('Test order', $orderResponse->getOrder()->description);
+        $this->assertNull($orderResponse->error);
+        $this->assertInstanceOf(Order::class, $orderResponse->order);
+        $this->assertSame('ord123', $orderResponse->order->id);
+        $this->assertSame('10000', $orderResponse->order->total->getAmount());
+        $this->assertSame('Test order', $orderResponse->order->description);
     }
 
-    public function test_construct_withSuccessResponseAndItems_parsesOrder(): void
+    public function test_construct_withSuccessDataAndItems_parsesOrder(): void
     {
-        $responseData = [
+        $data = [
             'id' => 'ord456',
             'total' => ['amount' => '300.00', 'currencyCode' => 'EUR'],
             'items' => [
@@ -53,20 +52,19 @@ class OrderResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $orderResponse = new OrderResponse($response);
+        $orderResponse = new OrderResponse($data, 200);
 
         $this->assertTrue($orderResponse->isSuccessful());
-        $order = $orderResponse->getOrder();
+        $order = $orderResponse->order;
         $this->assertNotNull($order->items);
         $this->assertCount(2, $order->items);
         $this->assertSame('Item 1', $order->items[0]->description);
         $this->assertSame('Item 2', $order->items[1]->description);
     }
 
-    public function test_construct_withErrorResponse_parsesError(): void
+    public function test_construct_withErrorData_parsesError(): void
     {
-        $errorData = [
+        $data = [
             'status' => 404,
             'failures' => [
                 [
@@ -77,16 +75,15 @@ class OrderResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $orderResponse = new OrderResponse($response);
+        $orderResponse = new OrderResponse($data, 404);
 
         $this->assertFalse($orderResponse->isSuccessful());
-        $this->assertNull($orderResponse->getOrder());
-        $this->assertNotNull($orderResponse->getError());
-        $this->assertSame('Order not found', $orderResponse->getError()->getMessage());
+        $this->assertNull($orderResponse->order);
+        $this->assertNotNull($orderResponse->error);
+        $this->assertSame('Order not found', $orderResponse->error->getMessage());
     }
 
-    public function test_construct_withEmptyBody_throwsException(): void
+    public function test_fromPsr7Response_withEmptyBody_throwsException(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $stream = $this->createMock(StreamInterface::class);
@@ -98,10 +95,10 @@ class OrderResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new OrderResponse($response);
+        OrderResponse::fromPsr7Response($response);
     }
 
-    public function test_construct_withInvalidJson_throwsException(): void
+    public function test_fromPsr7Response_withInvalidJson_throwsException(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $stream = $this->createMock(StreamInterface::class);
@@ -113,10 +110,10 @@ class OrderResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new OrderResponse($response);
+        OrderResponse::fromPsr7Response($response);
     }
 
-    public function test_construct_withJsonArray_throwsException(): void
+    public function test_fromPsr7Response_withJsonArray_throwsException(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $stream = $this->createMock(StreamInterface::class);
@@ -128,7 +125,7 @@ class OrderResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
-        new OrderResponse($response);
+        OrderResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -142,33 +139,19 @@ class OrderResponseTest extends TestCase
         $orderResponse = OrderResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(OrderResponse::class, $orderResponse);
-        $this->assertSame('ord789', $orderResponse->getOrder()->id);
+        $this->assertSame('ord789', $orderResponse->order->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
     {
-        $responseData = [
+        $data = [
             'id' => 'ord999',
             'total' => ['amount' => '25.00', 'currencyCode' => 'USD'],
         ];
 
-        $response = $this->createMockResponse(201, $responseData);
-        $orderResponse = new OrderResponse($response);
+        $orderResponse = new OrderResponse($data, 201);
 
-        $this->assertSame(201, $orderResponse->getStatusCode());
-    }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'id' => 'ord111',
-            'total' => ['amount' => '75.00', 'currencyCode' => 'USD'],
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $orderResponse = new OrderResponse($response);
-
-        $this->assertSame($response, $orderResponse->getPsr7Response());
+        $this->assertSame(201, $orderResponse->statusCode);
     }
 
     /**

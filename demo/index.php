@@ -112,6 +112,16 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
             font-family: 'Monaco', 'Consolas', monospace;
             font-size: 13px;
         }
+        .test-cards code.copyable {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .test-cards code.copyable:hover {
+            background: #e0e0e0;
+        }
+        .test-cards code.copied {
+            background: #d4edda;
+        }
         .test-cards .note {
             margin-top: 15px;
             padding: 10px;
@@ -120,10 +130,30 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
             font-size: 13px;
             color: #856404;
         }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 16px;
+            background: white;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 <body>
     <h1>Elavon 3DS Payment Demo</h1>
+
+    <div class="nav-links">
+        <a href="<?= htmlspecialchars($basePath) ?>orders.php">View Orders</a>
+    </div>
 
     <div class="card">
         <form action="<?= htmlspecialchars($basePath) ?>checkout.php" method="POST">
@@ -174,32 +204,32 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
                 <th>3DS Result</th>
             </tr>
             <tr>
-                <td><code>4000000000001091</code></td>
+                <td><code class="copyable">4000000000001091</code></td>
                 <td>Visa</td>
                 <td>3DS Challenge (authenticated)</td>
             </tr>
             <tr>
-                <td><code>4000000000001000</code></td>
+                <td><code class="copyable">4000000000001000</code></td>
                 <td>Visa</td>
                 <td>3DS Frictionless (authenticated)</td>
             </tr>
             <tr>
-                <td><code>4000000000001109</code></td>
+                <td><code class="copyable">4000000000001109</code></td>
                 <td>Visa</td>
                 <td>3DS Not Authenticated</td>
             </tr>
             <tr>
-                <td><code>4000000000001026</code></td>
+                <td><code class="copyable">4000000000001026</code></td>
                 <td>Visa</td>
                 <td>3DS Unavailable</td>
             </tr>
             <tr>
-                <td><code>5100000000000511</code></td>
+                <td><code class="copyable">5100000000000511</code></td>
                 <td>Mastercard</td>
                 <td>3DS Challenge (authenticated)</td>
             </tr>
             <tr>
-                <td><code>5100000000000529</code></td>
+                <td><code class="copyable">5100000000000529</code></td>
                 <td>Mastercard</td>
                 <td>3DS Frictionless (authenticated)</td>
             </tr>
@@ -212,5 +242,44 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
             3DS Password (if prompted): <code>password</code>
         </div>
     </div>
+
+    <script>
+        function copyToClipboard(text, el) {
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+            // Fallback for non-secure contexts
+            var textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+            document.body.removeChild(textArea);
+            return Promise.resolve();
+        }
+
+        document.querySelectorAll('code.copyable').forEach(function(el) {
+            el.title = 'Click to copy';
+            el.addEventListener('click', function() {
+                var text = this.textContent;
+                var element = this;
+                copyToClipboard(text, element).then(function() {
+                    element.classList.add('copied');
+                    element.textContent = 'Copied!';
+                    setTimeout(function() {
+                        element.textContent = text;
+                        element.classList.remove('copied');
+                    }, 1000);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

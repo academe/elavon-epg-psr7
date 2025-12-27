@@ -65,7 +65,7 @@ class CreatePaymentSessionRequestTest extends TestCase
             order: 'https://api.example.com/orders/ord123',
             returnUrl: 'https://merchant.com/return',
             cancelUrl: 'https://merchant.com/cancel',
-            shopperEmailAddress: 'shopper@example.com',
+            shopperEmailAddress: new \Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress('shopper@example.com'),
             doCreateTransaction: true,
         );
 

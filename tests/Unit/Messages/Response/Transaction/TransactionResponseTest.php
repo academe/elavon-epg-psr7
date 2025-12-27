@@ -32,7 +32,7 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Assert
         $this->assertInstanceOf(TransactionResponse::class, $response);
@@ -73,10 +73,10 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 201);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act
-        $transaction = $response->getTransaction();
+        $transaction = $response->transaction;
 
         // Assert
         $this->assertInstanceOf(Transaction::class, $transaction);
@@ -98,10 +98,10 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 201);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act
-        $statusCode = $response->getStatusCode();
+        $statusCode = $response->statusCode;
 
         // Assert
         $this->assertSame(201, $statusCode);
@@ -115,7 +115,7 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 200);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act & Assert
         $this->assertTrue($response->isSuccessful());
@@ -129,7 +129,7 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 201);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act & Assert
         $this->assertTrue($response->isSuccessful());
@@ -143,7 +143,7 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 299);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act & Assert
         $this->assertTrue($response->isSuccessful());
@@ -157,7 +157,7 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 400);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act & Assert
         $this->assertFalse($response->isSuccessful());
@@ -171,79 +171,57 @@ class TransactionResponseTest extends TestCase
         ]);
 
         $psr7Response = $this->createMockResponse($responseBody, 500);
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Act & Assert
         $this->assertFalse($response->isSuccessful());
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        // Arrange
-        $responseBody = json_encode([
-            'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
-        ]);
-
-        $psr7Response = $this->createMockResponse($responseBody, 200);
-        $response = new TransactionResponse($psr7Response);
-
-        // Act
-        $originalResponse = $response->getPsr7Response();
-
-        // Assert
-        $this->assertSame($psr7Response, $originalResponse);
-    }
-
     public function test_construct_withEmptyBody_throwsException(): void
     {
         // Arrange
         $psr7Response = $this->createMockResponse('', 200);
-
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
         // Act
-        new TransactionResponse($psr7Response);
+        TransactionResponse::fromPsr7Response($psr7Response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
     {
         // Arrange
         $psr7Response = $this->createMockResponse('invalid json{', 200);
-
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
         // Act
-        new TransactionResponse($psr7Response);
+        TransactionResponse::fromPsr7Response($psr7Response);
     }
 
     public function test_construct_withNonObjectJson_throwsException(): void
     {
         // Arrange
         $psr7Response = $this->createMockResponse('"just a string"', 200);
-
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
         // Act
-        new TransactionResponse($psr7Response);
+        TransactionResponse::fromPsr7Response($psr7Response);
     }
 
     public function test_construct_withJsonArray_throwsException(): void
     {
         // Arrange
         $psr7Response = $this->createMockResponse('[]', 200);
-
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
         // Act
-        new TransactionResponse($psr7Response);
+        TransactionResponse::fromPsr7Response($psr7Response);
     }
 
     public function test_construct_withDeclinedTransaction_createsInstance(): void
@@ -259,8 +237,8 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
-        $transaction = $response->getTransaction();
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
+        $transaction = $response->transaction;
 
         // Assert
         $this->assertSame(TransactionState::DECLINED, $transaction->state);
@@ -288,8 +266,8 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
-        $transaction = $response->getTransaction();
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
+        $transaction = $response->transaction;
 
         // Assert
         $this->assertSame(TransactionState::CAPTURED, $transaction->state);
@@ -314,8 +292,8 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
-        $transaction = $response->getTransaction();
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
+        $transaction = $response->transaction;
 
         // Assert
         $this->assertSame('100', $transaction->total->getAmount());
@@ -344,14 +322,14 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 401);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getTransaction());
+        $this->assertNull($response->transaction);
 
-        $error = $response->getError();
+        $error = $response->error;
         $this->assertNotNull($error);
         $this->assertSame(401, $error->status);
         $this->assertSame('unauthorized', $error->getCode());
@@ -375,13 +353,13 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 400);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Assert
         $this->assertTrue($response->hasError());
         $this->assertFalse($response->isSuccessful());
 
-        $error = $response->getError();
+        $error = $response->error;
         $this->assertSame('validation_error', $error->getCode());
         $this->assertSame('Card number is invalid', $error->getMessage());
         $this->assertSame('card.number', $error->getFailures()[0]->field);
@@ -404,13 +382,13 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 500);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Assert
         $this->assertTrue($response->hasError());
-        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame(500, $response->statusCode);
 
-        $error = $response->getError();
+        $error = $response->error;
         $this->assertSame('internal_error', $error->getCode());
     }
 
@@ -427,12 +405,12 @@ class TransactionResponseTest extends TestCase
         $psr7Response = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionResponse($psr7Response);
+        $response = TransactionResponse::fromPsr7Response($psr7Response);
 
         // Assert
         $this->assertFalse($response->hasError());
-        $this->assertNull($response->getError());
-        $this->assertNotNull($response->getTransaction());
+        $this->assertNull($response->error);
+        $this->assertNotNull($response->transaction);
     }
 
     /**

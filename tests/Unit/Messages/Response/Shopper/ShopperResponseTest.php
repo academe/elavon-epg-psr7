@@ -32,13 +32,12 @@ class ShopperResponseTest extends TestCase
             'email' => 'john@example.com',
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 201);
-        $response = new ShopperResponse($psr7Response);
+        $response = new ShopperResponse($responseData, 201);
 
         $this->assertTrue($response->isSuccessful());
-        $this->assertInstanceOf(Shopper::class, $response->getShopper());
-        $this->assertSame('shopper_123', $response->getShopper()->id);
-        $this->assertNull($response->getError());
+        $this->assertInstanceOf(Shopper::class, $response->shopper);
+        $this->assertSame('shopper_123', $response->shopper->id);
+        $this->assertNull($response->error);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -50,13 +49,12 @@ class ShopperResponseTest extends TestCase
             ],
         ];
 
-        $psr7Response = $this->createMockResponse(json_encode($errorData), 404);
-        $response = new ShopperResponse($psr7Response);
+        $response = new ShopperResponse($errorData, 404);
 
         $this->assertFalse($response->isSuccessful());
-        $this->assertNull($response->getShopper());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
-        $this->assertSame(404, $response->getError()->status);
+        $this->assertNull($response->shopper);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
+        $this->assertSame(404, $response->error->status);
     }
 
     public function test_fromPsr7Response_factoryMethod(): void
@@ -67,16 +65,15 @@ class ShopperResponseTest extends TestCase
         $response = ShopperResponse::fromPsr7Response($psr7Response);
 
         $this->assertInstanceOf(ShopperResponse::class, $response);
-        $this->assertSame('shopper_456', $response->getShopper()->id);
+        $this->assertSame('shopper_456', $response->shopper->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
     {
         $responseData = ['id' => 'shopper_789'];
 
-        $psr7Response = $this->createMockResponse(json_encode($responseData), 200);
-        $response = new ShopperResponse($psr7Response);
+        $response = new ShopperResponse($responseData, 200);
 
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->statusCode);
     }
 }

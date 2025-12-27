@@ -42,15 +42,15 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->hasError());
-        $this->assertCount(2, $response->getTransactions());
-        $this->assertInstanceOf(Transaction::class, $response->getTransactions()[0]);
-        $this->assertSame('txn1', $response->getTransactions()[0]->id);
-        $this->assertSame('txn2', $response->getTransactions()[1]->id);
+        $this->assertCount(2, $response->transactions);
+        $this->assertInstanceOf(Transaction::class, $response->transactions[0]);
+        $this->assertSame('txn1', $response->transactions[0]->id);
+        $this->assertSame('txn2', $response->transactions[1]->id);
     }
 
     public function test_construct_withEmptyList_returnsEmptyArray(): void
@@ -64,11 +64,11 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertIsArray($response->getTransactions());
-        $this->assertCount(0, $response->getTransactions());
+        $this->assertIsArray($response->transactions);
+        $this->assertCount(0, $response->transactions);
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -83,10 +83,10 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/transactions?page=2', $response->getNextPage());
+        $this->assertSame('https://api.example.com/transactions?page=2', $response->nextPage);
         $this->assertTrue($response->hasMorePages());
     }
 
@@ -101,10 +101,10 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertNull($response->getNextPage());
+        $this->assertNull($response->nextPage);
         $this->assertFalse($response->hasMorePages());
     }
 
@@ -119,10 +119,10 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame('https://api.example.com/transactions?page=1', $response->getFirstPage());
+        $this->assertSame('https://api.example.com/transactions?page=1', $response->firstPage);
     }
 
     public function test_construct_withErrorResponse_parsesError(): void
@@ -137,13 +137,13 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 401);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
         $this->assertFalse($response->isSuccessful());
         $this->assertTrue($response->hasError());
-        $this->assertNull($response->getTransactions());
-        $this->assertInstanceOf(ErrorResponse::class, $response->getError());
+        $this->assertNull($response->transactions);
+        $this->assertInstanceOf(ErrorResponse::class, $response->error);
     }
 
     public function test_construct_withMissingItems_throwsException(): void
@@ -161,7 +161,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        TransactionListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withNonArrayItems_throwsException(): void
@@ -179,7 +179,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response must contain an "items" array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        TransactionListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withInvalidItemFormat_throwsException(): void
@@ -200,7 +200,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Item at index 1 is not an array');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        TransactionListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -213,7 +213,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Response body is empty');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        TransactionListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -226,7 +226,7 @@ class TransactionListResponseTest extends TestCase
         $this->expectExceptionMessage('Failed to decode JSON response');
 
         // Act
-        new TransactionListResponse($psrResponse);
+        TransactionListResponse::fromPsr7Response($psrResponse);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -244,7 +244,7 @@ class TransactionListResponseTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(TransactionListResponse::class, $response);
-        $this->assertCount(1, $response->getTransactions());
+        $this->assertCount(1, $response->transactions);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -258,29 +258,11 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        // Arrange
-        $responseBody = json_encode([
-            'items' => [['id' => 'txn1']],
-            'next' => null,
-            'first' => 'https://api.example.com/transactions?page=1',
-        ]);
-        $psrResponse = $this->createMockResponse($responseBody, 200);
-
-        // Act
-        $response = new TransactionListResponse($psrResponse);
-
-        // Assert
-        $this->assertSame($psrResponse, $response->getPsr7Response());
-    }
-
     public function test_construct_withoutPaginationLinks_setsThemToNull(): void
     {
         // Arrange
@@ -291,11 +273,11 @@ class TransactionListResponseTest extends TestCase
         $psrResponse = $this->createMockResponse($responseBody, 200);
 
         // Act
-        $response = new TransactionListResponse($psrResponse);
+        $response = TransactionListResponse::fromPsr7Response($psrResponse);
 
         // Assert
-        $this->assertNull($response->getNextPage());
-        $this->assertNull($response->getFirstPage());
+        $this->assertNull($response->nextPage);
+        $this->assertNull($response->firstPage);
         $this->assertFalse($response->hasMorePages());
     }
 }

@@ -36,15 +36,14 @@ class BatchResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $batchResponse = new BatchResponse($response);
+        $batchResponse = new BatchResponse($responseData, 200);
 
         $this->assertTrue($batchResponse->isSuccessful());
-        $this->assertNull($batchResponse->getError());
-        $this->assertInstanceOf(Batch::class, $batchResponse->getBatch());
-        $this->assertSame('batch123', $batchResponse->getBatch()->id);
-        $this->assertSame('settled', $batchResponse->getBatch()->state->value);
-        $this->assertSame('21280002', $batchResponse->getBatch()->processorReference);
+        $this->assertNull($batchResponse->error);
+        $this->assertInstanceOf(Batch::class, $batchResponse->batch);
+        $this->assertSame('batch123', $batchResponse->batch->id);
+        $this->assertSame('settled', $batchResponse->batch->state->value);
+        $this->assertSame('21280002', $batchResponse->batch->processorReference);
     }
 
     public function test_construct_withSuccessResponseAndAllFields_parsesBatch(): void
@@ -74,11 +73,10 @@ class BatchResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $batchResponse = new BatchResponse($response);
+        $batchResponse = new BatchResponse($responseData, 200);
 
         $this->assertTrue($batchResponse->isSuccessful());
-        $batch = $batchResponse->getBatch();
+        $batch = $batchResponse->batch;
         $this->assertNotNull($batch->credits);
         $this->assertSame(0, $batch->credits->count);
         $this->assertSame('0', $batch->credits->total->getAmount());
@@ -103,13 +101,12 @@ class BatchResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $batchResponse = new BatchResponse($response);
+        $batchResponse = new BatchResponse($errorData, 404);
 
         $this->assertFalse($batchResponse->isSuccessful());
-        $this->assertNull($batchResponse->getBatch());
-        $this->assertNotNull($batchResponse->getError());
-        $this->assertSame('Batch not found', $batchResponse->getError()->getMessage());
+        $this->assertNull($batchResponse->batch);
+        $this->assertNotNull($batchResponse->error);
+        $this->assertSame('Batch not found', $batchResponse->error->getMessage());
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -124,7 +121,7 @@ class BatchResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new BatchResponse($response);
+        BatchResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -139,7 +136,7 @@ class BatchResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new BatchResponse($response);
+        BatchResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withJsonArray_throwsException(): void
@@ -154,7 +151,7 @@ class BatchResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
-        new BatchResponse($response);
+        BatchResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -168,7 +165,7 @@ class BatchResponseTest extends TestCase
         $batchResponse = BatchResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(BatchResponse::class, $batchResponse);
-        $this->assertSame('batch789', $batchResponse->getBatch()->id);
+        $this->assertSame('batch789', $batchResponse->batch->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -178,25 +175,10 @@ class BatchResponseTest extends TestCase
             'state' => 'settled',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $batchResponse = new BatchResponse($response);
+        $batchResponse = new BatchResponse($responseData, 200);
 
-        $this->assertSame(200, $batchResponse->getStatusCode());
+        $this->assertSame(200, $batchResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'id' => 'batch111',
-            'state' => 'rejected',
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $batchResponse = new BatchResponse($response);
-
-        $this->assertSame($response, $batchResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

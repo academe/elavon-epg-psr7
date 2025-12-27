@@ -26,15 +26,14 @@ class AccountResponseTest extends TestCase
             'tradeName' => 'Gringotts',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $accountResponse = new AccountResponse($response);
+        $accountResponse = new AccountResponse($responseData, 200);
 
         $this->assertTrue($accountResponse->isSuccessful());
-        $this->assertNull($accountResponse->getError());
-        $this->assertInstanceOf(Account::class, $accountResponse->getAccount());
-        $this->assertSame('account123', $accountResponse->getAccount()->id);
-        $this->assertSame('Sirius Corporation', $accountResponse->getAccount()->name);
-        $this->assertSame('Gringotts', $accountResponse->getAccount()->tradeName);
+        $this->assertNull($accountResponse->error);
+        $this->assertInstanceOf(Account::class, $accountResponse->account);
+        $this->assertSame('account123', $accountResponse->account->id);
+        $this->assertSame('Sirius Corporation', $accountResponse->account->name);
+        $this->assertSame('Gringotts', $accountResponse->account->tradeName);
     }
 
     public function test_construct_withSuccessResponseAndAllFields_parsesAccount(): void
@@ -67,11 +66,10 @@ class AccountResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $accountResponse = new AccountResponse($response);
+        $accountResponse = new AccountResponse($responseData, 200);
 
         $this->assertTrue($accountResponse->isSuccessful());
-        $account = $accountResponse->getAccount();
+        $account = $accountResponse->account;
         $this->assertNotNull($account);
         $this->assertSame('f9g699w9v43r9gcp77y2bxq4rjcx', $account->id);
         $this->assertSame('Sirius Corporation', $account->name);
@@ -96,13 +94,12 @@ class AccountResponseTest extends TestCase
             ],
         ];
 
-        $response = $this->createMockResponse(404, $errorData);
-        $accountResponse = new AccountResponse($response);
+        $accountResponse = new AccountResponse($errorData, 404);
 
         $this->assertFalse($accountResponse->isSuccessful());
-        $this->assertNull($accountResponse->getAccount());
-        $this->assertNotNull($accountResponse->getError());
-        $this->assertSame('Account not found', $accountResponse->getError()->getMessage());
+        $this->assertNull($accountResponse->account);
+        $this->assertNotNull($accountResponse->error);
+        $this->assertSame('Account not found', $accountResponse->error->getMessage());
     }
 
     public function test_construct_withEmptyBody_throwsException(): void
@@ -117,7 +114,7 @@ class AccountResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is empty');
 
-        new AccountResponse($response);
+        AccountResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withInvalidJson_throwsException(): void
@@ -132,7 +129,7 @@ class AccountResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
 
-        new AccountResponse($response);
+        AccountResponse::fromPsr7Response($response);
     }
 
     public function test_construct_withJsonArray_throwsException(): void
@@ -147,7 +144,7 @@ class AccountResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Response body is not a JSON object');
 
-        new AccountResponse($response);
+        AccountResponse::fromPsr7Response($response);
     }
 
     public function test_fromPsr7Response_createsInstance(): void
@@ -161,7 +158,7 @@ class AccountResponseTest extends TestCase
         $accountResponse = AccountResponse::fromPsr7Response($response);
 
         $this->assertInstanceOf(AccountResponse::class, $accountResponse);
-        $this->assertSame('account789', $accountResponse->getAccount()->id);
+        $this->assertSame('account789', $accountResponse->account->id);
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void
@@ -171,25 +168,10 @@ class AccountResponseTest extends TestCase
             'name' => 'Status Test',
         ];
 
-        $response = $this->createMockResponse(200, $responseData);
-        $accountResponse = new AccountResponse($response);
+        $accountResponse = new AccountResponse($responseData, 200);
 
-        $this->assertSame(200, $accountResponse->getStatusCode());
+        $this->assertSame(200, $accountResponse->statusCode);
     }
-
-    public function test_getPsr7Response_returnsOriginalResponse(): void
-    {
-        $responseData = [
-            'id' => 'account111',
-            'name' => 'Response Test',
-        ];
-
-        $response = $this->createMockResponse(200, $responseData);
-        $accountResponse = new AccountResponse($response);
-
-        $this->assertSame($response, $accountResponse->getPsr7Response());
-    }
-
     /**
      * Creates a mock PSR-7 response.
      */

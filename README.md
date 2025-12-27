@@ -23,7 +23,7 @@ Don't have an Elavon merchant account yet? [**Sign up here**](https://www.elavon
 
 - PHP 8.1 or higher
 - An [Elavon merchant account](https://www.elavon.eu/partner-form.html?partner_id=0014H00004E0iYw) with API credentials
-- PSR-7 HTTP Message implementation (or use built-in message)
+- PSR-7 HTTP Message implementation (or use built-in message factory)
 - PSR-17 HTTP Factory implementation (or user built-in factory)
 
 ## Installation
@@ -77,12 +77,10 @@ $psr7Response = $client->sendRequest($psr7Request);
 $response = TransactionResponse::fromPsr7Response($psr7Response);
 
 if ($response->isSuccessful()) {
-    $transaction = $response->getTransaction();
-    echo "Transaction ID: {$transaction->id}\n";
-    echo "State: {$transaction->state->value}\n";
+    echo "Transaction ID: {$response->transaction->id}\n";
+    echo "State: {$response->transaction->state->value}\n";
 } else {
-    $error = $response->getError();
-    echo "Error: {$error->getMessage()}\n";
+    echo "Error: {$response->error->getMessage()}\n";
 }
 ```
 
@@ -133,6 +131,60 @@ $transaction = new Transaction(
 $request = new CreateTransactionRequest($transaction);
 ```
 
+### Paginated Lists
+
+Many API endpoints return paginated lists of resources. The response classes provide cursor-based pagination:
+
+```php
+use Academe\Elavon\Epg\Psr7\Messages\Request\Order\RetrieveOrderListRequest;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Order\OrderListResponse;
+use GuzzleHttp\Psr7\Request;
+
+// First page - use the request class
+$request = (new RetrieveOrderListRequest(['limit' => 10]))->build();
+$request = $factory->apply($request);
+
+$response = OrderListResponse::fromPsr7Response($client->sendRequest($request));
+
+if ($response->isSuccessful()) {
+    foreach ($response->orders as $order) {
+        echo "Order: {$order->id} - {$order->description}\n";
+    }
+
+    // Check for more pages
+    if ($response->nextPage) {
+        echo "More orders available\n";
+    }
+}
+
+// Next page - use the cursor URL directly
+if ($response->nextPage) {
+    $nextRequest = new Request('GET', $response->nextPage);
+    $nextRequest = $factory->apply($nextRequest);
+
+    $nextResponse = OrderListResponse::fromPsr7Response($client->sendRequest($nextRequest));
+    // Process next page...
+}
+
+// Return to first page
+if ($response->firstPage) {
+    $firstRequest = new Request('GET', $response->firstPage);
+    // ...
+}
+```
+
+**Pagination properties:**
+
+| Property                     | Description                                              |
+| ---------------------------- | -------------------------------------------------------- |
+| `$response->nextPage`        | Cursor URL for the next page, or `null` if on last page  |
+| `$response->firstPage`       | Cursor URL to return to the first page                   |
+| `$response->hasMorePages()`  | Returns `true` if `nextPage` is available                |
+
+**Note:** The API uses forward-only cursor pagination. There is no "previous page" cursor - applications needing backward navigation should cache cursors as users navigate forward.
+
+**Note:** Support for list filtering will be documented in a future update.
+
 See [docs/examples/](docs/examples/) for more examples.
 
 ## Features
@@ -162,11 +214,13 @@ Based on the Elavon Payment Gateway API version 2025-10-01, this package support
 - Notifications
 - Total Adjustments
 
-## API Documentation
+## API Endpoints
 
-The Elavon Payment Gateway API documentation is available at:
-- Sandbox: https://uat.api.converge.eu.elavonaws.com
-- Production: https://api.eu.convergepay.com
+The Elavon Payment Gateway API base URLs:
+- EU Sandbox: `https://uat.api.converge.eu.elavonaws.com`
+- EU Production: `https://api.eu.convergepay.com`
+- US Sandbox: `https://uat.api.convergepay.com`
+- US Production: `https://api.convergepay.com`
 
 ## Development
 
