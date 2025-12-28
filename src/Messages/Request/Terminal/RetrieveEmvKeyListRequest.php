@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Terminal;
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Retrieve EMV Key List Request.
@@ -28,16 +28,34 @@ class RetrieveEmvKeyListRequest
 
     /**
      * @param string $terminalId Terminal ID to retrieve EMV keys for
-     * @param array<string, mixed> $queryParams Query parameters for pagination/filtering     *
+     * @param QueryParams $queryParams Query parameters for pagination
      * @throws InvalidArgumentException When terminal ID is empty
      */
     public function __construct(
-        private readonly string $terminalId,
-        private readonly array $queryParams = []
+        public readonly string $terminalId,
+        public readonly QueryParams $queryParams = new QueryParams()
     ) {
         if (empty($this->terminalId)) {
             throw new InvalidArgumentException('Terminal ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{terminalId: string, queryParams?: QueryParams|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('terminalId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'terminalId' in data");
+        }
+
+        $queryParams = $data['queryParams'] ?? new QueryParams();
+
+        if (is_array($queryParams)) {
+            $queryParams = QueryParams::fromArray($queryParams);
+        }
+
+        return new static($data['terminalId'], $queryParams);
     }
 
     /**
@@ -47,36 +65,13 @@ class RetrieveEmvKeyListRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
+        $request = $this->getRequestFactory()
+            ->createRequest('GET', '/terminals/' . $this->terminalId . '/emv-keys');
 
-        // Build URI with query parameters
-        $uri = '/terminals/' . $this->terminalId . '/emv-keys';
-        if (!empty($this->queryParams)) {
-            $uri .= '?' . http_build_query($this->queryParams);
+        if (! $this->queryParams->isEmpty()) {
+            $request = $request->withUri($this->queryParams->apply($request->getUri()));
         }
 
-        // Build PSR-7 GET request
-        return $this->getRequestFactory()
-            ->createRequest('GET', $uri);
-    }
-
-    /**
-     * Gets the terminal ID.
-     *
-     * @return string
-     */
-    public function getTerminalId(): string
-    {
-        return $this->terminalId;
-    }
-
-    /**
-     * Gets the query parameters.
-     *
-     * @return array<string, mixed>
-     */
-    public function getQueryParams(): array
-    {
-        return $this->queryParams;
+        return $request;
     }
 }

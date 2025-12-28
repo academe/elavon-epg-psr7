@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink;
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Retrieve PaymentLink Event List Request.
@@ -19,13 +19,13 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  *
  * Example usage with ElavonApiFactory:
  * ```php
+ * use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
  * use Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink\RetrievePaymentLinkEventListRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  *
- * // Build the base request with optional query params
- * $request = (new RetrievePaymentLinkEventListRequest('6xxFwvM8BqmM6T6DcF3DyTB3', [
- *     'limit' => 50,
- * ]))->build();
+ * // Build the base request with pagination
+ * $queryParams = QueryParams::create()->withLimit(50);
+ * $request = (new RetrievePaymentLinkEventListRequest('6xxFwvM8BqmM6T6DcF3DyTB3', $queryParams))->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -50,16 +50,38 @@ class RetrievePaymentLinkEventListRequest
 
     /**
      * @param string $paymentLinkId PaymentLink Resource ID
-     * @param array<string, mixed> $queryParams Query parameters for pagination/filtering     *
+     * @param QueryParams $queryParams Query parameters for pagination/filtering
      * @throws InvalidArgumentException When payment link ID is empty
      */
     public function __construct(
-        private readonly string $paymentLinkId,
-        private readonly array $queryParams = []
+        public readonly string $paymentLinkId,
+        public readonly QueryParams $queryParams = new QueryParams()
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{paymentLinkId: string, queryParams?: QueryParams|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentLinkId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentLinkId' in data");
+        }
+
+        $queryParams = $data['queryParams'] ?? new QueryParams();
+
+        if (is_array($queryParams)) {
+            $queryParams = QueryParams::fromArray($queryParams);
+        }
+
+        return new static($data['paymentLinkId'], $queryParams);
     }
 
     /**
@@ -69,36 +91,13 @@ class RetrievePaymentLinkEventListRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
+        $request = $this->getRequestFactory()
+            ->createRequest('GET', '/payment-links/' . $this->paymentLinkId . '/payment-link-events');
 
-        // Build URI with query parameters
-        $uri = '/payment-links/' . $this->paymentLinkId . '/payment-link-events';
-        if (!empty($this->queryParams)) {
-            $uri .= '?' . http_build_query($this->queryParams);
+        if (! $this->queryParams->isEmpty()) {
+            $request = $request->withUri($this->queryParams->apply($request->getUri()));
         }
 
-        // Build PSR-7 GET request
-        return $this->getRequestFactory()
-            ->createRequest('GET', $uri);
-    }
-
-    /**
-     * Gets the payment link ID.
-     *
-     * @return string
-     */
-    public function getPaymentLinkId(): string
-    {
-        return $this->paymentLinkId;
-    }
-
-    /**
-     * Gets the query parameters.
-     *
-     * @return array<string, mixed>
-     */
-    public function getQueryParams(): array
-    {
-        return $this->queryParams;
+        return $request;
     }
 }

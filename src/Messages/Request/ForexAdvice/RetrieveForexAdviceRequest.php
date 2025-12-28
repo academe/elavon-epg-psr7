@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\ForexAdvice;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveForexAdviceRequest
      * @throws InvalidArgumentException When forex advice ID is empty
      */
     public function __construct(
-        private readonly string $forexAdviceId
+        public readonly string $forexAdviceId
     ) {
         if (empty($this->forexAdviceId)) {
             throw new InvalidArgumentException('Forex advice ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{forexAdviceId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('forexAdviceId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'forexAdviceId' in data");
+        }
+
+        return new static($data['forexAdviceId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveForexAdviceRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/forex-advices/' . $this->forexAdviceId);
-    }
-
-    /**
-     * Gets the forex advice ID being retrieved.
-     *
-     * @return string
-     */
-    public function getForexAdviceId(): string
-    {
-        return $this->forexAdviceId;
     }
 }

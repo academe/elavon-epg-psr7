@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ManualBatch;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -54,26 +52,42 @@ class UpdateManualBatchRequest
 {
     use HasPsr17Factories;
 
-    private readonly ManualBatch $updates;
-
     /**
      * @param string $manualBatchId Manual batch ID to update
-     * @param ManualBatch|array<string, mixed> $updates Update data (partial manual batch)     *
-     * @throws InvalidArgumentException When manual batch ID is empty or updates are invalid
+     * @param ManualBatch $manualBatch Update data (partial manual batch)     *
+     * @throws InvalidArgumentException When manual batch ID is empty
      */
     public function __construct(
-        private readonly string $manualBatchId,
-        ManualBatch|array $updates
+        public readonly string $manualBatchId,
+        public readonly ManualBatch $manualBatch
     ) {
         if (empty($this->manualBatchId)) {
             throw new InvalidArgumentException('Manual batch ID cannot be empty');
         }
+    }
 
-        // Normalize to ManualBatch object
-        $this->updates = match (true) {
-            $updates instanceof ManualBatch => $updates,
-            is_array($updates) => ManualBatch::fromData($updates),
-        };
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{manualBatchId: string, manualBatch: ManualBatch|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('manualBatchId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'manualBatchId' in data");
+        }
+
+        if (! array_key_exists('manualBatch', $data)) {
+            throw new InvalidArgumentException("Missing required key 'manualBatch' in data");
+        }
+
+        $manualBatch = $data['manualBatch'] instanceof ManualBatch
+            ? $data['manualBatch']
+            : ManualBatch::fromData($data['manualBatch']);
+
+        return new static($data['manualBatchId'], $manualBatch);
     }
 
     /**
@@ -83,35 +97,13 @@ class UpdateManualBatchRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize updates to JSON
-        $data = $this->updates->toData();
+        $data = $this->manualBatch->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request (API uses POST for updates)
         return $this->getRequestFactory()
             ->createRequest('POST', '/manual-batches/' . $this->manualBatchId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the manual batch ID being updated.
-     *
-     * @return string
-     */
-    public function getManualBatchId(): string
-    {
-        return $this->manualBatchId;
-    }
-
-    /**
-     * Gets the update data.
-     *
-     * @return ManualBatch
-     */
-    public function getUpdates(): ManualBatch
-    {
-        return $this->updates;
     }
 }

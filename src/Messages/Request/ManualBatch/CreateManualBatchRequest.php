@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ManualBatch;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -55,20 +53,31 @@ class CreateManualBatchRequest
 {
     use HasPsr17Factories;
 
-    private readonly ManualBatch $manualBatch;
+    /**
+     * @param ManualBatch $manualBatch Manual batch data     */
+    public function __construct(
+        public readonly ManualBatch $manualBatch
+    ) {
+    }
 
     /**
-     * @param ManualBatch|array<string, mixed> $manualBatch Manual batch data or array     *
-     * @throws InvalidArgumentException When manual batch data is invalid
+     * Creates an instance from raw data.
+     *
+     * @param array{manualBatch: ManualBatch|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
      */
-    public function __construct(
-        ManualBatch|array $manualBatch
-    ) {
-        // Normalize to ManualBatch object
-        $this->manualBatch = match (true) {
-            $manualBatch instanceof ManualBatch => $manualBatch,
-            is_array($manualBatch) => ManualBatch::fromData($manualBatch),
-        };
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('manualBatch', $data)) {
+            throw new InvalidArgumentException("Missing required key 'manualBatch' in data");
+        }
+
+        $manualBatch = $data['manualBatch'] instanceof ManualBatch
+            ? $data['manualBatch']
+            : ManualBatch::fromData($data['manualBatch']);
+
+        return new static($manualBatch);
     }
 
     /**
@@ -78,8 +87,6 @@ class CreateManualBatchRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize manual batch to JSON
         $data = $this->manualBatch->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -88,15 +95,5 @@ class CreateManualBatchRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/manual-batches')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the manual batch being created.
-     *
-     * @return ManualBatch
-     */
-    public function getManualBatch(): ManualBatch
-    {
-        return $this->manualBatch;
     }
 }

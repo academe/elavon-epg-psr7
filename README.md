@@ -131,17 +131,18 @@ $transaction = new Transaction(
 $request = new CreateTransactionRequest($transaction);
 ```
 
-### Paginated Lists
+### Paginated Lists with QueryParams
 
-Many API endpoints return paginated lists of resources. The response classes provide cursor-based pagination:
+Many API endpoints return paginated lists of resources. The `QueryParams` class provides a fluent interface for pagination and filtering:
 
 ```php
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\RetrieveOrderListRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Order\OrderListResponse;
-use GuzzleHttp\Psr7\Request;
 
-// First page - use the request class
-$request = (new RetrieveOrderListRequest(['limit' => 10]))->build();
+// First page with pagination
+$queryParams = QueryParams::create()->withLimit(25);
+$request = (new RetrieveOrderListRequest($queryParams))->build();
 $request = $factory->apply($request);
 
 $response = OrderListResponse::fromPsr7Response($client->sendRequest($request));
@@ -151,39 +152,98 @@ if ($response->isSuccessful()) {
         echo "Order: {$order->id} - {$order->description}\n";
     }
 
-    // Check for more pages
-    if ($response->nextPage) {
-        echo "More orders available\n";
+    // Fetch next page using the nextPageToken
+    if ($response->nextPageToken) {
+        $nextParams = QueryParams::create()
+            ->withLimit(25)
+            ->withPageToken($response->nextPageToken);
+        $nextRequest = (new RetrieveOrderListRequest($nextParams))->build();
+        // ...
     }
-}
-
-// Next page - use the cursor URL directly
-if ($response->nextPage) {
-    $nextRequest = new Request('GET', $response->nextPage);
-    $nextRequest = $factory->apply($nextRequest);
-
-    $nextResponse = OrderListResponse::fromPsr7Response($client->sendRequest($nextRequest));
-    // Process next page...
-}
-
-// Return to first page
-if ($response->firstPage) {
-    $firstRequest = new Request('GET', $response->firstPage);
-    // ...
 }
 ```
 
-**Pagination properties:**
+#### QueryParams Methods
 
-| Property                     | Description                                              |
-| ---------------------------- | -------------------------------------------------------- |
-| `$response->nextPage`        | Cursor URL for the next page, or `null` if on last page  |
-| `$response->firstPage`       | Cursor URL to return to the first page                   |
-| `$response->hasMorePages()`  | Returns `true` if `nextPage` is available                |
+| Method | Description |
+| ------ | ----------- |
+| `QueryParams::create()` | Create an empty QueryParams instance |
+| `withPageToken(?string $token)` | Set the pagination token for the next page |
+| `withLimit(?int $limit)` | Set page size (1-200, throws exception if out of range) |
+| `withFilter(string $field, string $operator, string $value)` | Add a filter condition |
+| `isEmpty()` | Check if any parameters are set |
+| `apply(UriInterface $uri)` | Apply parameters to a PSR-7 URI |
 
-**Note:** The API uses forward-only cursor pagination. There is no "previous page" cursor - applications needing backward navigation should cache cursors as users navigate forward.
+#### Filtering
 
-**Note:** Support for list filtering will be documented in a future update.
+The Elavon API supports filtering on list endpoints. Use `withFilter()` to add filter conditions:
+
+```php
+$queryParams = QueryParams::create()
+    ->withLimit(50)
+    ->withFilter('createdAt', 'gt', '2024-01-01')
+    ->withFilter('type', 'eq', 'refund')
+    ->withFilter('total.amount', 'ge', '100');
+```
+
+**Available filter operators:**
+
+| Operator | Description |
+| -------- | ----------- |
+| `eq` | Equals |
+| `ne` | Not equals |
+| `gt` | Greater than |
+| `ge` | Greater than or equal |
+| `lt` | Less than |
+| `le` | Less than or equal |
+| `like` | Like pattern |
+| `in` | In list |
+| `contains` | Contains |
+| `is` | Is (for null checks) |
+| `isnot` | Is not (for null checks) |
+
+**Note:** Available filters vary by endpoint. See the [Elavon API documentation](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference) for endpoint-specific filters.
+
+#### Response Pagination Properties
+
+| Property | Description |
+| -------- | ----------- |
+| `$response->nextPageToken` | Token for the next page (use with `withPageToken()`) |
+| `$response->nextPage` | Full URL for the next page |
+| `$response->firstPage` | Full URL to return to the first page |
+| `$response->hasMorePages()` | Returns `true` if more pages are available |
+
+#### List Requests Supporting QueryParams
+
+The following request classes accept a `QueryParams` parameter:
+
+**Top-level resources:**
+
+- `RetrieveAccountListRequest` → GET /accounts
+- `RetrieveBatchListRequest` → GET /batches
+- `RetrieveHostedCardListRequest` → GET /hosted-cards
+- `RetrieveManualBatchListRequest` → GET /manual-batches
+- `RetrieveMerchantListRequest` → GET /merchants
+- `RetrieveNotificationListRequest` → GET /notifications
+- `RetrieveOrderListRequest` → GET /orders
+- `RetrievePaymentLinkEventListRequest` → GET /payment-link-events
+- `RetrievePaymentLinkListRequest` → GET /payment-links
+- `RetrievePaymentMethodLinkListRequest` → GET /payment-method-links
+- `RetrievePlanListListRequest` → GET /plan-lists
+- `RetrieveProcessorAccountListRequest` → GET /processor-accounts
+- `RetrieveShopperListRequest` → GET /shoppers
+- `RetrieveStoredAchPaymentListRequest` → GET /stored-ach-payments
+- `RetrieveStoredCardListRequest` → GET /stored-cards
+- `RetrieveTerminalListRequest` → GET /terminals
+- `RetrieveTransactionListRequest` → GET /transactions
+
+**Nested resources (require parent ID + QueryParams):**
+
+- `RetrieveEmvKeyListRequest` → GET /terminals/{id}/emv-keys
+- `RetrievePaymentLinkEventListRequest` → GET /payment-links/{id}/events
+- `RetrieveProvisioningCodeListRequest` → GET /terminals/{id}/provisioning-codes
+- `RetrieveShopperStoredCardsRequest` → GET /shoppers/{id}/stored-cards
+- `RetrieveTotalAdjustmentListRequest` → GET /transactions/{id}/total-adjustments
 
 See [docs/examples/](docs/examples/) for more examples.
 

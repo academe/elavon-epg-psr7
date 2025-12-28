@@ -14,7 +14,7 @@ class RetrieveBatchRequestTest extends TestCase
     {
         $request = new RetrieveBatchRequest('batch123');
 
-        $this->assertSame('batch123', $request->getBatchId());
+        $this->assertSame('batch123', $request->batchId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -50,6 +50,6 @@ class RetrieveBatchRequestTest extends TestCase
         $batchId = 'test-batch-id';
         $request = new RetrieveBatchRequest($batchId);
 
-        $this->assertSame($batchId, $request->getBatchId());
+        $this->assertSame($batchId, $request->batchId);
     }
 }

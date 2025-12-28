@@ -25,10 +25,10 @@ class CreateManualBatchRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(CreateManualBatchRequest::class, $request);
-        $this->assertSame($manualBatch, $request->getManualBatch());
+        $this->assertSame($manualBatch, $request->manualBatch);
     }
 
-    public function test_construct_withArray_createsInstance(): void
+    public function test_fromData_withArray_createsInstance(): void
     {
         // Arrange
         $data = [
@@ -37,11 +37,11 @@ class CreateManualBatchRequestTest extends TestCase
         ];
 
         // Act
-        $request = new CreateManualBatchRequest($data);
+        $request = CreateManualBatchRequest::fromData(['manualBatch' => $data]);
 
         // Assert
         $this->assertInstanceOf(CreateManualBatchRequest::class, $request);
-        $this->assertSame('batch-2024-02', $request->getManualBatch()->customReference);
+        $this->assertSame('batch-2024-02', $request->manualBatch->customReference);
     }
 
     public function test_build_returnsValidPsr7Request(): void

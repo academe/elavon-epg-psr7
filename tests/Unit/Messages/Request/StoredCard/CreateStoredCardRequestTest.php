@@ -28,10 +28,10 @@ class CreateStoredCardRequestTest extends TestCase
         $request = new CreateStoredCardRequest($storedCard);
 
         // Assert
-        $this->assertSame($storedCard, $request->getStoredCard());
+        $this->assertSame($storedCard, $request->storedCard);
     }
 
-    public function test_construct_withStoredCardArray_normalizesToObject(): void
+    public function test_fromData_withStoredCardArray_normalizesToObject(): void
     {
         // Arrange
         $storedCardData = [
@@ -41,11 +41,11 @@ class CreateStoredCardRequestTest extends TestCase
         ];
 
         // Act
-        $request = new CreateStoredCardRequest($storedCardData);
+        $request = CreateStoredCardRequest::fromData(['storedCard' => $storedCardData]);
 
         // Assert
-        $this->assertInstanceOf(StoredCard::class, $request->getStoredCard());
-        $this->assertSame('ref-123', $request->getStoredCard()->customReference);
+        $this->assertInstanceOf(StoredCard::class, $request->storedCard);
+        $this->assertSame('ref-123', $request->storedCard->customReference);
     }
 
     public function test_construct_withoutShopper_throwsException(): void
@@ -94,7 +94,7 @@ class CreateStoredCardRequestTest extends TestCase
         $request = new CreateStoredCardRequest($storedCard);
 
         // Assert
-        $this->assertSame($storedCard, $request->getStoredCard());
+        $this->assertSame($storedCard, $request->storedCard);
     }
 
     public function test_build_withDefaultFactory_returnsValidRequest(): void

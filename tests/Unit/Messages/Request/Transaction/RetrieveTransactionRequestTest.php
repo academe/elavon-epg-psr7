@@ -29,7 +29,7 @@ class RetrieveTransactionRequestTest extends TestCase
         $request = new RetrieveTransactionRequest('txn123');
 
         // Assert
-        $this->assertSame('txn123', $request->getTransactionId());
+        $this->assertSame('txn123', $request->transactionId);
     }
 
     public function test_build_createsGetRequest(): void
@@ -64,7 +64,7 @@ class RetrieveTransactionRequestTest extends TestCase
         $request = new RetrieveTransactionRequest('my-txn-id');
 
         // Act & Assert
-        $this->assertSame('my-txn-id', $request->getTransactionId());
+        $this->assertSame('my-txn-id', $request->transactionId);
     }
 
     public function test_build_withDifferentTransactionIds_createsCorrectUrls(): void

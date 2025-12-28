@@ -26,6 +26,7 @@ use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
 use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
+use DateTimeImmutable;
 use Money\Money;
 
 /**
@@ -69,10 +70,10 @@ class Transaction implements DataTransferObject
         public readonly ?string $customReference = null,
 
         // Timestamps
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
-        public readonly ?string $authorizationExpiresAt = null,
-        public readonly ?string $refundableUntil = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
+        public readonly ?DateTimeImmutable $authorizationExpiresAt = null,
+        public readonly ?DateTimeImmutable $refundableUntil = null,
 
         // Resource URLs
         public readonly ?string $href = null,

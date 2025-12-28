@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use DateTimeImmutable;
 
 /**
  * Account data transfer object.
@@ -24,8 +25,8 @@ class Account implements DataTransferObject
     public function __construct(
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
         public readonly ?string $merchant = null,
         /** @var array<ProcessorAccount>|null */
         #[ArrayOf(ProcessorAccount::class)]

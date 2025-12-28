@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -19,16 +20,17 @@ class PaymentLinkTest extends TestCase
     public function test_construct_withMinimalFields_createsInstance(): void
     {
         // Arrange & Act
-        $paymentLink = new PaymentLink(
-            total: Money::USD(10000),
-            expiresAt: '2025-12-31T23:59:59Z',
-        );
+        $paymentLink = PaymentLink::fromData([
+            'total' => ['amount' => '100.00', 'currencyCode' => 'USD'],
+            'expiresAt' => '2025-12-31T23:59:59Z',
+        ]);
 
         // Assert
         $this->assertInstanceOf(Money::class, $paymentLink->total);
         $this->assertSame('10000', $paymentLink->total->getAmount());
         $this->assertSame('USD', $paymentLink->total->getCurrency()->getCode());
-        $this->assertSame('2025-12-31T23:59:59Z', $paymentLink->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $paymentLink->expiresAt);
+        $this->assertSame('2025-12-31 23:59:59', $paymentLink->expiresAt->format('Y-m-d H:i:s'));
         $this->assertNull($paymentLink->id);
         $this->assertNull($paymentLink->description);
     }
@@ -36,35 +38,35 @@ class PaymentLinkTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $paymentLink = new PaymentLink(
-            href: 'https://api.example.com/payment-links/pl123',
-            id: 'pl123',
-            merchant: 'https://api.example.com/merchants/m123',
-            account: 'https://api.example.com/accounts/a123',
-            url: 'https://hpp.example.com/payment-links/pl123',
-            returnUrl: 'https://merchant.com/return',
-            createdAt: '2025-11-19T10:00:00Z',
-            createdBy: 'user@example.com',
-            modifiedAt: '2025-11-19T11:00:00Z',
-            expiresAt: '2025-12-31T23:59:59Z',
-            cancelledAt: null,
-            cancelledBy: null,
-            doCancel: false,
-            doCapture: true,
-            conversionCount: 5,
-            conversionLimit: 10,
-            description: 'Payment for Invoice #12345',
-            total: Money::USD(25000),
-            salesTax: Money::USD(2500),
-            debtorAccount: ['lastName' => 'Smith', 'postalCode' => 'SW1A 1AA'],
-            orderReference: 'ORD-67890',
-            shopperEmailAddress: 'shopper@example.com',
-            shopper: 'https://api.example.com/shoppers/s123',
-            status: ['active'],
-            useStoredPaymentMethod: true,
-            customReference: 'CUST-REF-111',
-            customFields: new CustomFields(['field1' => 'value1']),
-        );
+        $paymentLink = PaymentLink::fromData([
+            'href' => 'https://api.example.com/payment-links/pl123',
+            'id' => 'pl123',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'account' => 'https://api.example.com/accounts/a123',
+            'url' => 'https://hpp.example.com/payment-links/pl123',
+            'returnUrl' => 'https://merchant.com/return',
+            'createdAt' => '2025-11-19T10:00:00Z',
+            'createdBy' => 'user@example.com',
+            'modifiedAt' => '2025-11-19T11:00:00Z',
+            'expiresAt' => '2025-12-31T23:59:59Z',
+            'cancelledAt' => null,
+            'cancelledBy' => null,
+            'doCancel' => false,
+            'doCapture' => true,
+            'conversionCount' => 5,
+            'conversionLimit' => 10,
+            'description' => 'Payment for Invoice #12345',
+            'total' => ['amount' => '250.00', 'currencyCode' => 'USD'],
+            'salesTax' => ['amount' => '25.00', 'currencyCode' => 'USD'],
+            'debtorAccount' => ['lastName' => 'Smith', 'postalCode' => 'SW1A 1AA'],
+            'orderReference' => 'ORD-67890',
+            'shopperEmailAddress' => 'shopper@example.com',
+            'shopper' => 'https://api.example.com/shoppers/s123',
+            'status' => ['active'],
+            'useStoredPaymentMethod' => true,
+            'customReference' => 'CUST-REF-111',
+            'customFields' => ['field1' => 'value1'],
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/payment-links/pl123', $paymentLink->href);
@@ -73,10 +75,13 @@ class PaymentLinkTest extends TestCase
         $this->assertSame('https://api.example.com/accounts/a123', $paymentLink->account);
         $this->assertSame('https://hpp.example.com/payment-links/pl123', $paymentLink->url);
         $this->assertSame('https://merchant.com/return', $paymentLink->returnUrl);
-        $this->assertSame('2025-11-19T10:00:00Z', $paymentLink->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $paymentLink->createdAt);
+        $this->assertSame('2025-11-19 10:00:00', $paymentLink->createdAt->format('Y-m-d H:i:s'));
         $this->assertSame('user@example.com', $paymentLink->createdBy);
-        $this->assertSame('2025-11-19T11:00:00Z', $paymentLink->modifiedAt);
-        $this->assertSame('2025-12-31T23:59:59Z', $paymentLink->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $paymentLink->modifiedAt);
+        $this->assertSame('2025-11-19 11:00:00', $paymentLink->modifiedAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $paymentLink->expiresAt);
+        $this->assertSame('2025-12-31 23:59:59', $paymentLink->expiresAt->format('Y-m-d H:i:s'));
         $this->assertFalse($paymentLink->doCancel);
         $this->assertTrue($paymentLink->doCapture);
         $this->assertSame(5, $paymentLink->conversionCount);
@@ -98,11 +103,12 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $money = Money::EUR(15000); // 150.00 EUR
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
 
         // Act
         $paymentLink = new PaymentLink(
             total: $money,
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
         );
 
         // Assert
@@ -116,11 +122,12 @@ class PaymentLinkTest extends TestCase
             lastName: 'Smith',
             postalCode: 'SW1A 1AA',
         );
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
 
         // Act
         $paymentLink = new PaymentLink(
             total: Money::USD(7500),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             debtorAccount: $debtorAccount,
         );
 
@@ -132,6 +139,7 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $longUrl = str_repeat('a', 2049);
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -140,13 +148,16 @@ class PaymentLinkTest extends TestCase
         // Act
         new PaymentLink(
             total: Money::USD(1000),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             returnUrl: $longUrl,
         );
     }
 
     public function test_construct_withInvalidReturnUrlPattern_throwsException(): void
     {
+        // Arrange
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
+
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Return URL must be a valid HTTP/HTTPS URL');
@@ -154,7 +165,7 @@ class PaymentLinkTest extends TestCase
         // Act
         new PaymentLink(
             total: Money::USD(1000),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             returnUrl: 'ftp://invalid.com',
         );
     }
@@ -163,6 +174,7 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $longDescription = str_repeat('a', 256);
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -171,7 +183,7 @@ class PaymentLinkTest extends TestCase
         // Act
         new PaymentLink(
             total: Money::USD(1000),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             description: $longDescription,
         );
     }
@@ -180,6 +192,7 @@ class PaymentLinkTest extends TestCase
     {
         // Arrange
         $longEmail = str_repeat('a', 255) . '@example.com';
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
@@ -188,13 +201,16 @@ class PaymentLinkTest extends TestCase
         // Act
         new PaymentLink(
             total: Money::USD(1000),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             shopperEmailAddress: $longEmail,
         );
     }
 
     public function test_construct_withInvalidStatus_throwsException(): void
     {
+        // Arrange
+        $expiresAt = new DateTimeImmutable('2025-12-31T23:59:59Z');
+
         // Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid status value: invalid_status');
@@ -202,7 +218,7 @@ class PaymentLinkTest extends TestCase
         // Act
         new PaymentLink(
             total: Money::USD(1000),
-            expiresAt: '2025-12-31T23:59:59Z',
+            expiresAt: $expiresAt,
             status: ['invalid_status'],
         );
     }
@@ -220,7 +236,8 @@ class PaymentLinkTest extends TestCase
 
         // Assert
         $this->assertSame('9999', $paymentLink->total->getAmount());
-        $this->assertSame('2025-12-31T23:59:59Z', $paymentLink->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $paymentLink->expiresAt);
+        $this->assertSame('2025-12-31 23:59:59', $paymentLink->expiresAt->format('Y-m-d H:i:s'));
         $this->assertNull($paymentLink->id);
     }
 
@@ -256,10 +273,10 @@ class PaymentLinkTest extends TestCase
     public function test_toData_withMinimalData_returnsArray(): void
     {
         // Arrange
-        $paymentLink = new PaymentLink(
-            total: Money::USD(5000),
-            expiresAt: '2025-12-31T23:59:59Z',
-        );
+        $paymentLink = PaymentLink::fromData([
+            'total' => ['amount' => '50.00', 'currencyCode' => 'USD'],
+            'expiresAt' => '2025-12-31T23:59:59Z',
+        ]);
 
         // Act
         $array = $paymentLink->toData();
@@ -270,18 +287,18 @@ class PaymentLinkTest extends TestCase
                 'amount' => '50.00',
                 'currencyCode' => 'USD',
             ],
-            'expiresAt' => '2025-12-31T23:59:59Z',
+            'expiresAt' => '2025-12-31T23:59:59.000+00:00',
         ], $array);
     }
 
     public function test_toData_onlyIncludesNonNullValues(): void
     {
         // Arrange
-        $paymentLink = new PaymentLink(
-            total: Money::USD(2500),
-            expiresAt: '2025-12-31T23:59:59Z',
-            description: 'Test payment link',
-        );
+        $paymentLink = PaymentLink::fromData([
+            'total' => ['amount' => '25.00', 'currencyCode' => 'USD'],
+            'expiresAt' => '2025-12-31T23:59:59Z',
+            'description' => 'Test payment link',
+        ]);
 
         // Act
         $array = $paymentLink->toData();
@@ -312,7 +329,8 @@ class PaymentLinkTest extends TestCase
 
         // Assert
         $this->assertSame($originalData['total'], $resultData['total']);
-        $this->assertSame($originalData['expiresAt'], $resultData['expiresAt']);
+        // expiresAt is serialized in RFC3339_EXTENDED format
+        $this->assertSame('2025-12-31T23:59:59.000+00:00', $resultData['expiresAt']);
         $this->assertSame($originalData['description'], $resultData['description']);
         $this->assertSame($originalData['returnUrl'], $resultData['returnUrl']);
         $this->assertSame($originalData['shopperEmailAddress'], $resultData['shopperEmailAddress']);

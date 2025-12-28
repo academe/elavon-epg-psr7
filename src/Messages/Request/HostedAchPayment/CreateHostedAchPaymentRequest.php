@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -60,22 +58,34 @@ class CreateHostedAchPaymentRequest
 {
     use HasPsr17Factories;
 
-    private readonly HostedAchPayment $hostedAchPayment;
-
     /**
-     * @param HostedAchPayment|array<string, mixed> $hostedAchPayment Hosted ACH payment data or array     *
+     * @param HostedAchPayment $hostedAchPayment Hosted ACH payment data     *
      * @throws InvalidArgumentException When hosted ACH payment data is invalid
      */
     public function __construct(
-        HostedAchPayment|array $hostedAchPayment
+        public readonly HostedAchPayment $hostedAchPayment
     ) {
-        // Normalize to HostedAchPayment object
-        $this->hostedAchPayment = match (true) {
-            $hostedAchPayment instanceof HostedAchPayment => $hostedAchPayment,
-            is_array($hostedAchPayment) => HostedAchPayment::fromData($hostedAchPayment),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hostedAchPayment: HostedAchPayment|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hostedAchPayment', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedAchPayment' in data");
+        }
+
+        $hostedAchPayment = $data['hostedAchPayment'] instanceof HostedAchPayment
+            ? $data['hostedAchPayment']
+            : HostedAchPayment::fromData($data['hostedAchPayment']);
+
+        return new static($hostedAchPayment);
     }
 
     /**
@@ -85,8 +95,6 @@ class CreateHostedAchPaymentRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize hosted ACH payment to JSON
         $data = $this->hostedAchPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -95,16 +103,6 @@ class CreateHostedAchPaymentRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/hosted-ach-payments')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the hosted ACH payment being created.
-     *
-     * @return HostedAchPayment
-     */
-    public function getHostedAchPayment(): HostedAchPayment
-    {
-        return $this->hostedAchPayment;
     }
 
     /**

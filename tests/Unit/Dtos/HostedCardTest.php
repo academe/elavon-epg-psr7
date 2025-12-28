@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\Card;
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -65,22 +66,25 @@ class HostedCardTest extends TestCase
     public function test_construct_withResponseFields_createsInstance(): void
     {
         // Act
-        $hostedCard = new HostedCard(
-            href: 'https://api.example.com/hosted-cards/hc123',
-            id: 'hc123',
-            createdAt: '2025-01-01T00:00:00Z',
-            modifiedAt: '2025-01-02T00:00:00Z',
-            expiresAt: '2025-01-31T23:59:59Z',
-            merchant: 'https://api.example.com/merchants/m123',
-            doVerify: true,
-        );
+        $hostedCard = HostedCard::fromData([
+            'href' => 'https://api.example.com/hosted-cards/hc123',
+            'id' => 'hc123',
+            'createdAt' => '2025-01-01T00:00:00Z',
+            'modifiedAt' => '2025-01-02T00:00:00Z',
+            'expiresAt' => '2025-01-31T23:59:59Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'doVerify' => true,
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/hosted-cards/hc123', $hostedCard->href);
         $this->assertSame('hc123', $hostedCard->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $hostedCard->createdAt);
-        $this->assertSame('2025-01-02T00:00:00Z', $hostedCard->modifiedAt);
-        $this->assertSame('2025-01-31T23:59:59Z', $hostedCard->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedCard->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $hostedCard->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedCard->modifiedAt);
+        $this->assertSame('2025-01-02 00:00:00', $hostedCard->modifiedAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedCard->expiresAt);
+        $this->assertSame('2025-01-31 23:59:59', $hostedCard->expiresAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $hostedCard->merchant);
         $this->assertTrue($hostedCard->doVerify);
     }
@@ -276,12 +280,12 @@ class HostedCardTest extends TestCase
     public function test_toData_withResponseData_returnsArray(): void
     {
         // Arrange
-        $hostedCard = new HostedCard(
-            href: 'https://api.example.com/hosted-cards/hc789',
-            id: 'hc789',
-            createdAt: '2025-01-15T08:30:00Z',
-            doVerify: true,
-        );
+        $hostedCard = HostedCard::fromData([
+            'href' => 'https://api.example.com/hosted-cards/hc789',
+            'id' => 'hc789',
+            'createdAt' => '2025-01-15T08:30:00Z',
+            'doVerify' => true,
+        ]);
 
         // Act
         $array = $hostedCard->toData();
@@ -290,7 +294,7 @@ class HostedCardTest extends TestCase
         $this->assertSame([
             'href' => 'https://api.example.com/hosted-cards/hc789',
             'id' => 'hc789',
-            'createdAt' => '2025-01-15T08:30:00Z',
+            'createdAt' => '2025-01-15T08:30:00.000+00:00',
             'doVerify' => true,
         ], $array);
     }

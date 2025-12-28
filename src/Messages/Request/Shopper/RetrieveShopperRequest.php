@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -44,15 +43,31 @@ class RetrieveShopperRequest
     use HasPsr17Factories;
 
     /**
-     * @param string $storedCardId shopper ID to retrieve     *
-     * @throws InvalidArgumentException When stored card ID is empty
+     * @param string $shopperId shopper ID to retrieve     *
+     * @throws InvalidArgumentException When shopper ID is empty
      */
     public function __construct(
-        private readonly string $storedCardId
+        public readonly string $shopperId
     ) {
-        if (empty($this->storedCardId)) {
+        if (empty($this->shopperId)) {
             throw new InvalidArgumentException('Shopper ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{shopperId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('shopperId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'shopperId' in data");
+        }
+
+        return new static($data['shopperId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveShopperRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
-            ->createRequest('GET', '/shoppers/' . $this->storedCardId);
-    }
-
-    /**
-     * Gets the stored card ID being retrieved.
-     *
-     * @return string
-     */
-    public function getShopperId(): string
-    {
-        return $this->storedCardId;
+            ->createRequest('GET', '/shoppers/' . $this->shopperId);
     }
 }

@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Shopper;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -56,20 +54,33 @@ class CreateShopperRequest
 {
     use HasPsr17Factories;
 
-    private readonly Shopper $shopper;
-
     /**
-     * @param Shopper|array<string, mixed> $shopper shopper data or array     *
+     * @param Shopper $shopper shopper data     *
      * @throws InvalidArgumentException When stored card data is invalid
      */
     public function __construct(
-        Shopper|array $shopper
+        public readonly Shopper $shopper
     ) {
-        // Normalize to Shopper object
-        $this->shopper = match (true) {
-            $shopper instanceof Shopper => $shopper,
-            is_array($shopper) => Shopper::fromData($shopper),
-        };
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{shopper: Shopper|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('shopper', $data)) {
+            throw new InvalidArgumentException("Missing required key 'shopper' in data");
+        }
+
+        $shopper = $data['shopper'] instanceof Shopper
+            ? $data['shopper']
+            : Shopper::fromData($data['shopper']);
+
+        return new static($shopper);
     }
 
     /**
@@ -79,8 +90,6 @@ class CreateShopperRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize stored card to JSON
         $data = $this->shopper->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -89,15 +98,5 @@ class CreateShopperRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/shoppers')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the shopper being created.
-     *
-     * @return Shopper
-     */
-    public function getShopper(): Shopper
-    {
-        return $this->shopper;
     }
 }

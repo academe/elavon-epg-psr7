@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\SurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\SurchargeAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -52,22 +50,34 @@ class CreateSurchargeAdviceRequest
 {
     use HasPsr17Factories;
 
-    private readonly SurchargeAdvice $surchargeAdvice;
-
     /**
-     * @param SurchargeAdvice|array<string, mixed> $surchargeAdvice Surcharge advice data     *
+     * @param SurchargeAdvice $surchargeAdvice Surcharge advice data     *
      * @throws InvalidArgumentException When surcharge advice data is invalid
      */
     public function __construct(
-        SurchargeAdvice|array $surchargeAdvice
+        public readonly SurchargeAdvice $surchargeAdvice
     ) {
-        // Normalize to SurchargeAdvice object
-        $this->surchargeAdvice = match (true) {
-            $surchargeAdvice instanceof SurchargeAdvice => $surchargeAdvice,
-            is_array($surchargeAdvice) => SurchargeAdvice::fromData($surchargeAdvice),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{surchargeAdvice: SurchargeAdvice|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('surchargeAdvice', $data)) {
+            throw new InvalidArgumentException("Missing required key 'surchargeAdvice' in data");
+        }
+
+        $surchargeAdvice = $data['surchargeAdvice'] instanceof SurchargeAdvice
+            ? $data['surchargeAdvice']
+            : SurchargeAdvice::fromData($data['surchargeAdvice']);
+
+        return new static($surchargeAdvice);
     }
 
     /**
@@ -89,8 +99,6 @@ class CreateSurchargeAdviceRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize to JSON
         $data = $this->surchargeAdvice->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -99,15 +107,5 @@ class CreateSurchargeAdviceRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/surcharge-advices')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the surcharge advice data.
-     *
-     * @return SurchargeAdvice
-     */
-    public function getSurchargeAdvice(): SurchargeAdvice
-    {
-        return $this->surchargeAdvice;
     }
 }

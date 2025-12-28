@@ -4,98 +4,94 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\HostedCard;
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard\RetrieveHostedCardListRequest;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Tests for RetrieveHostedCardListRequest message.
- */
 class RetrieveHostedCardListRequestTest extends TestCase
 {
-    public function test_construct_withoutParams_createsInstance(): void
+    public function test_construct_withNoParams_createsInstance(): void
     {
-        // Act
         $request = new RetrieveHostedCardListRequest();
 
-        // Assert
-        $this->assertSame([], $request->getQueryParams());
+        $this->assertTrue($request->queryParams->isEmpty());
     }
 
-    public function test_construct_withParams_createsInstance(): void
+    public function test_construct_withQueryParams_createsInstance(): void
     {
-        // Arrange
-        $params = ['limit' => 50, 'offset' => 100];
+        $params = QueryParams::create()->withLimit(50)->withPageToken('abc123');
 
-        // Act
         $request = new RetrieveHostedCardListRequest($params);
 
-        // Assert
-        $this->assertSame($params, $request->getQueryParams());
+        $this->assertSame(50, $request->queryParams->limit);
+        $this->assertSame('abc123', $request->queryParams->pageToken);
     }
 
-    public function test_build_withoutParams_createsValidRequest(): void
+    public function test_build_withNoParams_createsValidPsr7Request(): void
     {
-        // Arrange
         $request = new RetrieveHostedCardListRequest();
 
-        // Act
-        $psrRequest = $request->build();
+        $psr7Request = $request->build();
 
-        // Assert
-        $this->assertSame('GET', $psrRequest->getMethod());
-        $this->assertSame('/hosted-cards', (string) $psrRequest->getUri());
+        $this->assertSame('GET', $psr7Request->getMethod());
+        $this->assertSame('/hosted-cards', (string) $psr7Request->getUri());
     }
 
-    public function test_build_withParams_includesQueryString(): void
+    public function test_build_withQueryParams_includesParamsInUri(): void
     {
-        // Arrange
-        $params = ['limit' => 50, 'offset' => 100];
+        $params = QueryParams::create()->withLimit(25)->withPageToken('nextPage');
         $request = new RetrieveHostedCardListRequest($params);
 
-        // Act
-        $psrRequest = $request->build();
-        $uri = (string) $psrRequest->getUri();
+        $psr7Request = $request->build();
 
-        // Assert
-        $this->assertStringContainsString('limit=50', $uri);
-        $this->assertStringContainsString('offset=100', $uri);
-        $this->assertStringStartsWith('/hosted-cards?', $uri);
+        $uri = (string) $psr7Request->getUri();
+        $this->assertStringContainsString('limit=25', $uri);
+        $this->assertStringContainsString('pageToken=nextPage', $uri);
     }
 
-    public function test_build_hasNoBody(): void
+    public function test_build_withFilters_includesFiltersInUri(): void
     {
-        // Arrange
-        $request = new RetrieveHostedCardListRequest();
-
-        // Act
-        $psrRequest = $request->build();
-        $body = (string) $psrRequest->getBody();
-
-        // Assert
-        $this->assertSame('', $body);
-    }
-
-    public function test_build_multipleCalls_returnsSeparateInstances(): void
-    {
-        // Arrange
-        $request = new RetrieveHostedCardListRequest(['page' => 1]);
-
-        // Act
-        $psrRequest1 = $request->build();
-        $psrRequest2 = $request->build();
-
-        // Assert
-        $this->assertNotSame($psrRequest1, $psrRequest2);
-        $this->assertEquals($psrRequest1->getUri(), $psrRequest2->getUri());
-    }
-
-    public function test_getQueryParams_returnsCorrectParams(): void
-    {
-        // Arrange
-        $params = ['limit' => 25, 'page' => 2];
+        $params = QueryParams::create()
+            ->withLimit(10)
+            ->withFilter('createdAt', 'gt', '2024-01-01');
         $request = new RetrieveHostedCardListRequest($params);
 
-        // Act & Assert
-        $this->assertSame($params, $request->getQueryParams());
+        $psr7Request = $request->build();
+
+        $uri = (string) $psr7Request->getUri();
+        $this->assertStringContainsString('limit=10', $uri);
+        $this->assertStringContainsString('filter=createdAt_gt_2024-01-01', $uri);
+    }
+
+    public function test_fromData_withArray_parsesQueryParams(): void
+    {
+        $data = [
+            'queryParams' => [
+                'limit' => 50,
+                'pageToken' => 'token123',
+            ],
+        ];
+
+        $request = RetrieveHostedCardListRequest::fromData($data);
+
+        $this->assertSame(50, $request->queryParams->limit);
+        $this->assertSame('token123', $request->queryParams->pageToken);
+    }
+
+    public function test_fromData_withQueryParamsObject_usesDirectly(): void
+    {
+        $params = QueryParams::create()->withLimit(100);
+        $data = ['queryParams' => $params];
+
+        $request = RetrieveHostedCardListRequest::fromData($data);
+
+        $this->assertSame(100, $request->queryParams->limit);
+    }
+
+    public function test_fromData_withEmptyData_createsEmptyParams(): void
+    {
+        $request = RetrieveHostedCardListRequest::fromData([]);
+
+        $this->assertTrue($request->queryParams->isEmpty());
     }
 }

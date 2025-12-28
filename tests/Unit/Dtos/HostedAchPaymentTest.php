@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\HostedAchPayment;
 use Academe\Elavon\Epg\Psr7\Enums\AchAccountType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -65,21 +66,24 @@ class HostedAchPaymentTest extends TestCase
     public function test_construct_withResponseFields_createsInstance(): void
     {
         // Act
-        $hostedAchPayment = new HostedAchPayment(
-            href: 'https://api.example.com/hosted-ach-payments/hap123',
-            id: 'hap123',
-            createdAt: '2025-01-01T00:00:00Z',
-            modifiedAt: '2025-01-02T00:00:00Z',
-            expiresAt: '2025-01-01T00:10:00Z',
-            merchant: 'https://api.example.com/merchants/m123',
-        );
+        $hostedAchPayment = HostedAchPayment::fromData([
+            'href' => 'https://api.example.com/hosted-ach-payments/hap123',
+            'id' => 'hap123',
+            'createdAt' => '2025-01-01T00:00:00Z',
+            'modifiedAt' => '2025-01-02T00:00:00Z',
+            'expiresAt' => '2025-01-01T00:10:00Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/hosted-ach-payments/hap123', $hostedAchPayment->href);
         $this->assertSame('hap123', $hostedAchPayment->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $hostedAchPayment->createdAt);
-        $this->assertSame('2025-01-02T00:00:00Z', $hostedAchPayment->modifiedAt);
-        $this->assertSame('2025-01-01T00:10:00Z', $hostedAchPayment->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedAchPayment->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $hostedAchPayment->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedAchPayment->modifiedAt);
+        $this->assertSame('2025-01-02 00:00:00', $hostedAchPayment->modifiedAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedAchPayment->expiresAt);
+        $this->assertSame('2025-01-01 00:10:00', $hostedAchPayment->expiresAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $hostedAchPayment->merchant);
     }
 
@@ -131,7 +135,8 @@ class HostedAchPaymentTest extends TestCase
         $this->assertInstanceOf(HostedAchPayment::class, $hostedAchPayment);
         $this->assertSame('https://api.example.com/hosted-ach-payments/hap456', $hostedAchPayment->href);
         $this->assertSame('hap456', $hostedAchPayment->id);
-        $this->assertSame('2025-01-15T12:10:00Z', $hostedAchPayment->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $hostedAchPayment->expiresAt);
+        $this->assertSame('2025-01-15 12:10:00', $hostedAchPayment->expiresAt->format('Y-m-d H:i:s'));
         $this->assertInstanceOf(AchPayment::class, $hostedAchPayment->achPayment);
         $this->assertSame('ref-555', $hostedAchPayment->customReference);
     }

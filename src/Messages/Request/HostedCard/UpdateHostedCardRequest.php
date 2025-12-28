@@ -6,49 +6,58 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 class UpdateHostedCardRequest
 {
     use HasPsr17Factories;
 
-    private readonly HostedCard $hostedCard;
-
+    /**
+     * @param string $hostedCardId Hosted card ID to update
+     * @param HostedCard $hostedCard Hosted card update data
+     *
+     * @throws InvalidArgumentException When hosted card ID is empty
+     */
     public function __construct(
-        private readonly string $hostedCardId,
-        HostedCard|array $hostedCard
+        public readonly string $hostedCardId,
+        public readonly HostedCard $hostedCard,
     ) {
         if (empty($this->hostedCardId)) {
             throw new InvalidArgumentException('HostedCard ID cannot be empty');
         }
+    }
 
-        $this->hostedCard = match (true) {
-            $hostedCard instanceof HostedCard => $hostedCard,
-            is_array($hostedCard) => HostedCard::fromData($hostedCard),
-        };
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hostedCardId: string, hostedCard: HostedCard|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hostedCardId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedCardId' in data");
+        }
+
+        if (! array_key_exists('hostedCard', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedCard' in data");
+        }
+
+        $hostedCard = $data['hostedCard'] instanceof HostedCard
+            ? $data['hostedCard']
+            : HostedCard::fromData($data['hostedCard']);
+
+        return new static($data['hostedCardId'], $hostedCard);
     }
 
     public function build(): RequestInterface
     {
-
-        $data = $this->hostedCard->toData();
-        $json = json_encode($data, JSON_THROW_ON_ERROR);
+        $json = json_encode($this->hostedCard->toData(), JSON_THROW_ON_ERROR);
 
         return $this->getRequestFactory()
             ->createRequest('POST', '/hosted-cards/' . $this->hostedCardId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    public function getHostedCardId(): string
-    {
-        return $this->hostedCardId;
-    }
-
-    public function getHostedCard(): HostedCard
-    {
-        return $this->hostedCard;
     }
 }

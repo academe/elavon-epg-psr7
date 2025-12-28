@@ -16,16 +16,16 @@ class CreateShopperRequestTest extends TestCase
 
         $request = new CreateShopperRequest($shopper);
 
-        $this->assertSame($shopper, $request->getShopper());
+        $this->assertSame($shopper, $request->shopper);
     }
 
-    public function test_construct_withArray_normalizes(): void
+    public function test_fromData_withArray_normalizes(): void
     {
         $data = ['fullName' => 'Jane Doe', 'email' => 'jane@example.com'];
 
-        $request = new CreateShopperRequest($data);
+        $request = CreateShopperRequest::fromData(['shopper' => $data]);
 
-        $this->assertInstanceOf(Shopper::class, $request->getShopper());
+        $this->assertInstanceOf(Shopper::class, $request->shopper);
     }
 
     public function test_build_createsValidPsr7Request(): void

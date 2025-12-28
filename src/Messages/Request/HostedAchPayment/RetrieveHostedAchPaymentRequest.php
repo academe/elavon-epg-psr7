@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveHostedAchPaymentRequest
      * @throws InvalidArgumentException When hosted ACH payment ID is empty
      */
     public function __construct(
-        private readonly string $hostedAchPaymentId
+        public readonly string $hostedAchPaymentId
     ) {
         if (empty($this->hostedAchPaymentId)) {
             throw new InvalidArgumentException('Hosted ACH payment ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hostedAchPaymentId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hostedAchPaymentId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedAchPaymentId' in data");
+        }
+
+        return new static($data['hostedAchPaymentId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveHostedAchPaymentRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/hosted-ach-payments/' . $this->hostedAchPaymentId);
-    }
-
-    /**
-     * Gets the hosted ACH payment ID being retrieved.
-     *
-     * @return string
-     */
-    public function getHostedAchPaymentId(): string
-    {
-        return $this->hostedAchPaymentId;
     }
 }

@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Order;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -54,26 +52,42 @@ class UpdateOrderRequest
 {
     use HasPsr17Factories;
 
-    private readonly Order $order;
-
     /**
      * @param string $orderId Order ID to update
-     * @param Order|array<string, mixed> $order Updated order data     *
-     * @throws InvalidArgumentException When order ID is empty or order data is invalid
+     * @param Order $order Updated order data     *
+     * @throws InvalidArgumentException When order ID is empty
      */
     public function __construct(
-        private readonly string $orderId,
-        Order|array $order
+        public readonly string $orderId,
+        public readonly Order $order
     ) {
         if (empty($this->orderId)) {
             throw new InvalidArgumentException('Order ID cannot be empty');
         }
+    }
 
-        // Normalize to Order object
-        $this->order = match (true) {
-            $order instanceof Order => $order,
-            is_array($order) => Order::fromData($order),
-        };
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{orderId: string, order: Order|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('orderId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'orderId' in data");
+        }
+
+        if (! array_key_exists('order', $data)) {
+            throw new InvalidArgumentException("Missing required key 'order' in data");
+        }
+
+        $order = $data['order'] instanceof Order
+            ? $data['order']
+            : Order::fromData($data['order']);
+
+        return new static($data['orderId'], $order);
     }
 
     /**
@@ -83,8 +97,6 @@ class UpdateOrderRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize order to JSON
         $data = $this->order->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -93,25 +105,5 @@ class UpdateOrderRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/orders/' . $this->orderId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the order ID being updated.
-     *
-     * @return string
-     */
-    public function getOrderId(): string
-    {
-        return $this->orderId;
-    }
-
-    /**
-     * Gets the order data.
-     *
-     * @return Order
-     */
-    public function getOrder(): Order
-    {
-        return $this->order;
     }
 }

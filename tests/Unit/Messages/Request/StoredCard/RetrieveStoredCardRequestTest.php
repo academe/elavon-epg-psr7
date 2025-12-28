@@ -19,7 +19,7 @@ class RetrieveStoredCardRequestTest extends TestCase
         $request = new RetrieveStoredCardRequest('sc123');
 
         // Assert
-        $this->assertSame('sc123', $request->getStoredCardId());
+        $this->assertSame('sc123', $request->storedCardId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -78,6 +78,6 @@ class RetrieveStoredCardRequestTest extends TestCase
         $request = new RetrieveStoredCardRequest('sc-test-id-222');
 
         // Act & Assert
-        $this->assertSame('sc-test-id-222', $request->getStoredCardId());
+        $this->assertSame('sc-test-id-222', $request->storedCardId);
     }
 }

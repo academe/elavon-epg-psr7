@@ -20,21 +20,21 @@ class UpdateOrderRequestTest extends TestCase
 
         $request = new UpdateOrderRequest('ord123', $order);
 
-        $this->assertSame('ord123', $request->getOrderId());
-        $this->assertSame($order, $request->getOrder());
+        $this->assertSame('ord123', $request->orderId);
+        $this->assertSame($order, $request->order);
     }
 
-    public function test_construct_withArray_normalizesToOrder(): void
+    public function test_fromData_withArray_normalizesToOrder(): void
     {
         $data = [
             'total' => ['amount' => '200.00', 'currencyCode' => 'EUR'],
             'description' => 'Updated order',
         ];
 
-        $request = new UpdateOrderRequest('ord456', $data);
+        $request = UpdateOrderRequest::fromData(['orderId' => 'ord456', 'order' => $data]);
 
-        $this->assertInstanceOf(Order::class, $request->getOrder());
-        $this->assertSame('20000', $request->getOrder()->total->getAmount());
+        $this->assertInstanceOf(Order::class, $request->order);
+        $this->assertSame('20000', $request->order->total->getAmount());
     }
 
     public function test_construct_withEmptyId_throwsException(): void

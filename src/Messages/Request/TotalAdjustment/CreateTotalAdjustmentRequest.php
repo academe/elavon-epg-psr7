@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\TotalAdjustment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\TotalAdjustment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -28,20 +26,32 @@ class CreateTotalAdjustmentRequest
 {
     use HasPsr17Factories;
 
-    private readonly TotalAdjustment $totalAdjustment;
-
     /**
-     * @param TotalAdjustment|array<string, mixed> $totalAdjustment Total adjustment data or array     *
-     * @throws InvalidArgumentException When total adjustment data is invalid
+     * @param TotalAdjustment $totalAdjustment Total adjustment data
      */
     public function __construct(
-        TotalAdjustment|array $totalAdjustment
+        public readonly TotalAdjustment $totalAdjustment
     ) {
-        // Normalize to TotalAdjustment object
-        $this->totalAdjustment = match (true) {
-            $totalAdjustment instanceof TotalAdjustment => $totalAdjustment,
-            is_array($totalAdjustment) => TotalAdjustment::fromData($totalAdjustment),
-        };
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{totalAdjustment: TotalAdjustment|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('totalAdjustment', $data)) {
+            throw new InvalidArgumentException("Missing required key 'totalAdjustment' in data");
+        }
+
+        $totalAdjustment = $data['totalAdjustment'] instanceof TotalAdjustment
+            ? $data['totalAdjustment']
+            : TotalAdjustment::fromData($data['totalAdjustment']);
+
+        return new static($totalAdjustment);
     }
 
     /**
@@ -61,15 +71,5 @@ class CreateTotalAdjustmentRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/total-adjustments')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the total adjustment being created.
-     *
-     * @return TotalAdjustment
-     */
-    public function getTotalAdjustment(): TotalAdjustment
-    {
-        return $this->totalAdjustment;
     }
 }

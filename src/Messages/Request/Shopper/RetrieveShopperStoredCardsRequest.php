@@ -4,43 +4,65 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
+use Psr\Http\Message\RequestInterface;
 
 class RetrieveShopperStoredCardsRequest
 {
     use HasPsr17Factories;
 
+    /**
+     * @param string $shopperId Shopper ID to retrieve stored cards for
+     * @param QueryParams $queryParams Query parameters for pagination/filtering
+     * @throws InvalidArgumentException When shopper ID is empty
+     */
     public function __construct(
-        private readonly string $shopperId,
-        private readonly array $queryParams = []
+        public readonly string $shopperId,
+        public readonly QueryParams $queryParams = new QueryParams()
     ) {
         if (empty($this->shopperId)) {
             throw new InvalidArgumentException('Shopper ID cannot be empty');
         }
     }
 
-    public function build(): RequestInterface
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{shopperId: string, queryParams?: QueryParams|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
     {
-
-        $uri = '/shoppers/' . $this->shopperId . '/stored-cards';
-        if (!empty($this->queryParams)) {
-            $uri .= '?' . http_build_query($this->queryParams);
+        if (! array_key_exists('shopperId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'shopperId' in data");
         }
 
-        return $this->getRequestFactory()
-            ->createRequest('GET', $uri);
+        $queryParams = $data['queryParams'] ?? new QueryParams();
+
+        if (is_array($queryParams)) {
+            $queryParams = QueryParams::fromArray($queryParams);
+        }
+
+        return new static($data['shopperId'], $queryParams);
     }
 
-    public function getShopperId(): string
+    /**
+     * Builds the PSR-7 HTTP request.
+     *
+     * @return RequestInterface The PSR-7 request ready to send
+     */
+    public function build(): RequestInterface
     {
-        return $this->shopperId;
-    }
+        $request = $this->getRequestFactory()
+            ->createRequest('GET', '/shoppers/' . $this->shopperId . '/stored-cards');
 
-    public function getQueryParams(): array
-    {
-        return $this->queryParams;
+        if (! $this->queryParams->isEmpty()) {
+            $request = $request->withUri($this->queryParams->apply($request->getUri()));
+        }
+
+        return $request;
     }
 }

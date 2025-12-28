@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard;
 
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Retrieve Stored Card List Request.
  *
  * Builds a PSR-7 request for retrieving paginated stored card lists (GET /stored-cards).
  *
- * Supports pagination via query parameters (page, limit, etc.).
+ * Supports pagination via QueryParams (pageToken, limit).
  *
  * Example usage with ElavonApiFactory:
  * ```php
- * use Academe\Elavon\Epg\Psr7\Messages\Request\RetrieveStoredCardListRequest;
+ * use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
+ * use Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard\RetrieveStoredCardListRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  *
- * // Build the base request with optional query params
- * $request = (new RetrieveStoredCardListRequest([
- *     'limit' => 50,
- *     'offset' => 100,
- * ]))->build();
+ * // Build the base request with pagination
+ * $queryParams = QueryParams::create()->withLimit(50);
+ * $request = (new RetrieveStoredCardListRequest($queryParams))->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -47,11 +46,25 @@ class RetrieveStoredCardListRequest
 {
     use HasPsr17Factories;
 
-    /**
-     * @param array<string, mixed> $queryParams Query parameters for pagination/filtering     */
     public function __construct(
-        private readonly array $queryParams = []
+        public readonly QueryParams $queryParams = new QueryParams()
     ) {
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{queryParams?: QueryParams|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        $queryParams = $data['queryParams'] ?? new QueryParams();
+
+        if (is_array($queryParams)) {
+            $queryParams = QueryParams::fromArray($queryParams);
+        }
+
+        return new static($queryParams);
     }
 
     /**
@@ -61,26 +74,12 @@ class RetrieveStoredCardListRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
+        $request = $this->getRequestFactory()->createRequest('GET', '/stored-cards');
 
-        // Build URI with query parameters
-        $uri = '/stored-cards';
-        if (!empty($this->queryParams)) {
-            $uri .= '?' . http_build_query($this->queryParams);
+        if (! $this->queryParams->isEmpty()) {
+            $request = $request->withUri($this->queryParams->apply($request->getUri()));
         }
 
-        // Build PSR-7 GET request
-        return $this->getRequestFactory()
-            ->createRequest('GET', $uri);
-    }
-
-    /**
-     * Gets the query parameters.
-     *
-     * @return array<string, mixed>
-     */
-    public function getQueryParams(): array
-    {
-        return $this->queryParams;
+        return $request;
     }
 }

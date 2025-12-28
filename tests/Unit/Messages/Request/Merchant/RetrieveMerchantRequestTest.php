@@ -14,7 +14,7 @@ class RetrieveMerchantRequestTest extends TestCase
     {
         $request = new RetrieveMerchantRequest('merchant123');
 
-        $this->assertSame('merchant123', $request->getMerchantId());
+        $this->assertSame('merchant123', $request->merchantId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

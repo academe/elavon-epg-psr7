@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Subscription;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -58,23 +56,35 @@ class CreateSubscriptionRequest
 {
     use HasPsr17Factories;
 
-    private readonly Subscription $subscription;
-
     /**
-     * @param Subscription|array<string, mixed> $subscription Subscription data or array     *
+     * @param Subscription $subscription Subscription data     *
      * @throws InvalidArgumentException When subscription data is invalid
      */
     public function __construct(
-        Subscription|array $subscription
+        public readonly Subscription $subscription
     ) {
-        // Normalize to Subscription object
-        $this->subscription = match (true) {
-            $subscription instanceof Subscription => $subscription,
-            is_array($subscription) => Subscription::fromData($subscription),
-        };
-
         // Validate required fields for creation
         $this->validateSubscriptionRequest($this->subscription);
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{subscription: Subscription|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('subscription', $data)) {
+            throw new InvalidArgumentException("Missing required key 'subscription' in data");
+        }
+
+        $subscription = $data['subscription'] instanceof Subscription
+            ? $data['subscription']
+            : Subscription::fromData($data['subscription']);
+
+        return new static($subscription);
     }
 
     /**
@@ -84,8 +94,6 @@ class CreateSubscriptionRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize subscription to JSON
         $data = $this->subscription->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -94,16 +102,6 @@ class CreateSubscriptionRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/subscriptions')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the subscription being created.
-     *
-     * @return Subscription
-     */
-    public function getSubscription(): Subscription
-    {
-        return $this->subscription;
     }
 
     /**

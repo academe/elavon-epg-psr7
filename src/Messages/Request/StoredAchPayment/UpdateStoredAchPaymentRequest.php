@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -60,26 +58,38 @@ class UpdateStoredAchPaymentRequest
 {
     use HasPsr17Factories;
 
-    private readonly StoredAchPayment $updates;
-
     /**
      * @param string $storedAchPaymentId Stored ACH payment ID to update
-     * @param StoredAchPayment|array<string, mixed> $updates Update data (partial stored ACH payment)     *
+     * @param StoredAchPayment $storedAchPayment Update data (partial stored ACH payment)     *
      * @throws InvalidArgumentException When stored ACH payment ID is empty or updates are invalid
      */
     public function __construct(
-        private readonly string $storedAchPaymentId,
-        StoredAchPayment|array $updates
+        public readonly string $storedAchPaymentId,
+        public readonly StoredAchPayment $storedAchPayment
     ) {
         if (empty($this->storedAchPaymentId)) {
             throw new InvalidArgumentException('Stored ACH payment ID cannot be empty');
         }
+    }
 
-        // Normalize to StoredAchPayment object
-        $this->updates = match (true) {
-            $updates instanceof StoredAchPayment => $updates,
-            is_array($updates) => StoredAchPayment::fromData($updates),
-        };
+    /**
+     * @param array{storedAchPaymentId: string, storedAchPayment: StoredAchPayment|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedAchPaymentId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedAchPaymentId' in data");
+        }
+
+        if (! array_key_exists('storedAchPayment', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedAchPayment' in data");
+        }
+
+        $storedAchPayment = $data['storedAchPayment'] instanceof StoredAchPayment
+            ? $data['storedAchPayment']
+            : StoredAchPayment::fromData($data['storedAchPayment']);
+
+        return new static($data['storedAchPaymentId'], $storedAchPayment);
     }
 
     /**
@@ -89,35 +99,13 @@ class UpdateStoredAchPaymentRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize updates to JSON
-        $data = $this->updates->toData();
+        $data = $this->storedAchPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 POST request (API uses POST for updates)
         return $this->getRequestFactory()
             ->createRequest('POST', '/stored-ach-payments/' . $this->storedAchPaymentId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the stored ACH payment ID being updated.
-     *
-     * @return string
-     */
-    public function getStoredAchPaymentId(): string
-    {
-        return $this->storedAchPaymentId;
-    }
-
-    /**
-     * Gets the update data.
-     *
-     * @return StoredAchPayment
-     */
-    public function getUpdates(): StoredAchPayment
-    {
-        return $this->updates;
     }
 }

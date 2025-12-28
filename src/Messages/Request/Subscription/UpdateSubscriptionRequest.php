@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Subscription;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -57,26 +55,38 @@ class UpdateSubscriptionRequest
 {
     use HasPsr17Factories;
 
-    private readonly Subscription $subscription;
-
     /**
      * @param string $subscriptionId Subscription ID to update
-     * @param Subscription|array<string, mixed> $subscription Updated subscription data or array     *
+     * @param Subscription $subscription Updated subscription data     *
      * @throws InvalidArgumentException When subscription ID is empty or subscription data is invalid
      */
     public function __construct(
-        private readonly string $subscriptionId,
-        Subscription|array $subscription
+        public readonly string $subscriptionId,
+        public readonly Subscription $subscription
     ) {
         if (empty($this->subscriptionId)) {
             throw new InvalidArgumentException('Subscription ID cannot be empty');
         }
+    }
 
-        // Normalize to Subscription object
-        $this->subscription = match (true) {
-            $subscription instanceof Subscription => $subscription,
-            is_array($subscription) => Subscription::fromData($subscription),
-        };
+    /**
+     * @param array{subscriptionId: string, subscription: Subscription|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('subscriptionId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'subscriptionId' in data");
+        }
+
+        if (! array_key_exists('subscription', $data)) {
+            throw new InvalidArgumentException("Missing required key 'subscription' in data");
+        }
+
+        $subscription = $data['subscription'] instanceof Subscription
+            ? $data['subscription']
+            : Subscription::fromData($data['subscription']);
+
+        return new static($data['subscriptionId'], $subscription);
     }
 
     /**
@@ -86,8 +96,6 @@ class UpdateSubscriptionRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize subscription to JSON
         $data = $this->subscription->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -96,25 +104,5 @@ class UpdateSubscriptionRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/subscriptions/' . $this->subscriptionId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the subscription ID being updated.
-     *
-     * @return string
-     */
-    public function getSubscriptionId(): string
-    {
-        return $this->subscriptionId;
-    }
-
-    /**
-     * Gets the subscription data being sent.
-     *
-     * @return Subscription
-     */
-    public function getSubscription(): Subscription
-    {
-        return $this->subscription;
     }
 }

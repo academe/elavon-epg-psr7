@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -55,26 +53,38 @@ class UpdatePaymentLinkRequest
 {
     use HasPsr17Factories;
 
-    private readonly PaymentLink $paymentLink;
-
     /**
      * @param string $paymentLinkId PaymentLink Resource ID to update
-     * @param PaymentLink|array<string, mixed> $paymentLink PaymentLink data or array (only fields to update)     *
-     * @throws InvalidArgumentException When payment link ID is empty or data is invalid
+     * @param PaymentLink $paymentLink PaymentLink data (only fields to update)     *
+     * @throws InvalidArgumentException When payment link ID is empty
      */
     public function __construct(
-        private readonly string $paymentLinkId,
-        PaymentLink|array $paymentLink
+        public readonly string $paymentLinkId,
+        public readonly PaymentLink $paymentLink
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
         }
+    }
 
-        // Normalize to PaymentLink object
-        $this->paymentLink = match (true) {
-            $paymentLink instanceof PaymentLink => $paymentLink,
-            is_array($paymentLink) => PaymentLink::fromData($paymentLink),
-        };
+    /**
+     * @param array{paymentLinkId: string, paymentLink: PaymentLink|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentLinkId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentLinkId' in data");
+        }
+
+        if (! array_key_exists('paymentLink', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentLink' in data");
+        }
+
+        $paymentLink = $data['paymentLink'] instanceof PaymentLink
+            ? $data['paymentLink']
+            : PaymentLink::fromData($data['paymentLink']);
+
+        return new static($data['paymentLinkId'], $paymentLink);
     }
 
     /**
@@ -84,8 +94,6 @@ class UpdatePaymentLinkRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize payment link to JSON
         $data = $this->paymentLink->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -94,25 +102,5 @@ class UpdatePaymentLinkRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/payment-links/' . $this->paymentLinkId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the payment link ID being updated.
-     *
-     * @return string
-     */
-    public function getPaymentLinkId(): string
-    {
-        return $this->paymentLinkId;
-    }
-
-    /**
-     * Gets the payment link data for the update.
-     *
-     * @return PaymentLink
-     */
-    public function getPaymentLink(): PaymentLink
-    {
-        return $this->paymentLink;
     }
 }

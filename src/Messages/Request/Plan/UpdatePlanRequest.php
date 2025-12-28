@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Plan;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Plan;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -56,26 +54,42 @@ class UpdatePlanRequest
 {
     use HasPsr17Factories;
 
-    private readonly Plan $plan;
-
     /**
      * @param string $planId Plan ID to update
-     * @param Plan|array<string, mixed> $plan Updated plan data or array     *
-     * @throws InvalidArgumentException When plan ID is empty or plan data is invalid
+     * @param Plan $plan Updated plan data     *
+     * @throws InvalidArgumentException When plan ID is empty
      */
     public function __construct(
-        private readonly string $planId,
-        Plan|array $plan
+        public readonly string $planId,
+        public readonly Plan $plan
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
         }
+    }
 
-        // Normalize to Plan object
-        $this->plan = match (true) {
-            $plan instanceof Plan => $plan,
-            is_array($plan) => Plan::fromData($plan),
-        };
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{planId: string, plan: Plan|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('planId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'planId' in data");
+        }
+
+        if (! array_key_exists('plan', $data)) {
+            throw new InvalidArgumentException("Missing required key 'plan' in data");
+        }
+
+        $plan = $data['plan'] instanceof Plan
+            ? $data['plan']
+            : Plan::fromData($data['plan']);
+
+        return new static($data['planId'], $plan);
     }
 
     /**
@@ -85,8 +99,6 @@ class UpdatePlanRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize plan to JSON
         $data = $this->plan->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -95,25 +107,5 @@ class UpdatePlanRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/plans/' . $this->planId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the plan ID being updated.
-     *
-     * @return string
-     */
-    public function getPlanId(): string
-    {
-        return $this->planId;
-    }
-
-    /**
-     * Gets the plan data being sent.
-     *
-     * @return Plan
-     */
-    public function getPlan(): Plan
-    {
-        return $this->plan;
     }
 }

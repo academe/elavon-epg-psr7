@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use Money\Money;
 
 /**
@@ -29,9 +30,9 @@ class Plan implements DataTransferObject
         // Response-only fields
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
-        public readonly ?string $deletedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
+        public readonly ?DateTimeImmutable $deletedAt = null,
         public readonly ?string $merchant = null,
 
         // Request/Response fields

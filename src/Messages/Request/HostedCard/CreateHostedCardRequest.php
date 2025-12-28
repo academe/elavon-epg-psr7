@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -59,22 +57,34 @@ class CreateHostedCardRequest
 {
     use HasPsr17Factories;
 
-    private readonly HostedCard $hostedCard;
-
     /**
-     * @param HostedCard|array<string, mixed> $hostedCard Hosted card data or array     *
+     * @param HostedCard $hostedCard Hosted card data     *
      * @throws InvalidArgumentException When hosted card data is invalid
      */
     public function __construct(
-        HostedCard|array $hostedCard
+        public readonly HostedCard $hostedCard
     ) {
-        // Normalize to HostedCard object
-        $this->hostedCard = match (true) {
-            $hostedCard instanceof HostedCard => $hostedCard,
-            is_array($hostedCard) => HostedCard::fromData($hostedCard),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hostedCard: HostedCard|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hostedCard', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedCard' in data");
+        }
+
+        $hostedCard = $data['hostedCard'] instanceof HostedCard
+            ? $data['hostedCard']
+            : HostedCard::fromData($data['hostedCard']);
+
+        return new static($hostedCard);
     }
 
     /**
@@ -84,8 +94,6 @@ class CreateHostedCardRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize hosted card to JSON
         $data = $this->hostedCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -94,16 +102,6 @@ class CreateHostedCardRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/hosted-cards')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the hosted card being created.
-     *
-     * @return HostedCard
-     */
-    public function getHostedCard(): HostedCard
-    {
-        return $this->hostedCard;
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Shopper;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class ShopperTest extends TestCase
@@ -24,7 +25,8 @@ class ShopperTest extends TestCase
 
         $this->assertSame('https://api.example.com/shoppers/test123', $shopper->href);
         $this->assertSame('test123', $shopper->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $shopper->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $shopper->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $shopper->createdAt->format('Y-m-d H:i:s'));
         $this->assertSame('ref123', $shopper->customReference);
         $this->assertSame(['key1' => 'value1'], $shopper->customFields->all());
     }

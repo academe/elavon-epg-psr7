@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PazePayment;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class PazePaymentTest extends TestCase
@@ -24,7 +25,8 @@ class PazePaymentTest extends TestCase
 
         $this->assertSame('https://api.example.com/pazepayments/test123', $pazepayment->href);
         $this->assertSame('test123', $pazepayment->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $pazepayment->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $pazepayment->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $pazepayment->createdAt->format('Y-m-d H:i:s'));
         $this->assertSame('ref123', $pazepayment->customReference);
         $this->assertSame(['key1' => 'value1'], $pazepayment->customFields->all());
     }

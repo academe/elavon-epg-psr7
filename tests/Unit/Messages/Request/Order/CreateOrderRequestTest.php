@@ -12,6 +12,14 @@ use PHPUnit\Framework\TestCase;
 
 class CreateOrderRequestTest extends TestCase
 {
+    public function test_fromData_withMissingOrderKey_throwsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Missing required key 'order' in data");
+
+        CreateOrderRequest::fromData([]);
+    }
+
     public function test_construct_withOrderObject_createsInstance(): void
     {
         $order = new Order(
@@ -21,20 +29,32 @@ class CreateOrderRequestTest extends TestCase
 
         $request = new CreateOrderRequest($order);
 
-        $this->assertSame($order, $request->getOrder());
+        $this->assertSame($order, $request->order);
     }
 
-    public function test_construct_withArray_normalizesToOrder(): void
+    public function test_fromData_withArray_normalizesToOrder(): void
     {
         $data = [
             'total' => ['amount' => '150.00', 'currencyCode' => 'EUR'],
             'description' => 'Array order',
         ];
 
-        $request = new CreateOrderRequest($data);
+        $request = CreateOrderRequest::fromData(['order' => $data]);
 
-        $this->assertInstanceOf(Order::class, $request->getOrder());
-        $this->assertSame('15000', $request->getOrder()->total->getAmount());
+        $this->assertInstanceOf(Order::class, $request->order);
+        $this->assertSame('15000', $request->order->total->getAmount());
+    }
+
+    public function test_fromData_withOrderObject_preservesObject(): void
+    {
+        $order = new Order(
+            total: Money::USD(10000),
+            description: 'Test order',
+        );
+
+        $request = CreateOrderRequest::fromData(['order' => $order]);
+
+        $this->assertSame($order, $request->order);
     }
 
     public function test_construct_withoutTotal_throwsException(): void
@@ -42,7 +62,15 @@ class CreateOrderRequestTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Order total is required for creating an order');
 
-        new CreateOrderRequest(['description' => 'No total']);
+        new CreateOrderRequest(new Order(description: 'No total'));
+    }
+
+    public function test_fromData_withoutTotal_throwsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Order total is required for creating an order');
+
+        CreateOrderRequest::fromData(['order' => ['description' => 'No total']]);
     }
 
     public function test_build_createsValidPsr7Request(): void

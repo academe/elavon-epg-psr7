@@ -12,6 +12,7 @@ use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
 use Academe\Elavon\Epg\Psr7\ValueObjects\TimeZone;
+use DateTimeImmutable;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -112,7 +113,8 @@ class TransactionTest extends TestCase
         $this->assertSame(TransactionState::AUTHORIZED, $transaction->state);
         $this->assertSame('Order #12345', $transaction->description);
         $this->assertSame('REF-12345', $transaction->customReference);
-        $this->assertSame('2025-11-13T10:00:00Z', $transaction->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $transaction->createdAt);
+        $this->assertSame('2025-11-13 10:00:00', $transaction->createdAt->format('Y-m-d H:i:s'));
     }
 
     public function test_construct_withNegativeTotal_throwsException(): void
@@ -186,7 +188,8 @@ class TransactionTest extends TestCase
         $this->assertSame(TransactionState::AUTHORIZED, $transaction->state);
         $this->assertSame('Order #12345', $transaction->description);
         $this->assertSame('REF-12345', $transaction->customReference);
-        $this->assertSame('2025-11-13T10:00:00Z', $transaction->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $transaction->createdAt);
+        $this->assertSame('2025-11-13 10:00:00', $transaction->createdAt->format('Y-m-d H:i:s'));
     }
 
     public function test_fromArray_withMissingTotal_createsTransactionWithNullTotal(): void
@@ -279,7 +282,7 @@ class TransactionTest extends TestCase
             'id' => 'txn_123',
             'description' => 'Order #12345',
             'customReference' => 'REF-12345',
-            'createdAt' => '2025-11-13T10:00:00Z',
+            'createdAt' => '2025-11-13T10:00:00.000+00:00',
         ], $array);
     }
 

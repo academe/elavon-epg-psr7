@@ -10,9 +10,9 @@ use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 use Academe\Elavon\Epg\Psr7\Support\Stream;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Tests for TransactionResponse message.
@@ -87,7 +87,8 @@ class TransactionResponseTest extends TestCase
         $this->assertSame('1111', $transaction->card->last4);
         $this->assertSame('411111', $transaction->card->bin);
         $this->assertSame(CardScheme::VISA, $transaction->card->scheme);
-        $this->assertSame('2025-11-13T10:00:00Z', $transaction->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $transaction->createdAt);
+        $this->assertSame('2025-11-13 10:00:00', $transaction->createdAt->format('Y-m-d H:i:s'));
     }
 
     public function test_getStatusCode_returnsCorrectCode(): void

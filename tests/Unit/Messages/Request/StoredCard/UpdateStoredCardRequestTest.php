@@ -24,11 +24,11 @@ class UpdateStoredCardRequestTest extends TestCase
         $request = new UpdateStoredCardRequest('sc123', $updates);
 
         // Assert
-        $this->assertSame('sc123', $request->getStoredCardId());
-        $this->assertSame($updates, $request->getUpdates());
+        $this->assertSame('sc123', $request->storedCardId);
+        $this->assertSame($updates, $request->storedCard);
     }
 
-    public function test_construct_withArrayUpdates_normalizesToObject(): void
+    public function test_fromData_withArrayUpdates_normalizesToObject(): void
     {
         // Arrange
         $updatesArray = [
@@ -37,12 +37,12 @@ class UpdateStoredCardRequestTest extends TestCase
         ];
 
         // Act
-        $request = new UpdateStoredCardRequest('sc456', $updatesArray);
+        $request = UpdateStoredCardRequest::fromData(['storedCardId' => 'sc456', 'storedCard' => $updatesArray]);
 
         // Assert
-        $this->assertInstanceOf(StoredCard::class, $request->getUpdates());
-        $this->assertSame('updated-reference', $request->getUpdates()->customReference);
-        $this->assertSame('active', $request->getUpdates()->customFields['status']);
+        $this->assertInstanceOf(StoredCard::class, $request->storedCard);
+        $this->assertSame('updated-reference', $request->storedCard->customReference);
+        $this->assertSame('active', $request->storedCard->customFields['status']);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -138,7 +138,7 @@ class UpdateStoredCardRequestTest extends TestCase
         $request = new UpdateStoredCardRequest('sc-test-id-456', $updates);
 
         // Act & Assert
-        $this->assertSame('sc-test-id-456', $request->getStoredCardId());
+        $this->assertSame('sc-test-id-456', $request->storedCardId);
     }
 
     public function test_getUpdates_returnsCorrectObject(): void
@@ -151,7 +151,7 @@ class UpdateStoredCardRequestTest extends TestCase
         $request = new UpdateStoredCardRequest('sc555', $updates);
 
         // Act
-        $retrievedUpdates = $request->getUpdates();
+        $retrievedUpdates = $request->storedCard;
 
         // Assert
         $this->assertSame($updates, $retrievedUpdates);

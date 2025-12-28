@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\ProcessorAccount;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -29,11 +28,27 @@ class RetrieveProcessorAccountRequest
      * @throws InvalidArgumentException When processor account ID is empty
      */
     public function __construct(
-        private readonly string $processorAccountId
+        public readonly string $processorAccountId
     ) {
         if (empty($this->processorAccountId)) {
             throw new InvalidArgumentException('ProcessorAccount ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{processorAccountId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('processorAccountId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'processorAccountId' in data");
+        }
+
+        return new static($data['processorAccountId']);
     }
 
     /**
@@ -43,20 +58,8 @@ class RetrieveProcessorAccountRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/processor-accounts/' . $this->processorAccountId);
-    }
-
-    /**
-     * Gets the processor account ID being retrieved.
-     *
-     * @return string
-     */
-    public function getProcessorAccountId(): string
-    {
-        return $this->processorAccountId;
     }
 }

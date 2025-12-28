@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\AchPayment;
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Enums\AchAccountType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -87,9 +88,12 @@ class StoredAchPaymentTest extends TestCase
         // Assert
         $this->assertSame('https://api.example.com/stored-ach-payments/sap123', $storedAchPayment->href);
         $this->assertSame('sap123', $storedAchPayment->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $storedAchPayment->createdAt);
-        $this->assertSame('2025-01-02T00:00:00Z', $storedAchPayment->modifiedAt);
-        $this->assertSame('2025-01-31T23:59:59Z', $storedAchPayment->deletedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedAchPayment->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $storedAchPayment->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedAchPayment->modifiedAt);
+        $this->assertSame('2025-01-02 00:00:00', $storedAchPayment->modifiedAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedAchPayment->deletedAt);
+        $this->assertSame('2025-01-31 23:59:59', $storedAchPayment->deletedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $storedAchPayment->merchant);
     }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentLink;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrievePaymentLinkRequest
      * @throws InvalidArgumentException When payment link ID is empty
      */
     public function __construct(
-        private readonly string $paymentLinkId
+        public readonly string $paymentLinkId
     ) {
         if (empty($this->paymentLinkId)) {
             throw new InvalidArgumentException('PaymentLink ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{paymentLinkId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentLinkId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentLinkId' in data");
+        }
+
+        return new static($data['paymentLinkId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrievePaymentLinkRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/payment-links/' . $this->paymentLinkId);
-    }
-
-    /**
-     * Gets the payment link ID.
-     *
-     * @return string
-     */
-    public function getPaymentLinkId(): string
-    {
-        return $this->paymentLinkId;
     }
 }

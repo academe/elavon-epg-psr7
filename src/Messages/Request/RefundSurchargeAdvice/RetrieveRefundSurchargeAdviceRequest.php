@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\RefundSurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveRefundSurchargeAdviceRequest
      * @throws InvalidArgumentException When refund surcharge advice ID is empty
      */
     public function __construct(
-        private readonly string $refundSurchargeAdviceId
+        public readonly string $refundSurchargeAdviceId
     ) {
         if (empty($this->refundSurchargeAdviceId)) {
             throw new InvalidArgumentException('Refund surcharge advice ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{refundSurchargeAdviceId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('refundSurchargeAdviceId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'refundSurchargeAdviceId' in data");
+        }
+
+        return new static($data['refundSurchargeAdviceId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveRefundSurchargeAdviceRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/refund-surcharge-advices/' . $this->refundSurchargeAdviceId);
-    }
-
-    /**
-     * Gets the refund surcharge advice ID being retrieved.
-     *
-     * @return string
-     */
-    public function getRefundSurchargeAdviceId(): string
-    {
-        return $this->refundSurchargeAdviceId;
     }
 }

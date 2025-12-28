@@ -14,7 +14,7 @@ class RetrieveGooglePayPaymentRequestTest extends TestCase
     {
         $request = new RetrieveGooglePayPaymentRequest('payment_123');
 
-        $this->assertSame('payment_123', $request->getGooglePayPaymentId());
+        $this->assertSame('payment_123', $request->googlePayPaymentId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

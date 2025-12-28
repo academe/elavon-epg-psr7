@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\ForexAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -53,22 +51,34 @@ class CreateForexAdviceRequest
 {
     use HasPsr17Factories;
 
-    private readonly ForexAdvice $forexAdvice;
-
     /**
-     * @param ForexAdvice|array<string, mixed> $forexAdvice Forex advice data     *
+     * @param ForexAdvice $forexAdvice Forex advice data     *
      * @throws InvalidArgumentException When forex advice data is invalid
      */
     public function __construct(
-        ForexAdvice|array $forexAdvice
+        public readonly ForexAdvice $forexAdvice
     ) {
-        // Normalize to ForexAdvice object
-        $this->forexAdvice = match (true) {
-            $forexAdvice instanceof ForexAdvice => $forexAdvice,
-            is_array($forexAdvice) => ForexAdvice::fromData($forexAdvice),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{forexAdvice: ForexAdvice|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('forexAdvice', $data)) {
+            throw new InvalidArgumentException("Missing required key 'forexAdvice' in data");
+        }
+
+        $forexAdvice = $data['forexAdvice'] instanceof ForexAdvice
+            ? $data['forexAdvice']
+            : ForexAdvice::fromData($data['forexAdvice']);
+
+        return new static($forexAdvice);
     }
 
     /**
@@ -94,8 +104,6 @@ class CreateForexAdviceRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize to JSON
         $data = $this->forexAdvice->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -104,15 +112,5 @@ class CreateForexAdviceRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/forex-advices')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the forex advice data.
-     *
-     * @return ForexAdvice
-     */
-    public function getForexAdvice(): ForexAdvice
-    {
-        return $this->forexAdvice;
     }
 }

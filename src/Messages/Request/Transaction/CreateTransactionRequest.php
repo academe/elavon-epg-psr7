@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 use Psr\Http\Message\RequestInterface;
 
@@ -18,8 +19,13 @@ use Psr\Http\Message\RequestInterface;
  * use Academe\Elavon\Epg\Psr7\Messages\Request\CreateTransactionRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  *
- * // Build the base request
+ * // Build the base request using a hydrated Transaction object
  * $request = (new CreateTransactionRequest($transaction))->build();
+ *
+ * // Or build from raw data
+ * $request = CreateTransactionRequest::fromData([
+ *     'transaction' => ['total' => ['amount' => '100.00', 'currencyCode' => 'USD']],
+ * ])->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -43,11 +49,31 @@ class CreateTransactionRequest
     use HasPsr17Factories;
 
     /**
-     * @param Transaction|array<string, mixed> $transaction Transaction data
+     * @param Transaction $transaction Transaction data
      */
     public function __construct(
-        private readonly Transaction|array $transaction,
+        public readonly Transaction $transaction,
     ) {
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{transaction: Transaction|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('transaction', $data)) {
+            throw new InvalidArgumentException("Missing required key 'transaction' in data");
+        }
+
+        $transaction = $data['transaction'] instanceof Transaction
+            ? $data['transaction']
+            : Transaction::fromData($data['transaction']);
+
+        return new static($transaction);
     }
 
     /**
@@ -55,20 +81,10 @@ class CreateTransactionRequest
      */
     public function build(): RequestInterface
     {
-        $body = json_encode($this->getTransaction()->toData(), JSON_THROW_ON_ERROR);
+        $body = json_encode($this->transaction->toData(), JSON_THROW_ON_ERROR);
 
         return $this->getRequestFactory()
             ->createRequest('POST', '/transactions')
             ->withBody($this->getStreamFactory()->createStream($body));
-    }
-
-    /**
-     * Gets the transaction object, normalizing from array if needed.
-     */
-    public function getTransaction(): Transaction
-    {
-        return $this->transaction instanceof Transaction
-            ? $this->transaction
-            : Transaction::fromData($this->transaction);
     }
 }

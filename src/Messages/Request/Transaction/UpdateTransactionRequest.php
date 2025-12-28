@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -21,12 +19,18 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  * use Academe\Elavon\Epg\Psr7\Messages\Request\UpdateTransactionRequest;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  *
- * // Build the base request (partial update - only changed fields)
+ * // Build the base request using hydrated objects (partial update - only changed fields)
  * $updates = new Transaction(
  *     description: 'Updated description',
  *     customReference: 'NEW-REF-123'
  * );
  * $request = (new UpdateTransactionRequest('txn123', $updates))->build();
+ *
+ * // Or build from raw data
+ * $request = UpdateTransactionRequest::fromData([
+ *     'transactionId' => 'txn123',
+ *     'transaction' => ['description' => 'Updated description'],
+ * ])->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -51,12 +55,13 @@ class UpdateTransactionRequest
 
     /**
      * @param string $transactionId Transaction ID to update
-     * @param Transaction|array<string, mixed> $updates Partial transaction data (only fields to update)     *
+     * @param Transaction $transaction Partial transaction data (only fields to update)
+     *
      * @throws InvalidArgumentException When transaction ID is empty
      */
     public function __construct(
-        private readonly string $transactionId,
-        private readonly Transaction|array $updates
+        public readonly string $transactionId,
+        public readonly Transaction $transaction,
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
@@ -64,53 +69,40 @@ class UpdateTransactionRequest
     }
 
     /**
+     * Creates an instance from raw data.
+     *
+     * @param array{transactionId: string, transaction: Transaction|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('transactionId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'transactionId' in data");
+        }
+
+        if (! array_key_exists('transaction', $data)) {
+            throw new InvalidArgumentException("Missing required key 'transaction' in data");
+        }
+
+        $transaction = $data['transaction'] instanceof Transaction
+            ? $data['transaction']
+            : Transaction::fromData($data['transaction']);
+
+        return new static($data['transactionId'], $transaction);
+    }
+
+    /**
      * Builds the PSR-7 HTTP request.
      *
      * @return RequestInterface The PSR-7 request ready to send
-     *
-     * @throws InvalidArgumentException When request cannot be built
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
+        $body = json_encode($this->transaction->toData(), JSON_THROW_ON_ERROR);
 
-        // Normalize to Transaction object
-        $updates = $this->updates instanceof Transaction
-            ? $this->updates
-            : Transaction::fromData($this->updates);
-
-        // Serialize updates to JSON (only non-null fields will be included)
-        $body = json_encode($updates->toData(), JSON_THROW_ON_ERROR);
-
-        // Create request stream
-        $stream = $this->getStreamFactory()->createStream($body);
-
-        // Build PSR-7 request
-        // Note: PATCH is used for partial updates
         return $this->getRequestFactory()
             ->createRequest('PATCH', '/transactions/' . $this->transactionId)
-            ->withBody($stream);
-    }
-
-    /**
-     * Gets the transaction ID being updated.
-     *
-     * @return string
-     */
-    public function getTransactionId(): string
-    {
-        return $this->transactionId;
-    }
-
-    /**
-     * Gets the update data.
-     *
-     * @return Transaction
-     */
-    public function getUpdates(): Transaction
-    {
-        return $this->updates instanceof Transaction
-            ? $this->updates
-            : Transaction::fromData($this->updates);
+            ->withBody($this->getStreamFactory()->createStream($body));
     }
 }

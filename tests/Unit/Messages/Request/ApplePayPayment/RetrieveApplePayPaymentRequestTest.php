@@ -14,7 +14,7 @@ class RetrieveApplePayPaymentRequestTest extends TestCase
     {
         $request = new RetrieveApplePayPaymentRequest('payment_123');
 
-        $this->assertSame('payment_123', $request->getApplePayPaymentId());
+        $this->assertSame('payment_123', $request->applePayPaymentId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

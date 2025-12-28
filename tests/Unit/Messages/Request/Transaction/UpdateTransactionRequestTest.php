@@ -14,6 +14,22 @@ use PHPUnit\Framework\TestCase;
  */
 class UpdateTransactionRequestTest extends TestCase
 {
+    public function test_fromData_withMissingTransactionIdKey_throwsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Missing required key 'transactionId' in data");
+
+        UpdateTransactionRequest::fromData(['transaction' => []]);
+    }
+
+    public function test_fromData_withMissingTransactionKey_throwsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Missing required key 'transaction' in data");
+
+        UpdateTransactionRequest::fromData(['transactionId' => 'txn123']);
+    }
+
     public function test_construct_withEmptyTransactionId_throwsException(): void
     {
         // Assert
@@ -30,7 +46,7 @@ class UpdateTransactionRequestTest extends TestCase
         $request = new UpdateTransactionRequest('txn123', new Transaction());
 
         // Assert
-        $this->assertSame('txn123', $request->getTransactionId());
+        $this->assertSame('txn123', $request->transactionId);
     }
 
     public function test_build_withTransactionObject_createsPatchRequest(): void
@@ -49,14 +65,16 @@ class UpdateTransactionRequestTest extends TestCase
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
     }
 
-    public function test_build_withTransactionArray_createsPatchRequest(): void
+    public function test_fromData_withTransactionArray_createsPatchRequest(): void
     {
         // Arrange
-        $updates = [
-            'description' => 'Updated description',
-            'customReference' => 'REF-456',
-        ];
-        $request = new UpdateTransactionRequest('txn123', $updates);
+        $request = UpdateTransactionRequest::fromData([
+            'transactionId' => 'txn123',
+            'transaction' => [
+                'description' => 'Updated description',
+                'customReference' => 'REF-456',
+            ],
+        ]);
 
         // Act
         $psrRequest = $request->build();
@@ -88,32 +106,28 @@ class UpdateTransactionRequestTest extends TestCase
         $this->assertArrayNotHasKey('state', $data);
     }
 
-    public function test_getUpdates_withTransactionObject_returnsTransaction(): void
+    public function test_transaction_property_withTransactionObject_returnsTransaction(): void
     {
         // Arrange
         $updates = new Transaction(description: 'Test');
         $request = new UpdateTransactionRequest('txn123', $updates);
 
-        // Act
-        $result = $request->getUpdates();
-
         // Assert
-        $this->assertInstanceOf(Transaction::class, $result);
-        $this->assertSame('Test', $result->description);
+        $this->assertInstanceOf(Transaction::class, $request->transaction);
+        $this->assertSame('Test', $request->transaction->description);
     }
 
-    public function test_getUpdates_withArray_returnsTransaction(): void
+    public function test_fromData_withTransactionArray_hydratesTransaction(): void
     {
         // Arrange
-        $updates = ['description' => 'Test'];
-        $request = new UpdateTransactionRequest('txn123', $updates);
-
-        // Act
-        $result = $request->getUpdates();
+        $request = UpdateTransactionRequest::fromData([
+            'transactionId' => 'txn123',
+            'transaction' => ['description' => 'Test'],
+        ]);
 
         // Assert
-        $this->assertInstanceOf(Transaction::class, $result);
-        $this->assertSame('Test', $result->description);
+        $this->assertInstanceOf(Transaction::class, $request->transaction);
+        $this->assertSame('Test', $request->transaction->description);
     }
 
     public function test_build_withMultipleUpdates_includesAllFields(): void
@@ -137,12 +151,25 @@ class UpdateTransactionRequestTest extends TestCase
         $this->assertSame('NEW-REF', $data['customReference']);
     }
 
-    public function test_getTransactionId_returnsCorrectId(): void
+    public function test_transactionId_property_returnsCorrectId(): void
     {
         // Arrange
         $request = new UpdateTransactionRequest('my-txn-id', new Transaction());
 
         // Act & Assert
-        $this->assertSame('my-txn-id', $request->getTransactionId());
+        $this->assertSame('my-txn-id', $request->transactionId);
+    }
+
+    public function test_fromData_withTransactionObject_preservesObject(): void
+    {
+        // Arrange
+        $transaction = new Transaction(description: 'Original');
+        $request = UpdateTransactionRequest::fromData([
+            'transactionId' => 'txn123',
+            'transaction' => $transaction,
+        ]);
+
+        // Assert
+        $this->assertSame($transaction, $request->transaction);
     }
 }

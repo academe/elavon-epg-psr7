@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\RefundSurchargeAdvice;
 
 use Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -52,22 +50,34 @@ class CreateRefundSurchargeAdviceRequest
 {
     use HasPsr17Factories;
 
-    private readonly RefundSurchargeAdvice $refundSurchargeAdvice;
-
     /**
-     * @param RefundSurchargeAdvice|array<string, mixed> $refundSurchargeAdvice Refund surcharge advice data     *
+     * @param RefundSurchargeAdvice $refundSurchargeAdvice Refund surcharge advice data     *
      * @throws InvalidArgumentException When refund surcharge advice data is invalid
      */
     public function __construct(
-        RefundSurchargeAdvice|array $refundSurchargeAdvice
+        public readonly RefundSurchargeAdvice $refundSurchargeAdvice
     ) {
-        // Normalize to RefundSurchargeAdvice object
-        $this->refundSurchargeAdvice = match (true) {
-            $refundSurchargeAdvice instanceof RefundSurchargeAdvice => $refundSurchargeAdvice,
-            is_array($refundSurchargeAdvice) => RefundSurchargeAdvice::fromData($refundSurchargeAdvice),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{refundSurchargeAdvice: RefundSurchargeAdvice|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('refundSurchargeAdvice', $data)) {
+            throw new InvalidArgumentException("Missing required key 'refundSurchargeAdvice' in data");
+        }
+
+        $refundSurchargeAdvice = $data['refundSurchargeAdvice'] instanceof RefundSurchargeAdvice
+            ? $data['refundSurchargeAdvice']
+            : RefundSurchargeAdvice::fromData($data['refundSurchargeAdvice']);
+
+        return new static($refundSurchargeAdvice);
     }
 
     /**
@@ -93,8 +103,6 @@ class CreateRefundSurchargeAdviceRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize to JSON
         $data = $this->refundSurchargeAdvice->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -103,15 +111,5 @@ class CreateRefundSurchargeAdviceRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/refund-surcharge-advices')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the refund surcharge advice data.
-     *
-     * @return RefundSurchargeAdvice
-     */
-    public function getRefundSurchargeAdvice(): RefundSurchargeAdvice
-    {
-        return $this->refundSurchargeAdvice;
     }
 }

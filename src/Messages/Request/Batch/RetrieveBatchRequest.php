@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Batch;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveBatchRequest
      * @throws InvalidArgumentException When batch ID is empty
      */
     public function __construct(
-        private readonly string $batchId
+        public readonly string $batchId
     ) {
         if (empty($this->batchId)) {
             throw new InvalidArgumentException('Batch ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{batchId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('batchId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'batchId' in data");
+        }
+
+        return new static($data['batchId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveBatchRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/batches/' . $this->batchId);
-    }
-
-    /**
-     * Gets the batch ID being retrieved.
-     *
-     * @return string
-     */
-    public function getBatchId(): string
-    {
-        return $this->batchId;
     }
 }

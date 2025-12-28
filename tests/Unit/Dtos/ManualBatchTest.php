@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\ManualBatch;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,21 +29,23 @@ class ManualBatchTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Act
-        $manualBatch = new ManualBatch(
-            href: 'https://api.example.com/manual-batches/mb123',
-            id: 'mb123',
-            createdAt: '2025-01-01T00:00:00Z',
-            modifiedAt: '2025-01-02T00:00:00Z',
-            merchant: 'https://api.example.com/merchants/m123',
-            customReference: 'batch-2024-01',
-            customFields: new CustomFields(['purpose' => 'daily-settlement']),
-        );
+        $manualBatch = ManualBatch::fromData([
+            'href' => 'https://api.example.com/manual-batches/mb123',
+            'id' => 'mb123',
+            'createdAt' => '2025-01-01T00:00:00Z',
+            'modifiedAt' => '2025-01-02T00:00:00Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'customReference' => 'batch-2024-01',
+            'customFields' => ['purpose' => 'daily-settlement'],
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/manual-batches/mb123', $manualBatch->href);
         $this->assertSame('mb123', $manualBatch->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $manualBatch->createdAt);
-        $this->assertSame('2025-01-02T00:00:00Z', $manualBatch->modifiedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $manualBatch->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $manualBatch->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $manualBatch->modifiedAt);
+        $this->assertSame('2025-01-02 00:00:00', $manualBatch->modifiedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $manualBatch->merchant);
         $this->assertSame('batch-2024-01', $manualBatch->customReference);
         $this->assertSame(['purpose' => 'daily-settlement'], $manualBatch->customFields->all());
@@ -107,8 +110,10 @@ class ManualBatchTest extends TestCase
         $this->assertInstanceOf(ManualBatch::class, $manualBatch);
         $this->assertSame('https://api.example.com/manual-batches/mb456', $manualBatch->href);
         $this->assertSame('mb456', $manualBatch->id);
-        $this->assertSame('2025-01-15T12:00:00Z', $manualBatch->createdAt);
-        $this->assertSame('2025-01-16T12:00:00Z', $manualBatch->modifiedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $manualBatch->createdAt);
+        $this->assertSame('2025-01-15 12:00:00', $manualBatch->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $manualBatch->modifiedAt);
+        $this->assertSame('2025-01-16 12:00:00', $manualBatch->modifiedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m456', $manualBatch->merchant);
         $this->assertSame('ref-789', $manualBatch->customReference);
         $this->assertSame(['status' => 'closed'], $manualBatch->customFields->all());

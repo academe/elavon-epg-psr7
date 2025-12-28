@@ -21,6 +21,9 @@ use Psr\Http\Message\RequestInterface;
  * // Build the base request
  * $request = (new RetrieveOrderRequest('order123'))->build();
  *
+ * // Or build from raw data
+ * $request = RetrieveOrderRequest::fromData(['orderId' => 'order123'])->build();
+ *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
  *     ->withRegion('eu')
@@ -43,15 +46,32 @@ class RetrieveOrderRequest
     use HasPsr17Factories;
 
     /**
-     * @param string $orderId Order ID to retrieve     *
+     * @param string $orderId Order ID to retrieve
+     *
      * @throws InvalidArgumentException When order ID is empty
      */
     public function __construct(
-        private readonly string $orderId
+        public readonly string $orderId,
     ) {
         if (empty($this->orderId)) {
             throw new InvalidArgumentException('Order ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{orderId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('orderId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'orderId' in data");
+        }
+
+        return new static($data['orderId']);
     }
 
     /**
@@ -61,20 +81,7 @@ class RetrieveOrderRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
-        // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/orders/' . $this->orderId);
-    }
-
-    /**
-     * Gets the order ID being retrieved.
-     *
-     * @return string
-     */
-    public function getOrderId(): string
-    {
-        return $this->orderId;
     }
 }

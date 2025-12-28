@@ -122,11 +122,13 @@ class ElavonApiFactory
             );
         }
 
-        // Replace base URI if configured
+        // Set the host in the URI if configured
         $baseUri = $this->getBaseUri();
         if ($baseUri !== null) {
-            $currentUri = $request->getUri();
-            $newUri = $this->replaceBaseUri($currentUri, $baseUri);
+            $newUri = $request->getUri()
+                ->withHost(parse_url($baseUri, PHP_URL_HOST))
+                ->withScheme(parse_url($baseUri, PHP_URL_SCHEME))
+                ->withPort(parse_url($baseUri, PHP_URL_PORT));
             $request = $request->withUri($newUri);
         }
 
@@ -259,24 +261,5 @@ class ElavonApiFactory
     public function getUsername(): ?string
     {
         return $this->username;
-    }
-
-    /**
-     * Replaces the base URI while preserving the path and query.
-     */
-    private function replaceBaseUri(\Psr\Http\Message\UriInterface $currentUri, string $newBaseUri): \Psr\Http\Message\UriInterface
-    {
-        $newUri = new Uri($newBaseUri);
-        $path = $currentUri->getPath();
-
-        // Handle alias-based original URIs (e.g., "eu-sandbox/transactions")
-        if ($currentUri->getHost() === '' && !str_starts_with($path, '/')) {
-            $slashPos = strpos($path, '/');
-            $path = $slashPos !== false ? substr($path, $slashPos) : '';
-        }
-
-        return $newUri
-            ->withPath($path)
-            ->withQuery($currentUri->getQuery());
     }
 }

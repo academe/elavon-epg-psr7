@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,23 @@ class RetrieveSubscriptionRequest
      * @throws InvalidArgumentException When subscription ID is empty
      */
     public function __construct(
-        private readonly string $subscriptionId
+        public readonly string $subscriptionId
     ) {
         if (empty($this->subscriptionId)) {
             throw new InvalidArgumentException('Subscription ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{subscriptionId: string} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('subscriptionId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'subscriptionId' in data");
+        }
+
+        return new static($data['subscriptionId']);
     }
 
     /**
@@ -62,20 +73,8 @@ class RetrieveSubscriptionRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/subscriptions/' . $this->subscriptionId);
-    }
-
-    /**
-     * Gets the subscription ID being retrieved.
-     *
-     * @return string
-     */
-    public function getSubscriptionId(): string
-    {
-        return $this->subscriptionId;
     }
 }

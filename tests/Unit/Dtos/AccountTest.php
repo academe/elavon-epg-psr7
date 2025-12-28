@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Account;
 use Academe\Elavon\Epg\Psr7\Dtos\AutoSettleAt;
 use Academe\Elavon\Epg\Psr7\Dtos\ProcessorAccount;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -64,7 +65,10 @@ class AccountTest extends TestCase
         // Assert
         $this->assertSame('https://api.eu.elavonpayments.com/accounts/f9g699w9v43r9gcp77y2bxq4rjcx', $account->href);
         $this->assertSame('f9g699w9v43r9gcp77y2bxq4rjcx', $account->id);
-        $this->assertSame('2017-02-22T13:01:23.123Z', $account->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $account->createdAt);
+        $this->assertSame('2017-02-22 13:01:23', $account->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $account->modifiedAt);
+        $this->assertSame('2017-02-22 13:01:33', $account->modifiedAt->format('Y-m-d H:i:s'));
         $this->assertSame('Sirius Corporation', $account->name);
         $this->assertSame('Gringotts', $account->tradeName);
         $this->assertInstanceOf(AutoSettleAt::class, $account->autoSettleAt);

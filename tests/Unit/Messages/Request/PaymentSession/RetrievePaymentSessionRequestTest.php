@@ -14,7 +14,7 @@ class RetrievePaymentSessionRequestTest extends TestCase
     {
         $request = new RetrievePaymentSessionRequest('ps123');
 
-        $this->assertSame('ps123', $request->getPaymentSessionId());
+        $this->assertSame('ps123', $request->paymentSessionId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

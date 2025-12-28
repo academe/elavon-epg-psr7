@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -56,22 +54,30 @@ class CreateStoredCardRequest
 {
     use HasPsr17Factories;
 
-    private readonly StoredCard $storedCard;
-
     /**
-     * @param StoredCard|array<string, mixed> $storedCard Stored card data or array     *
+     * @param StoredCard $storedCard Stored card data     *
      * @throws InvalidArgumentException When stored card data is invalid
      */
     public function __construct(
-        StoredCard|array $storedCard
+        public readonly StoredCard $storedCard
     ) {
-        // Normalize to StoredCard object
-        $this->storedCard = match (true) {
-            $storedCard instanceof StoredCard => $storedCard,
-            is_array($storedCard) => StoredCard::fromData($storedCard),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * @param array{storedCard: StoredCard|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedCard', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedCard' in data");
+        }
+
+        $storedCard = $data['storedCard'] instanceof StoredCard
+            ? $data['storedCard']
+            : StoredCard::fromData($data['storedCard']);
+
+        return new static($storedCard);
     }
 
     /**
@@ -81,8 +87,6 @@ class CreateStoredCardRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize stored card to JSON
         $data = $this->storedCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -91,16 +95,6 @@ class CreateStoredCardRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/stored-cards')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the stored card being created.
-     *
-     * @return StoredCard
-     */
-    public function getStoredCard(): StoredCard
-    {
-        return $this->storedCard;
     }
 
     /**

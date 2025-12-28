@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\HsmCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\HsmCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -20,33 +18,44 @@ class CreateHsmCardRequest
 {
     use HasPsr17Factories;
 
-    private readonly HsmCard $hsmCard;
-
+    /**
+     * @param HsmCard $hsmCard HSM card data
+     *
+     * @throws InvalidArgumentException When required fields are missing
+     */
     public function __construct(
-        HsmCard|array $hsmCard
+        public readonly HsmCard $hsmCard,
     ) {
-        $this->hsmCard = match (true) {
-            $hsmCard instanceof HsmCard => $hsmCard,
-            is_array($hsmCard) => HsmCard::fromData($hsmCard),
-        };
-
         $this->validateRequest($this->hsmCard);
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hsmCard: HsmCard|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hsmCard', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hsmCard' in data");
+        }
+
+        $hsmCard = $data['hsmCard'] instanceof HsmCard
+            ? $data['hsmCard']
+            : HsmCard::fromData($data['hsmCard']);
+
+        return new static($hsmCard);
     }
 
     public function build(): RequestInterface
     {
-
-        $data = $this->hsmCard->toData();
-        $json = json_encode($data, JSON_THROW_ON_ERROR);
+        $json = json_encode($this->hsmCard->toData(), JSON_THROW_ON_ERROR);
 
         return $this->getRequestFactory()
             ->createRequest('POST', '/hsm-cards')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    public function getHsmCard(): HsmCard
-    {
-        return $this->hsmCard;
     }
 
     private function validateRequest(HsmCard $hsmCard): void

@@ -17,8 +17,8 @@ class UpdateShopperRequestTest extends TestCase
 
         $request = new UpdateShopperRequest('shopper_123', $shopper);
 
-        $this->assertSame('shopper_123', $request->getShopperId());
-        $this->assertSame($shopper, $request->getUpdates());
+        $this->assertSame('shopper_123', $request->shopperId);
+        $this->assertSame($shopper, $request->shopper);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

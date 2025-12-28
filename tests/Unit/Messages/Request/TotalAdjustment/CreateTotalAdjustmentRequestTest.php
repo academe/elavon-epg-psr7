@@ -20,19 +20,19 @@ class CreateTotalAdjustmentRequestTest extends TestCase
 
         $request = new CreateTotalAdjustmentRequest($totalAdjustment);
 
-        $this->assertSame($totalAdjustment, $request->getTotalAdjustment());
+        $this->assertSame($totalAdjustment, $request->totalAdjustment);
     }
 
-    public function test_construct_withArray_createsInstance(): void
+    public function test_fromData_withArray_createsInstance(): void
     {
         $data = [
             'total' => ['amount' => '100.00', 'currencyCode' => 'EUR'],
             'doCapture' => true,
         ];
 
-        $request = new CreateTotalAdjustmentRequest($data);
+        $request = CreateTotalAdjustmentRequest::fromData(['totalAdjustment' => $data]);
 
-        $totalAdjustment = $request->getTotalAdjustment();
+        $totalAdjustment = $request->totalAdjustment;
         $this->assertInstanceOf(TotalAdjustment::class, $totalAdjustment);
         $this->assertInstanceOf(Money::class, $totalAdjustment->total);
         $this->assertSame('10000', $totalAdjustment->total->getAmount());

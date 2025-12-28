@@ -19,7 +19,7 @@ class RetrieveHostedCardRequestTest extends TestCase
         $request = new RetrieveHostedCardRequest('hc123');
 
         // Assert
-        $this->assertSame('hc123', $request->getHostedCardId());
+        $this->assertSame('hc123', $request->hostedCardId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

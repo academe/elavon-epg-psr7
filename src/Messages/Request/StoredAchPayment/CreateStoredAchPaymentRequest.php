@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredAchPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -57,22 +55,34 @@ class CreateStoredAchPaymentRequest
 {
     use HasPsr17Factories;
 
-    private readonly StoredAchPayment $storedAchPayment;
-
     /**
-     * @param StoredAchPayment|array<string, mixed> $storedAchPayment Stored ACH payment data or array     *
+     * @param StoredAchPayment $storedAchPayment Stored ACH payment data     *
      * @throws InvalidArgumentException When stored ACH payment data is invalid
      */
     public function __construct(
-        StoredAchPayment|array $storedAchPayment
+        public readonly StoredAchPayment $storedAchPayment
     ) {
-        // Normalize to StoredAchPayment object
-        $this->storedAchPayment = match (true) {
-            $storedAchPayment instanceof StoredAchPayment => $storedAchPayment,
-            is_array($storedAchPayment) => StoredAchPayment::fromData($storedAchPayment),
-        };
-
         $this->validate();
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{storedAchPayment: StoredAchPayment|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedAchPayment', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedAchPayment' in data");
+        }
+
+        $storedAchPayment = $data['storedAchPayment'] instanceof StoredAchPayment
+            ? $data['storedAchPayment']
+            : StoredAchPayment::fromData($data['storedAchPayment']);
+
+        return new static($storedAchPayment);
     }
 
     /**
@@ -82,8 +92,6 @@ class CreateStoredAchPaymentRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize stored ACH payment to JSON
         $data = $this->storedAchPayment->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -92,16 +100,6 @@ class CreateStoredAchPaymentRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/stored-ach-payments')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the stored ACH payment being created.
-     *
-     * @return StoredAchPayment
-     */
-    public function getStoredAchPayment(): StoredAchPayment
-    {
-        return $this->storedAchPayment;
     }
 
     /**

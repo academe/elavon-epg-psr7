@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLinkEvent;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkEventType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,23 +31,24 @@ class PaymentLinkEventTest extends TestCase
     public function test_construct_withAllFields_createsInstance(): void
     {
         // Arrange & Act
-        $event = new PaymentLinkEvent(
-            href: 'https://api.example.com/payment-link-events/e123',
-            id: 'e123',
-            merchant: 'https://api.example.com/merchants/m123',
-            createdAt: '2025-11-19T10:00:00Z',
-            transaction: 'https://api.example.com/transactions/t123',
-            paymentLink: 'https://api.example.com/payment-links/pl123',
-            type: 'payment',
-            createdBy: 'user@example.com',
-            shopperEmailAddress: 'shopper@example.com',
-        );
+        $event = PaymentLinkEvent::fromData([
+            'href' => 'https://api.example.com/payment-link-events/e123',
+            'id' => 'e123',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'createdAt' => '2025-11-19T10:00:00Z',
+            'transaction' => 'https://api.example.com/transactions/t123',
+            'paymentLink' => 'https://api.example.com/payment-links/pl123',
+            'type' => 'payment',
+            'createdBy' => 'user@example.com',
+            'shopperEmailAddress' => 'shopper@example.com',
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/payment-link-events/e123', $event->href);
         $this->assertSame('e123', $event->id);
         $this->assertSame('https://api.example.com/merchants/m123', $event->merchant);
-        $this->assertSame('2025-11-19T10:00:00Z', $event->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $event->createdAt);
+        $this->assertSame('2025-11-19 10:00:00', $event->createdAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/transactions/t123', $event->transaction);
         $this->assertSame('https://api.example.com/payment-links/pl123', $event->paymentLink);
         $this->assertSame(PaymentLinkEventType::PAYMENT, $event->type);

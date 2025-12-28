@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Order;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Order;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -25,15 +23,18 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  * use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
  * use Academe\Elavon\Epg\Psr7\Dtos\Order;
  *
- * // Build the order
+ * // Build the order using a hydrated Order object
  * $order = new Order(
  *     total: ['amount' => '100.00', 'currencyCode' => 'USD'],
  *     description: 'March 2025 Rent',
  *     shopperEmailAddress: 'shopper@example.com',
  * );
- *
- * // Build the request
  * $request = (new CreateOrderRequest($order))->build();
+ *
+ * // Or build from raw data
+ * $request = CreateOrderRequest::fromData([
+ *     'order' => ['total' => ['amount' => '100.00', 'currencyCode' => 'USD']],
+ * ])->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -56,23 +57,35 @@ class CreateOrderRequest
 {
     use HasPsr17Factories;
 
-    private readonly Order $order;
-
     /**
-     * @param Order|array<string, mixed> $order Order data or array     *
+     * @param Order $order Order data
+     *
      * @throws InvalidArgumentException When order data is invalid
      */
     public function __construct(
-        Order|array $order
+        public readonly Order $order,
     ) {
-        // Normalize to Order object
-        $this->order = match (true) {
-            $order instanceof Order => $order,
-            is_array($order) => Order::fromData($order),
-        };
-
-        // Validate required fields for creation
         $this->validateOrderRequest($this->order);
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{order: Order|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('order', $data)) {
+            throw new InvalidArgumentException("Missing required key 'order' in data");
+        }
+
+        $order = $data['order'] instanceof Order
+            ? $data['order']
+            : Order::fromData($data['order']);
+
+        return new static($order);
     }
 
     /**
@@ -82,32 +95,16 @@ class CreateOrderRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
+        $body = json_encode($this->order->toData(), JSON_THROW_ON_ERROR);
 
-        // Serialize order to JSON
-        $data = $this->order->toData();
-        $json = json_encode($data, JSON_THROW_ON_ERROR);
-
-        // Build PSR-7 POST request
         return $this->getRequestFactory()
             ->createRequest('POST', '/orders')
-            ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the order being created.
-     *
-     * @return Order
-     */
-    public function getOrder(): Order
-    {
-        return $this->order;
+            ->withBody($this->getStreamFactory()->createStream($body));
     }
 
     /**
      * Validates that required fields are present for an order creation request.
      *
-     * @param Order $order
      * @throws InvalidArgumentException When required fields are missing
      */
     private function validateOrderRequest(Order $order): void

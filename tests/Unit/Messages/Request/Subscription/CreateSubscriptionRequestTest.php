@@ -29,10 +29,10 @@ class CreateSubscriptionRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(CreateSubscriptionRequest::class, $request);
-        $this->assertSame($subscription, $request->getSubscription());
+        $this->assertSame($subscription, $request->subscription);
     }
 
-    public function test_construct_withArrayData_createsInstance(): void
+    public function test_fromData_withArrayData_createsInstance(): void
     {
         // Arrange
         $subscriptionData = [
@@ -43,11 +43,11 @@ class CreateSubscriptionRequestTest extends TestCase
         ];
 
         // Act
-        $request = new CreateSubscriptionRequest($subscriptionData);
+        $request = CreateSubscriptionRequest::fromData(['subscription' => $subscriptionData]);
 
         // Assert
-        $this->assertInstanceOf(Subscription::class, $request->getSubscription());
-        $this->assertSame('2025-02-01', $request->getSubscription()->firstBillAt);
+        $this->assertInstanceOf(Subscription::class, $request->subscription);
+        $this->assertSame('2025-02-01', $request->subscription->firstBillAt);
     }
 
     public function test_construct_withMissingPlan_throwsException(): void

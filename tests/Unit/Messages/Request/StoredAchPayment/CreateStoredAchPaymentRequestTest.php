@@ -35,7 +35,7 @@ class CreateStoredAchPaymentRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(CreateStoredAchPaymentRequest::class, $request);
-        $this->assertSame($storedAchPayment, $request->getStoredAchPayment());
+        $this->assertSame($storedAchPayment, $request->storedAchPayment);
     }
 
     public function test_construct_withoutShopper_throwsException(): void

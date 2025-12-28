@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -22,26 +20,42 @@ class UpdatePaymentMethodLinkRequest
 {
     use HasPsr17Factories;
 
-    private readonly PaymentMethodLink $paymentMethodLink;
-
     /**
      * @param string $paymentMethodLinkId PaymentMethodLink ID to update
-     * @param PaymentMethodLink|array<string, mixed> $paymentMethodLink PaymentMethodLink data or array     *
-     * @throws InvalidArgumentException When payment method link data is invalid
+     * @param PaymentMethodLink $paymentMethodLink PaymentMethodLink data     *
+     * @throws InvalidArgumentException When payment method link ID is empty
      */
     public function __construct(
-        private readonly string $paymentMethodLinkId,
-        PaymentMethodLink|array $paymentMethodLink
+        public readonly string $paymentMethodLinkId,
+        public readonly PaymentMethodLink $paymentMethodLink
     ) {
         if (empty($this->paymentMethodLinkId)) {
             throw new InvalidArgumentException('PaymentMethodLink ID cannot be empty');
         }
+    }
 
-        // Normalize to PaymentMethodLink object
-        $this->paymentMethodLink = match (true) {
-            $paymentMethodLink instanceof PaymentMethodLink => $paymentMethodLink,
-            is_array($paymentMethodLink) => PaymentMethodLink::fromData($paymentMethodLink),
-        };
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{paymentMethodLinkId: string, paymentMethodLink: PaymentMethodLink|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentMethodLinkId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentMethodLinkId' in data");
+        }
+
+        if (! array_key_exists('paymentMethodLink', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentMethodLink' in data");
+        }
+
+        $paymentMethodLink = $data['paymentMethodLink'] instanceof PaymentMethodLink
+            ? $data['paymentMethodLink']
+            : PaymentMethodLink::fromData($data['paymentMethodLink']);
+
+        return new static($data['paymentMethodLinkId'], $paymentMethodLink);
     }
 
     /**
@@ -51,8 +65,6 @@ class UpdatePaymentMethodLinkRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize payment method link to JSON
         $data = $this->paymentMethodLink->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -61,25 +73,5 @@ class UpdatePaymentMethodLinkRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/payment-method-links/' . $this->paymentMethodLinkId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the payment method link ID being updated.
-     *
-     * @return string
-     */
-    public function getPaymentMethodLinkId(): string
-    {
-        return $this->paymentMethodLinkId;
-    }
-
-    /**
-     * Gets the payment method link data.
-     *
-     * @return PaymentMethodLink
-     */
-    public function getPaymentMethodLink(): PaymentMethodLink
-    {
-        return $this->paymentMethodLink;
     }
 }

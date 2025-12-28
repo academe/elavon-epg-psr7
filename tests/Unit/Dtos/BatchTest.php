@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Batch;
 use Academe\Elavon\Epg\Psr7\Dtos\CountAndTotal;
 use Academe\Elavon\Epg\Psr7\Enums\BatchState;
+use DateTimeImmutable;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -67,8 +68,10 @@ class BatchTest extends TestCase
         // Assert
         $this->assertSame('https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ', $batch->href);
         $this->assertSame('wrKK4HcHCXcK3KkXwFRMXVjQ', $batch->id);
-        $this->assertSame('2018-07-31T00:00:01.508Z', $batch->createdAt);
-        $this->assertSame('2018-07-31T00:00:12.074Z', $batch->modifiedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $batch->createdAt);
+        $this->assertSame('2018-07-31 00:00:01', $batch->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $batch->modifiedAt);
+        $this->assertSame('2018-07-31 00:00:12', $batch->modifiedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49', $batch->merchant);
         $this->assertSame('https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD', $batch->processorAccount);
         $this->assertSame('https://api.converge.eu.elavon.net/terminals/terminal123', $batch->terminal);

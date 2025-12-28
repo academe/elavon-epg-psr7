@@ -21,10 +21,10 @@ class CreatePaymentSessionRequestTest extends TestCase
 
         $request = new CreatePaymentSessionRequest($paymentSession);
 
-        $this->assertSame($paymentSession, $request->getPaymentSession());
+        $this->assertSame($paymentSession, $request->paymentSession);
     }
 
-    public function test_construct_withArray_normalizesToPaymentSession(): void
+    public function test_fromData_withArray_normalizesToPaymentSession(): void
     {
         $data = [
             'order' => 'https://api.example.com/orders/ord456',
@@ -32,18 +32,18 @@ class CreatePaymentSessionRequestTest extends TestCase
             'cancelUrl' => 'https://merchant.com/cancel',
         ];
 
-        $request = new CreatePaymentSessionRequest($data);
+        $request = CreatePaymentSessionRequest::fromData(['paymentSession' => $data]);
 
-        $this->assertInstanceOf(PaymentSession::class, $request->getPaymentSession());
-        $this->assertSame('https://api.example.com/orders/ord456', $request->getPaymentSession()->order);
+        $this->assertInstanceOf(PaymentSession::class, $request->paymentSession);
+        $this->assertSame('https://api.example.com/orders/ord456', $request->paymentSession->order);
     }
 
-    public function test_construct_withoutOrder_throwsException(): void
+    public function test_fromData_withoutOrder_throwsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Order is required for creating a payment session');
 
-        new CreatePaymentSessionRequest(['returnUrl' => 'https://merchant.com/return']);
+        CreatePaymentSessionRequest::fromData(['paymentSession' => ['returnUrl' => 'https://merchant.com/return']]);
     }
 
     public function test_build_createsValidPsr7Request(): void

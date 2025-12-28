@@ -5,36 +5,23 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Support\Psr17Factory;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * Tests for CreateTransactionRequest message.
  */
 class CreateTransactionRequestTest extends TestCase
 {
-    public function test_construct_withTransactionArray_createsInstance(): void
+    public function test_fromData_withMissingTransactionKey_throwsException(): void
     {
-        // Arrange
-        $transaction = [
-            'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
-            'card' => [
-                'number' => '4111111111111111',
-                'securityCode' => '123',
-                'expirationMonth' => 12,
-                'expirationYear' => 2025,
-            ],
-        ];
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Missing required key 'transaction' in data");
 
-        // Act
-        $request = new CreateTransactionRequest(transaction: $transaction);
-
-        // Assert
-        $this->assertInstanceOf(CreateTransactionRequest::class, $request);
+        CreateTransactionRequest::fromData([]);
     }
 
     public function test_construct_withTransactionObject_createsInstance(): void
@@ -55,13 +42,51 @@ class CreateTransactionRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(CreateTransactionRequest::class, $request);
+        $this->assertSame($transaction, $request->transaction);
+    }
+
+    public function test_fromData_withTransactionArray_createsInstance(): void
+    {
+        // Arrange
+        $transactionData = [
+            'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+            'card' => [
+                'number' => '4111111111111111',
+                'securityCode' => '123',
+                'expirationMonth' => 12,
+                'expirationYear' => 2025,
+            ],
+        ];
+
+        // Act
+        $request = CreateTransactionRequest::fromData(['transaction' => $transactionData]);
+
+        // Assert
+        $this->assertInstanceOf(CreateTransactionRequest::class, $request);
+        $this->assertInstanceOf(Transaction::class, $request->transaction);
+    }
+
+    public function test_fromData_withTransactionObject_createsInstance(): void
+    {
+        // Arrange
+        $transaction = Transaction::fromData([
+            'total' => Money::USD(9999),
+            'card' => ['number' => '4111111111111111'],
+        ]);
+
+        // Act
+        $request = CreateTransactionRequest::fromData(['transaction' => $transaction]);
+
+        // Assert
+        $this->assertInstanceOf(CreateTransactionRequest::class, $request);
+        $this->assertSame($transaction, $request->transaction);
     }
 
     public function test_build_withDefaultFactory_returnsValidRequest(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => [
                     'number' => '4111111111111111',
@@ -70,7 +95,7 @@ class CreateTransactionRequestTest extends TestCase
                     'expirationYear' => 2025,
                 ],
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();
@@ -83,8 +108,8 @@ class CreateTransactionRequestTest extends TestCase
     public function test_build_bodyContainsSerializedTransaction(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => [
                     'number' => '4111111111111111',
@@ -95,7 +120,7 @@ class CreateTransactionRequestTest extends TestCase
                 ],
                 'description' => 'Order #12345',
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();
@@ -122,12 +147,12 @@ class CreateTransactionRequestTest extends TestCase
         $requestFactory = new Psr17Factory();
         $streamFactory = new Psr17Factory();
 
-        $request = (new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
             ],
-        ))
+        ])
         ->withRequestFactory($requestFactory)
         ->withStreamFactory($streamFactory);
 
@@ -138,7 +163,7 @@ class CreateTransactionRequestTest extends TestCase
         $this->assertSame('POST', $psr7Request->getMethod());
     }
 
-    public function test_getTransaction_withTransactionArray_returnsTransactionObject(): void
+    public function test_transaction_property_returnsTransactionObject(): void
     {
         // Arrange
         $transactionData = [
@@ -151,19 +176,16 @@ class CreateTransactionRequestTest extends TestCase
             ],
         ];
 
-        $request = new CreateTransactionRequest(transaction: $transactionData);
-
-        // Act
-        $transaction = $request->getTransaction();
+        $request = CreateTransactionRequest::fromData(['transaction' => $transactionData]);
 
         // Assert
-        $this->assertInstanceOf(Transaction::class, $transaction);
-        $this->assertSame('9999', $transaction->total->getAmount());
-        $this->assertSame('USD', $transaction->total->getCurrency()->getCode());
-        $this->assertSame('4111111111111111', $transaction->card->number);
+        $this->assertInstanceOf(Transaction::class, $request->transaction);
+        $this->assertSame('9999', $request->transaction->total->getAmount());
+        $this->assertSame('USD', $request->transaction->total->getCurrency()->getCode());
+        $this->assertSame('4111111111111111', $request->transaction->card->number);
     }
 
-    public function test_getTransaction_withTransactionObject_returnsSameObject(): void
+    public function test_transaction_property_withTransactionObject_returnsSameObject(): void
     {
         // Arrange
         $originalTransaction = Transaction::fromData([
@@ -173,22 +195,19 @@ class CreateTransactionRequestTest extends TestCase
 
         $request = new CreateTransactionRequest(transaction: $originalTransaction);
 
-        // Act
-        $transaction = $request->getTransaction();
-
         // Assert
-        $this->assertSame($originalTransaction, $transaction);
+        $this->assertSame($originalTransaction, $request->transaction);
     }
 
     public function test_build_producesValidJson(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();
@@ -201,12 +220,12 @@ class CreateTransactionRequestTest extends TestCase
     public function test_build_canBeCalledMultipleTimes(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
             ],
-        );
+        ]);
 
         // Act
         $psr7Request1 = $request->build();
@@ -220,12 +239,12 @@ class CreateTransactionRequestTest extends TestCase
     public function test_build_withMinimalTransaction_succeeds(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '1.00', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();
@@ -241,13 +260,13 @@ class CreateTransactionRequestTest extends TestCase
     public function test_build_doesNotIncludeNullFields(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
                 'card' => ['number' => '4111111111111111'],
                 'description' => 'Test',
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();
@@ -265,8 +284,8 @@ class CreateTransactionRequestTest extends TestCase
     public function test_build_withComplexTransaction_serializesCorrectly(): void
     {
         // Arrange
-        $request = new CreateTransactionRequest(
-            transaction: [
+        $request = CreateTransactionRequest::fromData([
+            'transaction' => [
                 'total' => ['amount' => '199.99', 'currencyCode' => 'EUR'],
                 'card' => [
                     'number' => '5555555555554444',
@@ -278,7 +297,7 @@ class CreateTransactionRequestTest extends TestCase
                 'description' => 'Premium subscription',
                 'customReference' => 'CUST-REF-999',
             ],
-        );
+        ]);
 
         // Act
         $psr7Request = $request->build();

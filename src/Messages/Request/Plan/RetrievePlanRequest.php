@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Plan;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrievePlanRequest
      * @throws InvalidArgumentException When plan ID is empty
      */
     public function __construct(
-        private readonly string $planId
+        public readonly string $planId
     ) {
         if (empty($this->planId)) {
             throw new InvalidArgumentException('Plan ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{planId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('planId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'planId' in data");
+        }
+
+        return new static($data['planId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrievePlanRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/plans/' . $this->planId);
-    }
-
-    /**
-     * Gets the plan ID being retrieved.
-     *
-     * @return string
-     */
-    public function getPlanId(): string
-    {
-        return $this->planId;
     }
 }

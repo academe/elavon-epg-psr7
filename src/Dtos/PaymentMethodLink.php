@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 
 /**
  * PaymentMethodLink data transfer object.
@@ -31,13 +32,13 @@ class PaymentMethodLink implements DataTransferObject
         public readonly ?string $merchant = null,
         public readonly ?string $account = null,
         public readonly ?string $url = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
-        public readonly ?string $cancelledAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
+        public readonly ?DateTimeImmutable $cancelledAt = null,
 
         // Request/Response fields
         public readonly ?string $returnUrl = null,
-        public readonly ?string $expiresAt = null,
+        public readonly ?DateTimeImmutable $expiresAt = null,
         public readonly ?string $cancelledBy = null,
         public readonly ?bool $doCancel = null,
         public readonly ?string $description = null,

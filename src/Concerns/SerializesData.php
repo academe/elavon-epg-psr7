@@ -6,6 +6,8 @@ namespace Academe\Elavon\Epg\Psr7\Concerns;
 
 use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
@@ -103,6 +105,9 @@ trait SerializesData
                 $typeName === 'bool' => (bool) $rawValue,
                 $typeName === 'float' => (float) $rawValue,
 
+                // DateTimeImmutable type (ISO 8601 format from API)
+                $typeName === DateTimeImmutable::class => static::parseDateTimeData($rawValue),
+
                 // Money type
                 $typeName === Money::class => static::parseMoneyData($rawValue),
 
@@ -143,6 +148,44 @@ trait SerializesData
                 ? $data['currencyCode']
                 : new Currency($data['currencyCode'])
         );
+    }
+
+    /**
+     * Parse datetime data from ISO 8601 string format.
+     *
+     * The Elavon API returns timestamps in ISO 8601 format: "2025-12-27T19:09:18.136Z"
+     */
+    private static function parseDateTimeData(mixed $data): ?DateTimeImmutable
+    {
+        if ($data instanceof DateTimeImmutable) {
+            return $data;
+        }
+
+        if ($data instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($data);
+        }
+
+        if (!is_string($data) || $data === '') {
+            return null;
+        }
+
+        $dateTime = DateTimeImmutable::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, $data);
+
+        if ($dateTime === false) {
+            // Try without milliseconds: "2025-12-27T19:09:18Z"
+            $dateTime = DateTimeImmutable::createFromFormat(DateTimeInterface::RFC3339, $data);
+        }
+
+        if ($dateTime === false) {
+            // Last resort: let PHP parse it
+            try {
+                $dateTime = new DateTimeImmutable($data);
+            } catch (\Exception) {
+                return null;
+            }
+        }
+
+        return $dateTime;
     }
 
     /**
@@ -296,6 +339,11 @@ trait SerializesData
      */
     private function convertValueToData(mixed $value): mixed
     {
+        // DateTimeInterface objects - convert to ISO 8601 string
+        if ($value instanceof DateTimeInterface) {
+            return $value->format(DateTimeInterface::RFC3339_EXTENDED);
+        }
+
         // Money objects - convert to amount + currencyCode
         if ($value instanceof Money) {
             $currencies = new ISOCurrencies();

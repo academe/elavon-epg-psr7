@@ -14,7 +14,7 @@ class RetrieveAccountRequestTest extends TestCase
     {
         $request = new RetrieveAccountRequest('account123');
 
-        $this->assertSame('account123', $request->getAccountId());
+        $this->assertSame('account123', $request->accountId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -50,6 +50,6 @@ class RetrieveAccountRequestTest extends TestCase
         $accountId = 'test-account-id';
         $request = new RetrieveAccountRequest($accountId);
 
-        $this->assertSame($accountId, $request->getAccountId());
+        $this->assertSame($accountId, $request->accountId);
     }
 }

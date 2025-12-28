@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Notification;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -29,11 +28,23 @@ class RetrieveNotificationRequest
      * @throws InvalidArgumentException When notification ID is empty
      */
     public function __construct(
-        private readonly string $notificationId
+        public readonly string $notificationId
     ) {
         if (empty($this->notificationId)) {
             throw new InvalidArgumentException('Notification ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{notificationId: string} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('notificationId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'notificationId' in data");
+        }
+
+        return new static($data['notificationId']);
     }
 
     /**
@@ -43,20 +54,8 @@ class RetrieveNotificationRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/notifications/' . $this->notificationId);
-    }
-
-    /**
-     * Gets the notification ID being retrieved.
-     *
-     * @return string
-     */
-    public function getNotificationId(): string
-    {
-        return $this->notificationId;
     }
 }

@@ -24,11 +24,11 @@ if (!class_exists(\Academe\Elavon\Epg\Psr7\Dtos\Order::class)) {
     die('Autoloader not found. Run: composer install');
 }
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\RetrieveOrderListRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Order\OrderListResponse;
 use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
 
 $config = require __DIR__ . '/config.php';
 
@@ -63,17 +63,15 @@ $nextCursor = null;
 $prevCursor = null;
 
 try {
-    // If we have a cursor, use it directly as the URI path
-    // Otherwise, build a fresh request for the first page
+    // Build query params with pagination
+    $queryParams = QueryParams::create()->withLimit($limit);
+
+    // If we have a cursor (pageToken), add it
     if ($cursor) {
-        // The cursor is a full API path like /orders?cursor=xxx
-        // We need to create a request with this path
-        $request = new Request('GET', $cursor);
-    } else {
-        $request = (new RetrieveOrderListRequest([
-            'limit' => $limit,
-        ]))->build();
+        $queryParams = $queryParams->withPageToken($cursor);
     }
+
+    $request = (new RetrieveOrderListRequest($queryParams))->build();
     $request = $apiFactory->apply($request);
 
     $httpResponse = $httpClient->send($request);
@@ -81,7 +79,7 @@ try {
 
     if ($response->isSuccessful()) {
         $orders = $response->orders;
-        $nextCursor = $response->nextPage;
+        $nextCursor = $response->nextPageToken;
 
         // Handle back navigation using session cursor stack
         if ($cursor !== null && isset($_GET['action']) && $_GET['action'] === 'next') {
@@ -273,7 +271,7 @@ try {
                             <span class="status <?= $statusClass ?>"><?= htmlspecialchars(ucfirst($status)) ?></span>
                         </td>
                         <td>
-                            <?= htmlspecialchars($order->createdAt ?? '-') ?>
+                            <?= $order->createdAt ? htmlspecialchars($order->createdAt->format('Y-m-d H:i:s')) : '-' ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

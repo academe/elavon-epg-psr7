@@ -19,19 +19,19 @@ class CreateApplePayPaymentRequestTest extends TestCase
 
         $request = new CreateApplePayPaymentRequest($payment);
 
-        $this->assertSame($payment, $request->getApplePayPayment());
+        $this->assertSame($payment, $request->applePayPayment);
     }
 
-    public function test_construct_withArray_normalizes(): void
+    public function test_fromData_withArray_normalizes(): void
     {
         $data = [
             'token' => 'encrypted_token',
             'customReference' => 'ref456',
         ];
 
-        $request = new CreateApplePayPaymentRequest($data);
+        $request = CreateApplePayPaymentRequest::fromData(['applePayPayment' => $data]);
 
-        $this->assertInstanceOf(ApplePayPayment::class, $request->getApplePayPayment());
+        $this->assertInstanceOf(ApplePayPayment::class, $request->applePayPayment);
     }
 
     public function test_build_createsValidPsr7Request(): void

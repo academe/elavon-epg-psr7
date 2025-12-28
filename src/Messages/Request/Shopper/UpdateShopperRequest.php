@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Shopper;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -54,26 +52,42 @@ class UpdateShopperRequest
 {
     use HasPsr17Factories;
 
-    private readonly Shopper $updates;
-
     /**
      * @param string $shopperId shopper ID to update
-     * @param Shopper|array<string, mixed> $updates Update data (partial stored card)     *
-     * @throws InvalidArgumentException When stored card ID is empty or updates are invalid
+     * @param Shopper $shopper Update data (partial stored card)     *
+     * @throws InvalidArgumentException When shopper ID is empty or updates are invalid
      */
     public function __construct(
-        private readonly string $shopperId,
-        Shopper|array $updates
+        public readonly string $shopperId,
+        public readonly Shopper $shopper
     ) {
         if (empty($this->shopperId)) {
-            throw new InvalidArgumentException('shopper ID cannot be empty');
+            throw new InvalidArgumentException('Shopper ID cannot be empty');
+        }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{shopperId: string, shopper: Shopper|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('shopperId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'shopperId' in data");
         }
 
-        // Normalize to Shopper object
-        $this->updates = match (true) {
-            $updates instanceof Shopper => $updates,
-            is_array($updates) => Shopper::fromData($updates),
-        };
+        if (! array_key_exists('shopper', $data)) {
+            throw new InvalidArgumentException("Missing required key 'shopper' in data");
+        }
+
+        $shopper = $data['shopper'] instanceof Shopper
+            ? $data['shopper']
+            : Shopper::fromData($data['shopper']);
+
+        return new static($data['shopperId'], $shopper);
     }
 
     /**
@@ -83,35 +97,13 @@ class UpdateShopperRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize updates to JSON
-        $data = $this->updates->toData();
+        $data = $this->shopper->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 PATCH request
         return $this->getRequestFactory()
             ->createRequest('PATCH', '/shoppers/' . $this->shopperId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the shopper ID being updated.
-     *
-     * @return string
-     */
-    public function getShopperId(): string
-    {
-        return $this->shopperId;
-    }
-
-    /**
-     * Gets the update data.
-     *
-     * @return Shopper
-     */
-    public function getUpdates(): Shopper
-    {
-        return $this->updates;
     }
 }

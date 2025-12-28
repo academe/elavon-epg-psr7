@@ -10,6 +10,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\OrderItem;
 use Academe\Elavon\Epg\Psr7\Enums\OrderItemType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -60,8 +61,10 @@ class OrderTest extends TestCase
         // Assert
         $this->assertSame('https://api.example.com/orders/ord123', $order->href);
         $this->assertSame('ord123', $order->id);
-        $this->assertSame('2025-11-19T10:00:00Z', $order->createdAt);
-        $this->assertSame('2025-11-19T11:00:00Z', $order->modifiedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $order->createdAt);
+        $this->assertSame('2025-11-19 10:00:00', $order->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $order->modifiedAt);
+        $this->assertSame('2025-11-19 11:00:00', $order->modifiedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $order->merchant);
         $this->assertSame('25000', $order->total->getAmount());
         $this->assertSame('March 2025 Rent', $order->description);

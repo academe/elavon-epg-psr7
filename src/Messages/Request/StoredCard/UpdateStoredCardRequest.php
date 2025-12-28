@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard;
 
 use Academe\Elavon\Epg\Psr7\Dtos\StoredCard;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -54,26 +52,38 @@ class UpdateStoredCardRequest
 {
     use HasPsr17Factories;
 
-    private readonly StoredCard $updates;
-
     /**
      * @param string $storedCardId Stored card ID to update
-     * @param StoredCard|array<string, mixed> $updates Update data (partial stored card)     *
+     * @param StoredCard $storedCard Update data (partial stored card)     *
      * @throws InvalidArgumentException When stored card ID is empty or updates are invalid
      */
     public function __construct(
-        private readonly string $storedCardId,
-        StoredCard|array $updates
+        public readonly string $storedCardId,
+        public readonly StoredCard $storedCard
     ) {
         if (empty($this->storedCardId)) {
             throw new InvalidArgumentException('Stored card ID cannot be empty');
         }
+    }
 
-        // Normalize to StoredCard object
-        $this->updates = match (true) {
-            $updates instanceof StoredCard => $updates,
-            is_array($updates) => StoredCard::fromData($updates),
-        };
+    /**
+     * @param array{storedCardId: string, storedCard: StoredCard|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedCardId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedCardId' in data");
+        }
+
+        if (! array_key_exists('storedCard', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedCard' in data");
+        }
+
+        $storedCard = $data['storedCard'] instanceof StoredCard
+            ? $data['storedCard']
+            : StoredCard::fromData($data['storedCard']);
+
+        return new static($data['storedCardId'], $storedCard);
     }
 
     /**
@@ -83,35 +93,13 @@ class UpdateStoredCardRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize updates to JSON
-        $data = $this->updates->toData();
+        $data = $this->storedCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
         // Build PSR-7 PATCH request
         return $this->getRequestFactory()
             ->createRequest('PATCH', '/stored-cards/' . $this->storedCardId)
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the stored card ID being updated.
-     *
-     * @return string
-     */
-    public function getStoredCardId(): string
-    {
-        return $this->storedCardId;
-    }
-
-    /**
-     * Gets the update data.
-     *
-     * @return StoredCard
-     */
-    public function getUpdates(): StoredCard
-    {
-        return $this->updates;
     }
 }

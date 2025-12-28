@@ -21,21 +21,21 @@ class UpdatePaymentLinkRequestTest extends TestCase
 
         $request = new UpdatePaymentLinkRequest('pl123', $paymentLink);
 
-        $this->assertSame('pl123', $request->getPaymentLinkId());
-        $this->assertSame($paymentLink, $request->getPaymentLink());
+        $this->assertSame('pl123', $request->paymentLinkId);
+        $this->assertSame($paymentLink, $request->paymentLink);
     }
 
-    public function test_construct_withArray_normalizesToPaymentLink(): void
+    public function test_fromData_withArray_normalizesToPaymentLink(): void
     {
         $data = [
             'doCancel' => true,
             'customReference' => 'New reference',
         ];
 
-        $request = new UpdatePaymentLinkRequest('pl456', $data);
+        $request = UpdatePaymentLinkRequest::fromData(['paymentLinkId' => 'pl456', 'paymentLink' => $data]);
 
-        $this->assertInstanceOf(PaymentLink::class, $request->getPaymentLink());
-        $this->assertTrue($request->getPaymentLink()->doCancel);
+        $this->assertInstanceOf(PaymentLink::class, $request->paymentLink);
+        $this->assertTrue($request->paymentLink->doCancel);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -43,7 +43,7 @@ class UpdatePaymentLinkRequestTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('PaymentLink ID cannot be empty');
 
-        new UpdatePaymentLinkRequest('', ['doCancel' => true]);
+        new UpdatePaymentLinkRequest('', new PaymentLink(doCancel: true));
     }
 
     public function test_build_createsValidPsr7Request(): void

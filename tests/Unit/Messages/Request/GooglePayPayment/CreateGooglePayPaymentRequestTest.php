@@ -19,19 +19,19 @@ class CreateGooglePayPaymentRequestTest extends TestCase
 
         $request = new CreateGooglePayPaymentRequest($payment);
 
-        $this->assertSame($payment, $request->getGooglePayPayment());
+        $this->assertSame($payment, $request->googlePayPayment);
     }
 
-    public function test_construct_withArray_normalizes(): void
+    public function test_fromData_withArray_normalizes(): void
     {
         $data = [
             'token' => 'encrypted_token',
             'customReference' => 'ref456',
         ];
 
-        $request = new CreateGooglePayPaymentRequest($data);
+        $request = CreateGooglePayPaymentRequest::fromData(['googlePayPayment' => $data]);
 
-        $this->assertInstanceOf(GooglePayPayment::class, $request->getGooglePayPayment());
+        $this->assertInstanceOf(GooglePayPayment::class, $request->googlePayPayment);
     }
 
     public function test_build_createsValidPsr7Request(): void

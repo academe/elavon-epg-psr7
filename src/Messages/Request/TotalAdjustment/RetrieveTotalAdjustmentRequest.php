@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\TotalAdjustment;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -25,15 +24,32 @@ class RetrieveTotalAdjustmentRequest
     use HasPsr17Factories;
 
     /**
-     * @param string $totalAdjustmentId Total adjustment ID to retrieve     *
+     * @param string $totalAdjustmentId Total adjustment ID to retrieve
+     *
      * @throws InvalidArgumentException When total adjustment ID is empty
      */
     public function __construct(
-        private readonly string $totalAdjustmentId
+        public readonly string $totalAdjustmentId
     ) {
         if (empty($this->totalAdjustmentId)) {
             throw new InvalidArgumentException('Total adjustment ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{totalAdjustmentId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('totalAdjustmentId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'totalAdjustmentId' in data");
+        }
+
+        return new static($data['totalAdjustmentId']);
     }
 
     /**
@@ -48,15 +64,5 @@ class RetrieveTotalAdjustmentRequest
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/total-adjustments/' . $this->totalAdjustmentId);
-    }
-
-    /**
-     * Gets the total adjustment ID being retrieved.
-     *
-     * @return string
-     */
-    public function getTotalAdjustmentId(): string
-    {
-        return $this->totalAdjustmentId;
     }
 }

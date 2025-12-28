@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Terminal;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -29,11 +28,23 @@ class RetrieveTerminalRequest
      * @throws InvalidArgumentException When terminal ID is empty
      */
     public function __construct(
-        private readonly string $terminalId
+        public readonly string $terminalId
     ) {
         if (empty($this->terminalId)) {
             throw new InvalidArgumentException('Terminal ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{terminalId: string} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('terminalId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'terminalId' in data");
+        }
+
+        return new static($data['terminalId']);
     }
 
     /**
@@ -43,20 +54,8 @@ class RetrieveTerminalRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/terminals/' . $this->terminalId);
-    }
-
-    /**
-     * Gets the terminal ID being retrieved.
-     *
-     * @return string
-     */
-    public function getTerminalId(): string
-    {
-        return $this->terminalId;
     }
 }

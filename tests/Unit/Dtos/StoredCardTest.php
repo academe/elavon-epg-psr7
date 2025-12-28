@@ -10,6 +10,7 @@ use Academe\Elavon\Epg\Psr7\Enums\CredentialOnFileType;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -74,23 +75,26 @@ class StoredCardTest extends TestCase
     public function test_construct_withResponseFields_createsInstance(): void
     {
         // Act
-        $storedCard = new StoredCard(
-            href: 'https://api.example.com/stored-cards/sc123',
-            id: 'sc123',
-            createdAt: '2025-01-01T00:00:00Z',
-            modifiedAt: '2025-01-02T00:00:00Z',
-            deletedAt: '2025-01-31T23:59:59Z',
-            merchant: 'https://api.example.com/merchants/m123',
-            shopperInteraction: ShopperInteraction::ECOMMERCE,
-            credentialOnFileType: CredentialOnFileType::RECURRING,
-        );
+        $storedCard = StoredCard::fromData([
+            'href' => 'https://api.example.com/stored-cards/sc123',
+            'id' => 'sc123',
+            'createdAt' => '2025-01-01T00:00:00Z',
+            'modifiedAt' => '2025-01-02T00:00:00Z',
+            'deletedAt' => '2025-01-31T23:59:59Z',
+            'merchant' => 'https://api.example.com/merchants/m123',
+            'shopperInteraction' => 'ecommerce',
+            'credentialOnFileType' => 'recurring',
+        ]);
 
         // Assert
         $this->assertSame('https://api.example.com/stored-cards/sc123', $storedCard->href);
         $this->assertSame('sc123', $storedCard->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $storedCard->createdAt);
-        $this->assertSame('2025-01-02T00:00:00Z', $storedCard->modifiedAt);
-        $this->assertSame('2025-01-31T23:59:59Z', $storedCard->deletedAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedCard->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $storedCard->createdAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedCard->modifiedAt);
+        $this->assertSame('2025-01-02 00:00:00', $storedCard->modifiedAt->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $storedCard->deletedAt);
+        $this->assertSame('2025-01-31 23:59:59', $storedCard->deletedAt->format('Y-m-d H:i:s'));
         $this->assertSame('https://api.example.com/merchants/m123', $storedCard->merchant);
         $this->assertSame(ShopperInteraction::ECOMMERCE, $storedCard->shopperInteraction);
         $this->assertSame(CredentialOnFileType::RECURRING, $storedCard->credentialOnFileType);
@@ -322,18 +326,17 @@ class StoredCardTest extends TestCase
     public function test_toData_withResponseData_returnsArray(): void
     {
         // Arrange
-        $card = new Card(
-            last4: '7777',
-            bin: '515151',
-        );
-        $storedCard = new StoredCard(
-            card: $card,
-            href: 'https://api.example.com/stored-cards/sc789',
-            id: 'sc789',
-            createdAt: '2025-01-15T08:30:00Z',
-            shopperInteraction: ShopperInteraction::MERCHANT_INITIATED,
-            credentialOnFileType: CredentialOnFileType::UNSCHEDULED,
-        );
+        $storedCard = StoredCard::fromData([
+            'card' => [
+                'last4' => '7777',
+                'bin' => '515151',
+            ],
+            'href' => 'https://api.example.com/stored-cards/sc789',
+            'id' => 'sc789',
+            'createdAt' => '2025-01-15T08:30:00Z',
+            'shopperInteraction' => 'merchantInitiated',
+            'credentialOnFileType' => 'unscheduled',
+        ]);
 
         // Act
         $array = $storedCard->toData();
@@ -348,7 +351,7 @@ class StoredCardTest extends TestCase
             'credentialOnFileType' => 'unscheduled',
             'href' => 'https://api.example.com/stored-cards/sc789',
             'id' => 'sc789',
-            'createdAt' => '2025-01-15T08:30:00Z',
+            'createdAt' => '2025-01-15T08:30:00.000+00:00',
         ], $array);
     }
 

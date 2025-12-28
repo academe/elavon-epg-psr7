@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredCard;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,23 @@ class DeleteStoredCardRequest
      * @throws InvalidArgumentException When stored card ID is empty
      */
     public function __construct(
-        private readonly string $storedCardId
+        public readonly string $storedCardId
     ) {
         if (empty($this->storedCardId)) {
             throw new InvalidArgumentException('Stored card ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{storedCardId: string} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedCardId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedCardId' in data");
+        }
+
+        return new static($data['storedCardId']);
     }
 
     /**
@@ -62,20 +73,8 @@ class DeleteStoredCardRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 DELETE request
         return $this->getRequestFactory()
             ->createRequest('DELETE', '/stored-cards/' . $this->storedCardId);
-    }
-
-    /**
-     * Gets the stored card ID being deleted.
-     *
-     * @return string
-     */
-    public function getStoredCardId(): string
-    {
-        return $this->storedCardId;
     }
 }

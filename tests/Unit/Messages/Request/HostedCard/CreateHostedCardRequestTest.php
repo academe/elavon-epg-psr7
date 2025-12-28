@@ -31,10 +31,10 @@ class CreateHostedCardRequestTest extends TestCase
         $request = new CreateHostedCardRequest($hostedCard);
 
         // Assert
-        $this->assertSame($hostedCard, $request->getHostedCard());
+        $this->assertSame($hostedCard, $request->hostedCard);
     }
 
-    public function test_construct_withHostedCardArray_normalizesToObject(): void
+    public function test_fromData_withHostedCardArray_normalizesToObject(): void
     {
         // Arrange
         $hostedCardData = [
@@ -48,11 +48,11 @@ class CreateHostedCardRequestTest extends TestCase
         ];
 
         // Act
-        $request = new CreateHostedCardRequest($hostedCardData);
+        $request = CreateHostedCardRequest::fromData(['hostedCard' => $hostedCardData]);
 
         // Assert
-        $this->assertInstanceOf(HostedCard::class, $request->getHostedCard());
-        $this->assertSame('order-123', $request->getHostedCard()->customReference);
+        $this->assertInstanceOf(HostedCard::class, $request->hostedCard);
+        $this->assertSame('order-123', $request->hostedCard->customReference);
     }
 
     public function test_construct_withoutCard_throwsException(): void

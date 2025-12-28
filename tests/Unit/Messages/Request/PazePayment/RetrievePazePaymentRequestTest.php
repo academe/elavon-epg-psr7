@@ -14,7 +14,7 @@ class RetrievePazePaymentRequestTest extends TestCase
     {
         $request = new RetrievePazePaymentRequest('payment_123');
 
-        $this->assertSame('payment_123', $request->getPazePaymentId());
+        $this->assertSame('payment_123', $request->pazePaymentId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

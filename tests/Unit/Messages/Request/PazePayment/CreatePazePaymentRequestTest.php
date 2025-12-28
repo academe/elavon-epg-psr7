@@ -19,19 +19,19 @@ class CreatePazePaymentRequestTest extends TestCase
 
         $request = new CreatePazePaymentRequest($payment);
 
-        $this->assertSame($payment, $request->getPazePayment());
+        $this->assertSame($payment, $request->pazePayment);
     }
 
-    public function test_construct_withArray_normalizes(): void
+    public function test_fromData_withArray_normalizes(): void
     {
         $data = [
             'token' => 'encrypted_token',
             'customReference' => 'ref456',
         ];
 
-        $request = new CreatePazePaymentRequest($data);
+        $request = CreatePazePaymentRequest::fromData(['pazePayment' => $data]);
 
-        $this->assertInstanceOf(PazePayment::class, $request->getPazePayment());
+        $this->assertInstanceOf(PazePayment::class, $request->pazePayment);
     }
 
     public function test_build_createsValidPsr7Request(): void

@@ -14,7 +14,7 @@ class RetrievePaymentLinkRequestTest extends TestCase
     {
         $request = new RetrievePaymentLinkRequest('pl123');
 
-        $this->assertSame('pl123', $request->getPaymentLinkId());
+        $this->assertSame('pl123', $request->paymentLinkId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

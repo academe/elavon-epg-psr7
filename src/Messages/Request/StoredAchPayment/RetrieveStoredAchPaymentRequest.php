@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\StoredAchPayment;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,23 @@ class RetrieveStoredAchPaymentRequest
      * @throws InvalidArgumentException When stored ACH payment ID is empty
      */
     public function __construct(
-        private readonly string $storedAchPaymentId
+        public readonly string $storedAchPaymentId
     ) {
         if (empty($this->storedAchPaymentId)) {
             throw new InvalidArgumentException('Stored ACH payment ID cannot be empty');
         }
+    }
+
+    /**
+     * @param array{storedAchPaymentId: string} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('storedAchPaymentId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'storedAchPaymentId' in data");
+        }
+
+        return new static($data['storedAchPaymentId']);
     }
 
     /**
@@ -62,20 +73,8 @@ class RetrieveStoredAchPaymentRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/stored-ach-payments/' . $this->storedAchPaymentId);
-    }
-
-    /**
-     * Gets the stored ACH payment ID being retrieved.
-     *
-     * @return string
-     */
-    public function getStoredAchPaymentId(): string
-    {
-        return $this->storedAchPaymentId;
     }
 }

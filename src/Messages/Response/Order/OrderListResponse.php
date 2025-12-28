@@ -42,6 +42,7 @@ class OrderListResponse
     /** @var array<Order>|null */
     public readonly ?array $orders;
     public readonly ?string $nextPage;
+    public readonly ?string $nextPageToken;
     public readonly ?string $firstPage;
 
     /**
@@ -58,11 +59,13 @@ class OrderListResponse
             $parsed = $this->parseSuccessData($data);
             $this->orders = $parsed['items'];
             $this->nextPage = $parsed['next'];
+            $this->nextPageToken = $parsed['nextPageToken'];
             $this->firstPage = $parsed['first'];
             $this->error = null;
         } else {
             $this->orders = null;
             $this->nextPage = null;
+            $this->nextPageToken = null;
             $this->firstPage = null;
             $this->error = self::parseErrorData($data);
         }
@@ -80,7 +83,7 @@ class OrderListResponse
     /**
      * Parses a successful response into a paginated list of orders.
      *
-     * @return array{items: array<Order>, next: string|null, first: string|null}
+     * @return array{items: array<Order>, next: string|null, nextPageToken: string|null, first: string|null}
      * @throws InvalidArgumentException When response cannot be parsed
      */
     private function parseSuccessData(array $data): array
@@ -102,6 +105,7 @@ class OrderListResponse
         return [
             'items' => $orders,
             'next' => isset($data['next']) ? (string) $data['next'] : null,
+            'nextPageToken' => isset($data['nextPageToken']) ? (string) $data['nextPageToken'] : null,
             'first' => isset($data['first']) ? (string) $data['first'] : null,
         ];
     }

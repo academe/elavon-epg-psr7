@@ -7,6 +7,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 use Academe\Elavon\Epg\Psr7\Dtos\Subscription;
 use Academe\Elavon\Epg\Psr7\Enums\SubscriptionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -38,8 +39,8 @@ class SubscriptionTest extends TestCase
         $subscription = new Subscription(
             href: 'https://api.example.com/subscriptions/sub123',
             id: 'sub123',
-            createdAt: '2025-11-19T10:00:00Z',
-            modifiedAt: '2025-11-19T11:00:00Z',
+            createdAt: new DateTimeImmutable('2025-11-19T10:00:00Z'),
+            modifiedAt: new DateTimeImmutable('2025-11-19T11:00:00Z'),
             merchant: 'https://api.example.com/merchants/m123',
             shopper: 'https://api.example.com/shoppers/sh123',
             plan: 'https://api.example.com/plans/plan123',

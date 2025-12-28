@@ -28,10 +28,10 @@ class CreatePlanRequestTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(CreatePlanRequest::class, $request);
-        $this->assertSame($plan, $request->getPlan());
+        $this->assertSame($plan, $request->plan);
     }
 
-    public function test_construct_withArrayData_createsInstance(): void
+    public function test_fromData_withArrayData_createsInstance(): void
     {
         // Arrange
         $planData = [
@@ -41,11 +41,11 @@ class CreatePlanRequestTest extends TestCase
         ];
 
         // Act
-        $request = new CreatePlanRequest($planData);
+        $request = CreatePlanRequest::fromData(['plan' => $planData]);
 
         // Assert
-        $this->assertInstanceOf(Plan::class, $request->getPlan());
-        $this->assertSame('Annual Plan', $request->getPlan()->name);
+        $this->assertInstanceOf(Plan::class, $request->plan);
+        $this->assertSame('Annual Plan', $request->plan->name);
     }
 
     public function test_construct_withMissingName_throwsException(): void

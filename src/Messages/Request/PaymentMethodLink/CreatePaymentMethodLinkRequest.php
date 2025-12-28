@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodLink;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -23,23 +21,35 @@ class CreatePaymentMethodLinkRequest
 {
     use HasPsr17Factories;
 
-    private readonly PaymentMethodLink $paymentMethodLink;
-
     /**
-     * @param PaymentMethodLink|array<string, mixed> $paymentMethodLink PaymentMethodLink data or array     *
+     * @param PaymentMethodLink $paymentMethodLink PaymentMethodLink data     *
      * @throws InvalidArgumentException When payment method link data is invalid
      */
     public function __construct(
-        PaymentMethodLink|array $paymentMethodLink
+        public readonly PaymentMethodLink $paymentMethodLink
     ) {
-        // Normalize to PaymentMethodLink object
-        $this->paymentMethodLink = match (true) {
-            $paymentMethodLink instanceof PaymentMethodLink => $paymentMethodLink,
-            is_array($paymentMethodLink) => PaymentMethodLink::fromData($paymentMethodLink),
-        };
-
         // Validate required fields for creation
         $this->validateRequest($this->paymentMethodLink);
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{paymentMethodLink: PaymentMethodLink|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentMethodLink', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentMethodLink' in data");
+        }
+
+        $paymentMethodLink = $data['paymentMethodLink'] instanceof PaymentMethodLink
+            ? $data['paymentMethodLink']
+            : PaymentMethodLink::fromData($data['paymentMethodLink']);
+
+        return new static($paymentMethodLink);
     }
 
     /**
@@ -49,8 +59,6 @@ class CreatePaymentMethodLinkRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize payment method link to JSON
         $data = $this->paymentMethodLink->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -59,16 +67,6 @@ class CreatePaymentMethodLinkRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/payment-method-links')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the payment method link being created.
-     *
-     * @return PaymentMethodLink
-     */
-    public function getPaymentMethodLink(): PaymentMethodLink
-    {
-        return $this->paymentMethodLink;
     }
 
     /**

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Account;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -21,6 +20,9 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  *
  * // Build the base request
  * $request = (new RetrieveAccountRequest('account123'))->build();
+ *
+ * // Or build from raw data
+ * $request = RetrieveAccountRequest::fromData(['accountId' => 'account123'])->build();
  *
  * // Add Elavon API headers, environment, and authentication
  * $factory = ElavonApiFactory::configure()
@@ -44,15 +46,32 @@ class RetrieveAccountRequest
     use HasPsr17Factories;
 
     /**
-     * @param string $accountId Account ID to retrieve     *
+     * @param string $accountId Account ID to retrieve
+     *
      * @throws InvalidArgumentException When account ID is empty
      */
     public function __construct(
-        private readonly string $accountId
+        public readonly string $accountId,
     ) {
         if (empty($this->accountId)) {
             throw new InvalidArgumentException('Account ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{accountId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('accountId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'accountId' in data");
+        }
+
+        return new static($data['accountId']);
     }
 
     /**
@@ -62,20 +81,7 @@ class RetrieveAccountRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
-        // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/accounts/' . $this->accountId);
-    }
-
-    /**
-     * Gets the account ID being retrieved.
-     *
-     * @return string
-     */
-    public function getAccountId(): string
-    {
-        return $this->accountId;
     }
 }

@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Dtos\HostedCard;
 use Academe\Elavon\Epg\Psr7\Messages\Response\HostedCard\HostedCardResponse;
 use Academe\Elavon\Epg\Psr7\Support\Stream;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -52,7 +53,8 @@ class HostedCardResponseTest extends TestCase
         $this->assertFalse($response->hasError());
         $this->assertInstanceOf(HostedCard::class, $response->hostedCard);
         $this->assertSame('hc123', $response->hostedCard->id);
-        $this->assertSame('2025-01-31T23:59:59Z', $response->hostedCard->expiresAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $response->hostedCard->expiresAt);
+        $this->assertSame('2025-01-31 23:59:59', $response->hostedCard->expiresAt->format('Y-m-d H:i:s'));
     }
 
     public function test_construct_withErrorResponse_parsesError(): void

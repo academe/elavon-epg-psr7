@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\HppType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 
 /**
  * PaymentMethodSession data transfer object.
@@ -28,14 +29,14 @@ class PaymentMethodSession implements DataTransferObject
         // Response-only fields
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
         public readonly ?string $url = null,
         public readonly ?string $merchant = null,
         public readonly ?string $shopper = null,
 
         // Request/Response fields
-        public readonly ?string $expiresAt = null,
+        public readonly ?DateTimeImmutable $expiresAt = null,
         public readonly ?string $account = null,
         public readonly ?string $paymentMethodLink = null,
         public readonly ?string $storedCard = null,

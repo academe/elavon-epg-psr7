@@ -14,6 +14,7 @@ use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
+use DateTimeImmutable;
 use Money\Money;
 
 /**
@@ -38,13 +39,13 @@ class PaymentSession implements DataTransferObject
         // Response-only fields
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
         public readonly ?string $merchant = null,
         public readonly ?string $url = null,
 
         // Request/Response fields
-        public readonly ?string $expiresAt = null,
+        public readonly ?DateTimeImmutable $expiresAt = null,
         public readonly ?string $account = null,
         public readonly ?string $order = null,
         public readonly ?string $paymentLink = null,

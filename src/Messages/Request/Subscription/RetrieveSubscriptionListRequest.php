@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Subscription;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -54,12 +53,27 @@ class RetrieveSubscriptionListRequest
      * @throws InvalidArgumentException When validation fails
      */
     public function __construct(
-        private readonly ?string $pageToken = null,
-        private readonly ?int $limit = null
+        public readonly ?string $pageToken = null,
+        public readonly ?int $limit = null
     ) {
         if ($this->limit !== null && $this->limit < 1) {
             throw new InvalidArgumentException('Limit must be at least 1');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{queryParams?: array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        return new static(
+            $data['pageToken'] ?? null,
+            $data['limit'] ?? null
+        );
     }
 
     /**
@@ -69,8 +83,6 @@ class RetrieveSubscriptionListRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build query string
         $queryParams = [];
         if ($this->pageToken !== null) {
@@ -88,25 +100,5 @@ class RetrieveSubscriptionListRequest
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', $uri);
-    }
-
-    /**
-     * Gets the page token for pagination.
-     *
-     * @return string|null
-     */
-    public function getPageToken(): ?string
-    {
-        return $this->pageToken;
-    }
-
-    /**
-     * Gets the limit for pagination.
-     *
-     * @return int|null
-     */
-    public function getLimit(): ?int
-    {
-        return $this->limit;
     }
 }

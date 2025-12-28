@@ -14,7 +14,7 @@ class DeleteShopperRequestTest extends TestCase
     {
         $request = new DeleteShopperRequest('shopper_123');
 
-        $this->assertSame('shopper_123', $request->getShopperId());
+        $this->assertSame('shopper_123', $request->shopperId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void

@@ -9,6 +9,7 @@ use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\SubscriptionState;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 
 /**
  * Subscription data transfer object.
@@ -32,14 +33,14 @@ class Subscription implements DataTransferObject
         // Response-only fields
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
         public readonly ?string $merchant = null,
         public readonly ?string $shopper = null,
-        public readonly ?string $nextBillAt = null,
-        public readonly ?string $previousBillAt = null,
-        public readonly ?string $finalBillAt = null,
-        public readonly ?string $cancelRequestedAt = null,
+        public readonly ?DateTimeImmutable $nextBillAt = null,
+        public readonly ?DateTimeImmutable $previousBillAt = null,
+        public readonly ?DateTimeImmutable $finalBillAt = null,
+        public readonly ?DateTimeImmutable $cancelRequestedAt = null,
         public readonly ?int $nextBillNumber = null,
         public readonly string|SubscriptionState|null $subscriptionState = null,
         public readonly ?int $failureCount = null,

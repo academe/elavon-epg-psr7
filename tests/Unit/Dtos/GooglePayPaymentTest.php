@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class GooglePayPaymentTest extends TestCase
@@ -24,7 +25,8 @@ class GooglePayPaymentTest extends TestCase
 
         $this->assertSame('https://api.example.com/googlepaypayments/test123', $googlepaypayment->href);
         $this->assertSame('test123', $googlepaypayment->id);
-        $this->assertSame('2025-01-01T00:00:00Z', $googlepaypayment->createdAt);
+        $this->assertInstanceOf(DateTimeImmutable::class, $googlepaypayment->createdAt);
+        $this->assertSame('2025-01-01 00:00:00', $googlepaypayment->createdAt->format('Y-m-d H:i:s'));
         $this->assertSame('ref123', $googlepaypayment->customReference);
         $this->assertSame(['key1' => 'value1'], $googlepaypayment->customFields->all());
     }

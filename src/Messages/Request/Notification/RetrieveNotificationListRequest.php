@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Notification;
 
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
+use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Retrieve Notification List Request.
  *
  * Builds a PSR-7 request for retrieving paginated notification lists (GET /notifications).
  *
- * Supports filtering by createdAt_ge|gt|le|lt_timestamp and pagination via query parameters.
+ * Supports filtering by createdAt_ge|gt|le|lt_timestamp and pagination via QueryParams.
  *
  * Note: This class builds the base request but does NOT add:
  * - Elavon API headers (Accept, Accept-Version)
@@ -25,11 +25,25 @@ class RetrieveNotificationListRequest
 {
     use HasPsr17Factories;
 
-    /**
-     * @param array<string, mixed> $queryParams Query parameters for pagination/filtering     */
     public function __construct(
-        private readonly array $queryParams = []
+        public readonly QueryParams $queryParams = new QueryParams()
     ) {
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{queryParams?: QueryParams|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        $queryParams = $data['queryParams'] ?? new QueryParams();
+
+        if (is_array($queryParams)) {
+            $queryParams = QueryParams::fromArray($queryParams);
+        }
+
+        return new static($queryParams);
     }
 
     /**
@@ -39,26 +53,12 @@ class RetrieveNotificationListRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
+        $request = $this->getRequestFactory()->createRequest('GET', '/notifications');
 
-        // Build URI with query parameters
-        $uri = '/notifications';
-        if (!empty($this->queryParams)) {
-            $uri .= '?' . http_build_query($this->queryParams);
+        if (! $this->queryParams->isEmpty()) {
+            $request = $request->withUri($this->queryParams->apply($request->getUri()));
         }
 
-        // Build PSR-7 GET request
-        return $this->getRequestFactory()
-            ->createRequest('GET', $uri);
-    }
-
-    /**
-     * Gets the query parameters.
-     *
-     * @return array<string, mixed>
-     */
-    public function getQueryParams(): array
-    {
-        return $this->queryParams;
+        return $request;
     }
 }

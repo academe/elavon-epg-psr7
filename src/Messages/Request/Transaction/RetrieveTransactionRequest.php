@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveTransactionRequest
      * @throws InvalidArgumentException When transaction ID is empty
      */
     public function __construct(
-        private readonly string $transactionId
+        public readonly string $transactionId
     ) {
         if (empty($this->transactionId)) {
             throw new InvalidArgumentException('Transaction ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{transactionId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('transactionId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'transactionId' in data");
+        }
+
+        return new static($data['transactionId']);
     }
 
     /**
@@ -65,15 +80,5 @@ class RetrieveTransactionRequest
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/transactions/' . $this->transactionId);
-    }
-
-    /**
-     * Gets the transaction ID being retrieved.
-     *
-     * @return string
-     */
-    public function getTransactionId(): string
-    {
-        return $this->transactionId;
     }
 }

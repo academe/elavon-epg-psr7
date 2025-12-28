@@ -8,6 +8,7 @@ use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 
 /**
  * Hosted Card data transfer object.
@@ -26,9 +27,9 @@ class HostedCard implements DataTransferObject
         public readonly ?Card $card = null,
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
-        public readonly ?string $expiresAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
+        public readonly ?DateTimeImmutable $expiresAt = null,
         public readonly ?string $merchant = null,
         public readonly ?bool $doVerify = null,
         public readonly ?string $customReference = null,

@@ -10,11 +10,19 @@ use PHPUnit\Framework\TestCase;
 
 class RetrieveOrderRequestTest extends TestCase
 {
+    public function test_fromData_withMissingOrderIdKey_throwsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Missing required key 'orderId' in data");
+
+        RetrieveOrderRequest::fromData([]);
+    }
+
     public function test_construct_withValidId_createsInstance(): void
     {
         $request = new RetrieveOrderRequest('order123');
 
-        $this->assertSame('order123', $request->getOrderId());
+        $this->assertSame('order123', $request->orderId);
     }
 
     public function test_construct_withEmptyId_throwsException(): void
@@ -23,6 +31,13 @@ class RetrieveOrderRequestTest extends TestCase
         $this->expectExceptionMessage('Order ID cannot be empty');
 
         new RetrieveOrderRequest('');
+    }
+
+    public function test_fromData_createsInstance(): void
+    {
+        $request = RetrieveOrderRequest::fromData(['orderId' => 'order123']);
+
+        $this->assertSame('order123', $request->orderId);
     }
 
     public function test_build_createsValidPsr7Request(): void

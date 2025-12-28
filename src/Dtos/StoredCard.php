@@ -10,6 +10,7 @@ use Academe\Elavon\Epg\Psr7\Enums\CredentialOnFileType;
 use Academe\Elavon\Epg\Psr7\Enums\ShopperInteraction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
+use DateTimeImmutable;
 
 /**
  * Stored Card data transfer object.
@@ -32,9 +33,9 @@ class StoredCard implements DataTransferObject
         public readonly ?string $hostedCard = null,
         public readonly ?string $href = null,
         public readonly ?string $id = null,
-        public readonly ?string $createdAt = null,
-        public readonly ?string $modifiedAt = null,
-        public readonly ?string $deletedAt = null,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $modifiedAt = null,
+        public readonly ?DateTimeImmutable $deletedAt = null,
         public readonly ?string $merchant = null,
         public readonly ?ShopperInteraction $shopperInteraction = null,
         public readonly ?CredentialOnFileType $credentialOnFileType = null,

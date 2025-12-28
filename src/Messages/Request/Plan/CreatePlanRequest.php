@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\Plan;
 
 use Academe\Elavon\Epg\Psr7\Dtos\Plan;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -57,23 +55,35 @@ class CreatePlanRequest
 {
     use HasPsr17Factories;
 
-    private readonly Plan $plan;
-
     /**
-     * @param Plan|array<string, mixed> $plan Plan data or array     *
+     * @param Plan $plan Plan data     *
      * @throws InvalidArgumentException When plan data is invalid
      */
     public function __construct(
-        Plan|array $plan
+        public readonly Plan $plan
     ) {
-        // Normalize to Plan object
-        $this->plan = match (true) {
-            $plan instanceof Plan => $plan,
-            is_array($plan) => Plan::fromData($plan),
-        };
-
         // Validate required fields for creation
         $this->validatePlanRequest($this->plan);
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{plan: Plan|array<string, mixed>} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('plan', $data)) {
+            throw new InvalidArgumentException("Missing required key 'plan' in data");
+        }
+
+        $plan = $data['plan'] instanceof Plan
+            ? $data['plan']
+            : Plan::fromData($data['plan']);
+
+        return new static($plan);
     }
 
     /**
@@ -83,8 +93,6 @@ class CreatePlanRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize plan to JSON
         $data = $this->plan->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -93,16 +101,6 @@ class CreatePlanRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/plans')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the plan being created.
-     *
-     * @return Plan
-     */
-    public function getPlan(): Plan
-    {
-        return $this->plan;
     }
 
     /**

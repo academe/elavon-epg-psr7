@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\HostedCard;
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
@@ -48,11 +47,27 @@ class RetrieveHostedCardRequest
      * @throws InvalidArgumentException When hosted card ID is empty
      */
     public function __construct(
-        private readonly string $hostedCardId
+        public readonly string $hostedCardId
     ) {
         if (empty($this->hostedCardId)) {
             throw new InvalidArgumentException('Hosted card ID cannot be empty');
         }
+    }
+
+    /**
+     * Creates an instance from raw data.
+     *
+     * @param array{hostedCardId: string} $data
+     *
+     * @throws InvalidArgumentException When required data is missing
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('hostedCardId', $data)) {
+            throw new InvalidArgumentException("Missing required key 'hostedCardId' in data");
+        }
+
+        return new static($data['hostedCardId']);
     }
 
     /**
@@ -62,20 +77,8 @@ class RetrieveHostedCardRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factory if none provided
-
         // Build PSR-7 GET request
         return $this->getRequestFactory()
             ->createRequest('GET', '/hosted-cards/' . $this->hostedCardId);
-    }
-
-    /**
-     * Gets the hosted card ID being retrieved.
-     *
-     * @return string
-     */
-    public function getHostedCardId(): string
-    {
-        return $this->hostedCardId;
     }
 }

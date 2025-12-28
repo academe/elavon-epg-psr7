@@ -6,9 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodSession;
 
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
 /**
@@ -20,20 +18,28 @@ class CreatePaymentMethodSessionRequest
 {
     use HasPsr17Factories;
 
-    private readonly PaymentMethodSession $paymentMethodSession;
-
     /**
-     * @param PaymentMethodSession|array<string, mixed> $paymentMethodSession PaymentMethodSession data or array     *
-     * @throws InvalidArgumentException When payment method session data is invalid
+     * @param PaymentMethodSession $paymentMethodSession PaymentMethodSession data
      */
     public function __construct(
-        PaymentMethodSession|array $paymentMethodSession
+        public readonly PaymentMethodSession $paymentMethodSession
     ) {
-        // Normalize to PaymentMethodSession object
-        $this->paymentMethodSession = match (true) {
-            $paymentMethodSession instanceof PaymentMethodSession => $paymentMethodSession,
-            is_array($paymentMethodSession) => PaymentMethodSession::fromData($paymentMethodSession),
-        };
+    }
+
+    /**
+     * @param array{paymentMethodSession: PaymentMethodSession|array<string, mixed>} $data
+     */
+    public static function fromData(array $data): static
+    {
+        if (! array_key_exists('paymentMethodSession', $data)) {
+            throw new InvalidArgumentException("Missing required key 'paymentMethodSession' in data");
+        }
+
+        $paymentMethodSession = $data['paymentMethodSession'] instanceof PaymentMethodSession
+            ? $data['paymentMethodSession']
+            : PaymentMethodSession::fromData($data['paymentMethodSession']);
+
+        return new static($paymentMethodSession);
     }
 
     /**
@@ -43,8 +49,6 @@ class CreatePaymentMethodSessionRequest
      */
     public function build(): RequestInterface
     {
-        // Use built-in factories if none provided
-
         // Serialize payment method session to JSON
         $data = $this->paymentMethodSession->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
@@ -53,15 +57,5 @@ class CreatePaymentMethodSessionRequest
         return $this->getRequestFactory()
             ->createRequest('POST', '/payment-method-sessions')
             ->withBody($this->getStreamFactory()->createStream($json));
-    }
-
-    /**
-     * Gets the payment method session being created.
-     *
-     * @return PaymentMethodSession
-     */
-    public function getPaymentMethodSession(): PaymentMethodSession
-    {
-        return $this->paymentMethodSession;
     }
 }
