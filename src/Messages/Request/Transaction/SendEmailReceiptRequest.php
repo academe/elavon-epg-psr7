@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
-class SendEmailReceiptRequest
+class SendEmailReceiptRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

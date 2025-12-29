@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\ApplePayPayment;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\ApplePayPayment as ApplePayPaymentDto;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
-class ApplePayPaymentResponse
+class ApplePayPaymentResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

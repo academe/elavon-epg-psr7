@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodSession;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -16,7 +17,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  *
  * Builds a PSR-7 request for updating a payment method session (POST /payment-method-sessions/{id}).
  */
-class UpdatePaymentMethodSessionRequest
+class UpdatePaymentMethodSessionRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\GooglePayPayment;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\GooglePayPayment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 
-class CreateGooglePayPaymentRequest
+class CreateGooglePayPaymentRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

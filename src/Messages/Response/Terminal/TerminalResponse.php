@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Terminal;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\Terminal;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
@@ -15,7 +16,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
  * For successful responses (2xx), contains terminal data.
  * For error responses (4xx, 5xx), contains error details.
  */
-class TerminalResponse
+class TerminalResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

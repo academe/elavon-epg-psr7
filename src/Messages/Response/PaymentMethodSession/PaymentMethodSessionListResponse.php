@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\PaymentMethodSession;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodSession;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
@@ -13,7 +14,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
  *
  * Parses PSR-7 responses for paginated payment method session lists (GET /payment-method-sessions).
  */
-class PaymentMethodSessionListResponse
+class PaymentMethodSessionListResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

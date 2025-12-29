@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\RefundSurchargeAdvice;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\ErrorResponse;
 use Academe\Elavon\Epg\Psr7\Dtos\RefundSurchargeAdvice;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
@@ -31,7 +32,7 @@ use Psr\Http\Message\ResponseInterface;
  * }
  * ```
  */
-class RefundSurchargeAdviceResponse
+class RefundSurchargeAdviceResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

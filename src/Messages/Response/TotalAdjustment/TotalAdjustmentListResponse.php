@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\TotalAdjustment;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\TotalAdjustment;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
-class TotalAdjustmentListResponse
+class TotalAdjustmentListResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

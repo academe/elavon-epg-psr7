@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\PanToken;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PanToken;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
-class PanTokenListResponse
+class PanTokenListResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

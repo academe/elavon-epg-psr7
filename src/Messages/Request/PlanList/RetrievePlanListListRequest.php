@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PlanList;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 use Psr\Http\Message\RequestInterface;
@@ -21,7 +22,7 @@ use Psr\Http\Message\RequestInterface;
  * - Authentication headers (Authorization)
  * Use the ElavonApiFactory to add these.
  */
-class RetrievePlanListListRequest
+class RetrievePlanListListRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Terminal;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\ProvisioningCode;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
@@ -15,7 +16,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
  *
  * This is a nested resource under terminals.
  */
-class ProvisioningCodeListResponse
+class ProvisioningCodeListResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

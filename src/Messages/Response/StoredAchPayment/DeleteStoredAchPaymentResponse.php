@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\StoredAchPayment;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
  * For successful deletions (204 No Content), the response body is empty.
  * For error responses (4xx, 5xx), contains error details.
  */
-class DeleteStoredAchPaymentResponse
+class DeleteStoredAchPaymentResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

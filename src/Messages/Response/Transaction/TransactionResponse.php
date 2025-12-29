@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\Transaction;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
@@ -15,7 +16,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
  * For successful responses (2xx), contains transaction data.
  * For error responses (4xx, 5xx), contains error details.
  */
-class TransactionResponse
+class TransactionResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

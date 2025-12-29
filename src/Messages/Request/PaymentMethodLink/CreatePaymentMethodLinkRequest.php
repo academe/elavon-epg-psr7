@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodLink;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
@@ -17,7 +18,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  * Payment method links allow shoppers to securely provide payment method details
  * using the hosted payment page without creating a transaction.
  */
-class CreatePaymentMethodLinkRequest
+class CreatePaymentMethodLinkRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

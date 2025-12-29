@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Response\PaymentLink;
 
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
@@ -35,7 +36,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
  * }
  * ```
  */
-class PaymentLinkListResponse
+class PaymentLinkListResponse implements ResponseMessage
 {
     use ParsesPsr7Response;
 

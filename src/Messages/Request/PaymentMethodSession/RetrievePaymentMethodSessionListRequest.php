@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodSession;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
@@ -13,7 +14,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  *
  * Builds a PSR-7 request for retrieving paginated payment method session lists (GET /payment-method-sessions).
  */
-class RetrievePaymentMethodSessionListRequest
+class RetrievePaymentMethodSessionListRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

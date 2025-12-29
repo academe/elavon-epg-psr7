@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\PaymentMethodLink;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentMethodLink;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
@@ -16,7 +17,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  *
  * Typically used to cancel a payment method link by setting doCancel to true.
  */
-class UpdatePaymentMethodLinkRequest
+class UpdatePaymentMethodLinkRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

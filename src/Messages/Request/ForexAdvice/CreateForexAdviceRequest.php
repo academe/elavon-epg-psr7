@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\ForexAdvice;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\ForexAdvice;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
@@ -47,7 +48,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
  * - Authentication headers (Authorization)
  * Use the ElavonApiFactory to add these.
  */
-class CreateForexAdviceRequest
+class CreateForexAdviceRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

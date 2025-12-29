@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Shopper;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 use Psr\Http\Message\RequestInterface;
 
-class RetrieveShopperStoredCardsRequest
+class RetrieveShopperStoredCardsRequest implements RequestMessage
 {
     use HasPsr17Factories;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Messages\Request\Transaction;
 
+use Academe\Elavon\Epg\Psr7\Contracts\RequestMessage;
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
@@ -44,7 +45,7 @@ use Psr\Http\Message\RequestInterface;
  * - Authentication headers (Authorization)
  * Use the ElavonApiFactory to add these.
  */
-class CreateTransactionRequest
+class CreateTransactionRequest implements RequestMessage
 {
     use HasPsr17Factories;
 
