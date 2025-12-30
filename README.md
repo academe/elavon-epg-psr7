@@ -51,19 +51,21 @@ $factory = ElavonApiFactory::configure()
     ->withAuthentication($merchantAlias, $apiSecret);     // Your credentials
 
 // 2. Create the transaction request
-$request = new CreateTransactionRequest([
-    'total' => [
-        'amount' => '99.99',
-        'currencyCode' => 'USD',
+$request = CreateTransactionRequest::fromData([
+    'transaction' => [
+        'total' => [
+            'amount' => '99.99',
+            'currencyCode' => 'USD',
+        ],
+        'card' => [
+            'number' => '4111111111111111',
+            'securityCode' => '123',
+            'expirationMonth' => 12,
+            'expirationYear' => 2025,
+            'holderName' => 'John Doe',
+        ],
+        'description' => 'Order #12345',
     ],
-    'card' => [
-        'number' => '4111111111111111',
-        'securityCode' => '123',
-        'expirationMonth' => 12,
-        'expirationYear' => 2025,
-        'holderName' => 'John Doe',
-    ],
-    'description' => 'Order #12345',
 ]);
 
 // 3. Build and apply API configuration
@@ -92,6 +94,7 @@ You can create DTOs explicitly from array data using `fromData()`:
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 
 $transaction = Transaction::fromData([
+    // Note: major units, but can also supply ['amountMinor' => 9999, ...]
     'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
     'card' => [
         'number' => '4111111111111111',
@@ -113,11 +116,11 @@ For full type safety, construct DTOs with typed value objects:
 ```php
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Dtos\Card;
-use Academe\Elavon\Epg\Psr7\ValueObjects\Money;
 use Academe\Elavon\Epg\Psr7\Enums\Currency;
+use Money\Money;
 
 $transaction = new Transaction(
-    total: new Money('99.99', Currency::USD),
+    total: new Money('9999', Currency::USD), // Note: minor units
     card: new Card(
         number: '4111111111111111',
         securityCode: '123',
@@ -170,37 +173,39 @@ if ($response->isSuccessful()) {
 | `QueryParams::create()` | Create an empty QueryParams instance |
 | `withPageToken(?string $token)` | Set the pagination token for the next page |
 | `withLimit(?int $limit)` | Set page size (1-200, throws exception if out of range) |
-| `withFilter(string $field, string $operator, string $value)` | Add a filter condition |
+| `withFilter(string $field, QueryFilterOperator $operator, string $value)` | Add a filter condition |
 | `isEmpty()` | Check if any parameters are set |
 | `apply(UriInterface $uri)` | Apply parameters to a PSR-7 URI |
 
 #### Filtering
 
-The Elavon API supports filtering on list endpoints. Use `withFilter()` to add filter conditions:
+The Elavon API supports filtering on list endpoints. Use `withFilter()` with the `QueryFilterOperator` enum to add filter conditions:
 
 ```php
+use Academe\Elavon\Epg\Psr7\Enums\QueryFilterOperator;
+
 $queryParams = QueryParams::create()
     ->withLimit(50)
-    ->withFilter('createdAt', 'gt', '2024-01-01')
-    ->withFilter('type', 'eq', 'refund')
-    ->withFilter('total.amount', 'ge', '100');
+    ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01')
+    ->withFilter('type', QueryFilterOperator::EQ, 'refund')
+    ->withFilter('total.amount', QueryFilterOperator::GE, '100');
 ```
 
-**Available filter operators:**
+**Available filter operators (QueryFilterOperator enum):**
 
-| Operator | Description |
-| -------- | ----------- |
-| `eq` | Equals |
-| `ne` | Not equals |
-| `gt` | Greater than |
-| `ge` | Greater than or equal |
-| `lt` | Less than |
-| `le` | Less than or equal |
-| `like` | Like pattern |
-| `in` | In list |
-| `contains` | Contains |
-| `is` | Is (for null checks) |
-| `isnot` | Is not (for null checks) |
+| Enum Case | Value | Description |
+| --------- | ----- | ----------- |
+| `EQ` | `eq` | Equals |
+| `NE` | `ne` | Not equals |
+| `GT` | `gt` | Greater than |
+| `GE` | `ge` | Greater than or equal |
+| `LT` | `lt` | Less than |
+| `LE` | `le` | Less than or equal |
+| `LIKE` | `like` | Like pattern |
+| `IN` | `in` | In list |
+| `CONTAINS` | `contains` | Contains |
+| `IS` | `is` | Is (for null checks) |
+| `IS_NOT` | `isnot` | Is not (for null checks) |
 
 **Note:** Available filters vary by endpoint. See the [Elavon API documentation](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference) for endpoint-specific filters.
 

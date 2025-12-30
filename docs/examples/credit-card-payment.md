@@ -10,9 +10,9 @@ This example shows how to create a PSR-7 request for a credit card payment trans
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 
-// Option 1: Using arrays (simplest - uses built-in PSR-7 factory)
-$request = new CreateTransactionRequest(
-    transaction: [
+// Option 1: Using fromData() with arrays (simplest - uses built-in PSR-7 factory)
+$request = CreateTransactionRequest::fromData([
+    'transaction' => [
         'total' => [
             'amount' => '99.99',
             'currencyCode' => 'USD',
@@ -26,7 +26,7 @@ $request = new CreateTransactionRequest(
         ],
         'description' => 'Order #12345',
     ],
-);
+]);
 
 // Build the PSR-7 request (uses built-in factory)
 $psr7Request = $request->build();
@@ -53,8 +53,13 @@ if ($response->isSuccessful()) {
 ```php
 <?php
 
-// Create Money value object
-$total = new Money('99.99', Currency::USD);
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Money\Money;
+use Money\Currency;
+
+// Create Money value object (using moneyphp/money)
+$total = Money::USD(9999); // Amount in cents
 
 // Create Card DTO
 $card = new Card(
@@ -72,31 +77,34 @@ $transaction = new Transaction(
     description: 'Order #12345',
 );
 
-// Create request
-$request = new CreateTransactionRequest(
-    transaction: $transaction,
-    requestFactory: $requestFactory,
-    streamFactory: $streamFactory,
-);
+// Create request with the Transaction object
+$request = new CreateTransactionRequest($transaction);
 
 $psr7Request = $request->build();
 ```
 
-## Option 3: Mixed Approach
+## Option 3: Using Transaction::fromData()
 
 ```php
 <?php
 
-// Mix arrays and objects as needed
-$transaction = new Transaction(
-    total: ['amount' => '99.99', 'currencyCode' => 'USD'],  // Array
-    card: new Card(                                          // Object
-        number: '4111111111111111',
-        securityCode: '123',
-        expirationMonth: 12,
-        expirationYear: 2025,
-    ),
-);
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+
+// Create Transaction from array data
+$transaction = Transaction::fromData([
+    'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+    'card' => [
+        'number' => '4111111111111111',
+        'securityCode' => '123',
+        'expirationMonth' => 12,
+        'expirationYear' => 2025,
+        'holderName' => 'John Doe',
+    ],
+    'description' => 'Order #12345',
+]);
+
+// Create request with the Transaction object
+$request = new CreateTransactionRequest($transaction);
 ```
 
 ## Validation
@@ -213,29 +221,30 @@ try {
 
 ## Using Custom PSR-17 Factories (Optional)
 
-The package includes a built-in PSR-7/PSR-17 implementation, but you can use your own if you prefer:
+The package includes a built-in PSR-7/PSR-17 implementation, but you can use your own if you prefer by calling the `setRequestFactory()` and `setStreamFactory()` methods on the request object:
 
 ```php
 <?php
 
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+
 // Using nyholm/psr7
 $factory = new \Nyholm\Psr7\Factory\Psr17Factory();
 
-$request = new CreateTransactionRequest(
-    transaction: [...],
-    requestFactory: $factory,
-    streamFactory: $factory,
-);
+$transaction = Transaction::fromData([...]);
+$request = new CreateTransactionRequest($transaction);
+$request->setRequestFactory($factory);
+$request->setStreamFactory($factory);
 
 // Using guzzlehttp/psr7
 $requestFactory = new \GuzzleHttp\Psr7\HttpFactory();
 $streamFactory = new \GuzzleHttp\Psr7\HttpFactory();
 
-$request = new CreateTransactionRequest(
-    transaction: [...],
-    requestFactory: $requestFactory,
-    streamFactory: $streamFactory,
-);
+$request = new CreateTransactionRequest($transaction);
+$request->setRequestFactory($requestFactory);
+$request->setStreamFactory($streamFactory);
+
+$psr7Request = $request->build();
 ```
 
 **When to use custom factories:**

@@ -29,21 +29,19 @@ Here's a basic example of creating a transaction request:
 
 declare(strict_types=1);
 
-use Academe\Elavon\Ept\Psr7\DataObjects\Transaction;
-use Academe\Elavon\Ept\Psr7\DataObjects\Card;
-use Academe\Elavon\Ept\Psr7\ValueObjects\Money;
-use Academe\Elavon\Ept\Psr7\Enums\Currency;
-use Academe\Elavon\Ept\Psr7\Enums\TransactionType;
-use Academe\Elavon\Ept\Psr7\Messages\Request\CreateTransactionRequest;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
+use Money\Money;
 
-// Create a Money value object
-$total = new Money('99.99', Currency::USD);
+// Create a Money value object (using moneyphp/money)
+$total = Money::USD(9999); // Amount in cents
 
 // Create a Card data object
 $card = new Card(
     number: '4111111111111111',
-    expirationMonth: '12',
-    expirationYear: '2025',
+    expirationMonth: 12,
+    expirationYear: 2025,
     securityCode: '123',
     holderName: 'John Doe',
 );
@@ -51,7 +49,6 @@ $card = new Card(
 // Create a Transaction data object
 $transaction = new Transaction(
     total: $total,
-    type: TransactionType::SALE,
     card: $card,
 );
 
@@ -92,10 +89,10 @@ $transaction = new Transaction(
 );
 
 // Convert to array for serialization
-$data = $transaction->toArray();
+$data = $transaction->toData();
 
 // Create from API response
-$transaction = Transaction::fromArray($responseData);
+$transaction = Transaction::fromData($responseData);
 ```
 
 See [DTO Classes Guide](dto-classes.md) for more details.
