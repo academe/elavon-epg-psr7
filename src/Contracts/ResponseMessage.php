@@ -38,4 +38,5 @@ namespace Academe\Elavon\Epg\Psr7\Contracts;
  */
 interface ResponseMessage extends Message
 {
+    public function isSuccessful(): bool;
 }

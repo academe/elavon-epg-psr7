@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Messages\Request\Order;
 
 use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
+use Academe\Elavon\Epg\Psr7\Enums\QueryFilterOperator;
 use Academe\Elavon\Epg\Psr7\Messages\Request\Order\RetrieveOrderListRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -53,7 +54,7 @@ class RetrieveOrderListRequestTest extends TestCase
     {
         $params = QueryParams::create()
             ->withLimit(10)
-            ->withFilter('createdAt', 'gt', '2024-01-01');
+            ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01');
         $request = new RetrieveOrderListRequest($params);
 
         $psr7Request = $request->build();

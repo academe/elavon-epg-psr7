@@ -24,9 +24,6 @@ class PaymentLinkEvent implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (enums)
-    public readonly ?PaymentLinkEventType $type;
-
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,
@@ -37,17 +34,10 @@ class PaymentLinkEvent implements DataTransferObject
 
         // Request/Response fields
         public readonly ?string $paymentLink = null,
-        PaymentLinkEventType|string|null $type = null,
+        public readonly ?PaymentLinkEventType $type = null,
         public readonly ?string $createdBy = null,
         public readonly ?string $shopperEmailAddress = null,
     ) {
-        // Normalize PaymentLinkEventType enum
-        $this->type = match (true) {
-            $type instanceof PaymentLinkEventType => $type,
-            is_string($type) => PaymentLinkEventType::from($type),
-            default => null,
-        };
-
         $this->validate();
     }
 

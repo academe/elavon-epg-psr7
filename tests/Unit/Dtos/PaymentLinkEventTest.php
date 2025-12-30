@@ -18,9 +18,9 @@ class PaymentLinkEventTest extends TestCase
     public function test_construct_withMinimalFields_createsInstance(): void
     {
         // Arrange & Act
-        $event = new PaymentLinkEvent(
-            type: 'payment',
-        );
+        $event = PaymentLinkEvent::fromData([
+            'type' => 'payment',
+        ]);
 
         // Assert
         $this->assertSame(PaymentLinkEventType::PAYMENT, $event->type);
@@ -56,24 +56,24 @@ class PaymentLinkEventTest extends TestCase
         $this->assertSame('shopper@example.com', $event->shopperEmailAddress);
     }
 
-    public function test_construct_withInvalidType_throwsException(): void
+    public function test_fromData_withInvalidType_throwsException(): void
     {
         // Assert
-        $this->expectException(\ValueError::class);
-        $this->expectExceptionMessage('is not a valid backing value for enum');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid enum value for');
 
         // Act
-        new PaymentLinkEvent(
-            type: 'invalid_type',
-        );
+        PaymentLinkEvent::fromData([
+            'type' => 'invalid_type',
+        ]);
     }
 
-    public function test_construct_withValidTypes_createsInstance(): void
+    public function test_fromData_withValidTypes_createsInstance(): void
     {
         // Arrange & Act
-        $paymentEvent = new PaymentLinkEvent(type: 'payment');
-        $reminderEvent = new PaymentLinkEvent(type: 'reminderSent');
-        $unknownEvent = new PaymentLinkEvent(type: 'unknown');
+        $paymentEvent = PaymentLinkEvent::fromData(['type' => 'payment']);
+        $reminderEvent = PaymentLinkEvent::fromData(['type' => 'reminderSent']);
+        $unknownEvent = PaymentLinkEvent::fromData(['type' => 'unknown']);
 
         // Assert
         $this->assertSame(PaymentLinkEventType::PAYMENT, $paymentEvent->type);
@@ -81,7 +81,7 @@ class PaymentLinkEventTest extends TestCase
         $this->assertSame(PaymentLinkEventType::UNKNOWN, $unknownEvent->type);
     }
 
-    public function test_construct_withTooLongCreatedBy_throwsException(): void
+    public function test_fromData_withTooLongCreatedBy_throwsException(): void
     {
         // Arrange
         $longCreatedBy = str_repeat('a', 256);
@@ -91,10 +91,10 @@ class PaymentLinkEventTest extends TestCase
         $this->expectExceptionMessage('Created by must not exceed 255 characters');
 
         // Act
-        new PaymentLinkEvent(
-            type: 'payment',
-            createdBy: $longCreatedBy,
-        );
+        PaymentLinkEvent::fromData([
+            'type' => 'payment',
+            'createdBy' => $longCreatedBy,
+        ]);
     }
 
     public function test_fromData_withMinimalData_createsInstance(): void
@@ -140,9 +140,9 @@ class PaymentLinkEventTest extends TestCase
     public function test_toData_withMinimalData_returnsArray(): void
     {
         // Arrange
-        $event = new PaymentLinkEvent(
-            type: 'payment',
-        );
+        $event = PaymentLinkEvent::fromData([
+            'type' => 'payment',
+        ]);
 
         // Act
         $array = $event->toData();
@@ -156,10 +156,10 @@ class PaymentLinkEventTest extends TestCase
     public function test_toData_onlyIncludesNonNullValues(): void
     {
         // Arrange
-        $event = new PaymentLinkEvent(
-            type: 'reminderSent',
-            shopperEmailAddress: 'test@example.com',
-        );
+        $event = PaymentLinkEvent::fromData([
+            'type' => 'reminderSent',
+            'shopperEmailAddress' => 'test@example.com',
+        ]);
 
         // Act
         $array = $event->toData();

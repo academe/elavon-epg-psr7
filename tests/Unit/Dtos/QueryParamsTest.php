@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Dtos\QueryFilter;
 use Academe\Elavon\Epg\Psr7\Dtos\QueryParams;
+use Academe\Elavon\Epg\Psr7\Enums\QueryFilterOperator;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
@@ -68,14 +70,25 @@ class QueryParamsTest extends TestCase
         new QueryParams(limit: 201);
     }
 
-    public function test_construct_withInvalidOperator_throwsException(): void
+    public function test_construct_withInvalidFilter_throwsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid filter operator 'invalid'");
+        $this->expectExceptionMessage('Filters must be QueryFilter instances');
 
         new QueryParams(filters: [
-            ['field' => 'type', 'operator' => 'invalid', 'value' => 'refund'],
+            ['field' => 'type', 'operator' => 'eq', 'value' => 'refund'],
         ]);
+    }
+
+    public function test_construct_withQueryFilterInstances_succeeds(): void
+    {
+        $filter = new QueryFilter('type', QueryFilterOperator::EQ, 'refund');
+        $params = new QueryParams(filters: [$filter]);
+
+        $this->assertCount(1, $params->filters);
+        $this->assertSame('type', $params->filters[0]->field);
+        $this->assertSame(QueryFilterOperator::EQ, $params->filters[0]->operator);
+        $this->assertSame('refund', $params->filters[0]->value);
     }
 
     public function test_withPageToken_returnsNewInstance(): void
@@ -99,56 +112,49 @@ class QueryParamsTest extends TestCase
     public function test_withFilter_addsFilter(): void
     {
         $params = QueryParams::create()
-            ->withFilter('type', 'eq', 'refund');
+            ->withFilter('type', QueryFilterOperator::EQ, 'refund');
 
         $this->assertCount(1, $params->filters);
-        $this->assertSame('type', $params->filters[0]['field']);
-        $this->assertSame('eq', $params->filters[0]['operator']);
-        $this->assertSame('refund', $params->filters[0]['value']);
+        $this->assertSame('type', $params->filters[0]->field);
+        $this->assertSame(QueryFilterOperator::EQ, $params->filters[0]->operator);
+        $this->assertSame('refund', $params->filters[0]->value);
     }
 
     public function test_withFilter_addsMultipleFilters(): void
     {
         $params = QueryParams::create()
-            ->withFilter('type', 'eq', 'refund')
-            ->withFilter('createdAt', 'gt', '2024-01-01');
+            ->withFilter('type', QueryFilterOperator::EQ, 'refund')
+            ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01');
 
         $this->assertCount(2, $params->filters);
-        $this->assertSame('type', $params->filters[0]['field']);
-        $this->assertSame('createdAt', $params->filters[1]['field']);
-    }
-
-    public function test_withFilter_validatesOperator(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        QueryParams::create()->withFilter('type', 'invalid', 'refund');
+        $this->assertSame('type', $params->filters[0]->field);
+        $this->assertSame('createdAt', $params->filters[1]->field);
     }
 
     /**
      * @dataProvider validOperatorsProvider
      */
-    public function test_withFilter_acceptsValidOperators(string $operator): void
+    public function test_withFilter_acceptsValidOperators(QueryFilterOperator $operator): void
     {
         $params = QueryParams::create()->withFilter('field', $operator, 'value');
 
-        $this->assertSame($operator, $params->filters[0]['operator']);
+        $this->assertSame($operator, $params->filters[0]->operator);
     }
 
     public static function validOperatorsProvider(): array
     {
         return [
-            'eq' => ['eq'],
-            'ne' => ['ne'],
-            'gt' => ['gt'],
-            'ge' => ['ge'],
-            'lt' => ['lt'],
-            'le' => ['le'],
-            'like' => ['like'],
-            'in' => ['in'],
-            'contains' => ['contains'],
-            'is' => ['is'],
-            'isnot' => ['isnot'],
+            'eq' => [QueryFilterOperator::EQ],
+            'ne' => [QueryFilterOperator::NE],
+            'gt' => [QueryFilterOperator::GT],
+            'ge' => [QueryFilterOperator::GE],
+            'lt' => [QueryFilterOperator::LT],
+            'le' => [QueryFilterOperator::LE],
+            'like' => [QueryFilterOperator::LIKE],
+            'in' => [QueryFilterOperator::IN],
+            'contains' => [QueryFilterOperator::CONTAINS],
+            'is' => [QueryFilterOperator::IS],
+            'isnot' => [QueryFilterOperator::IS_NOT],
         ];
     }
 
@@ -175,7 +181,7 @@ class QueryParamsTest extends TestCase
 
     public function test_isEmpty_returnsFalseWithFilter(): void
     {
-        $params = QueryParams::create()->withFilter('type', 'eq', 'sale');
+        $params = QueryParams::create()->withFilter('type', QueryFilterOperator::EQ, 'sale');
 
         $this->assertFalse($params->isEmpty());
     }
@@ -203,7 +209,7 @@ class QueryParamsTest extends TestCase
 
     public function test_toQueryString_withFilter_returnsCorrectString(): void
     {
-        $params = QueryParams::create()->withFilter('type', 'eq', 'refund');
+        $params = QueryParams::create()->withFilter('type', QueryFilterOperator::EQ, 'refund');
 
         $this->assertSame('filter=type_eq_refund', $params->toQueryString());
     }
@@ -211,8 +217,8 @@ class QueryParamsTest extends TestCase
     public function test_toQueryString_withMultipleFilters_returnsCorrectString(): void
     {
         $params = QueryParams::create()
-            ->withFilter('type', 'eq', 'refund')
-            ->withFilter('createdAt', 'gt', '2024-01-01');
+            ->withFilter('type', QueryFilterOperator::EQ, 'refund')
+            ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01');
 
         $this->assertSame(
             'filter=type_eq_refund&filter=createdAt_gt_2024-01-01',
@@ -225,7 +231,7 @@ class QueryParamsTest extends TestCase
         $params = QueryParams::create()
             ->withPageToken('token123')
             ->withLimit(25)
-            ->withFilter('type', 'eq', 'sale');
+            ->withFilter('type', QueryFilterOperator::EQ, 'sale');
 
         $this->assertSame(
             'pageToken=token123&limit=25&filter=type_eq_sale',
@@ -252,8 +258,8 @@ class QueryParamsTest extends TestCase
         $params = QueryParams::create()
             ->withPageToken('token123')
             ->withLimit(25)
-            ->withFilter('type', 'eq', 'sale')
-            ->withFilter('createdAt', 'gt', '2024');
+            ->withFilter('type', QueryFilterOperator::EQ, 'sale')
+            ->withFilter('createdAt', QueryFilterOperator::GT, '2024');
 
         $array = $params->toArray();
 
@@ -262,58 +268,6 @@ class QueryParamsTest extends TestCase
         $this->assertCount(2, $array['filter']);
         $this->assertSame('type_eq_sale', $array['filter'][0]);
         $this->assertSame('createdAt_gt_2024', $array['filter'][1]);
-    }
-
-    public function test_fromArray_withEmptyArray_createsEmptyParams(): void
-    {
-        $params = QueryParams::fromArray([]);
-
-        $this->assertTrue($params->isEmpty());
-    }
-
-    public function test_fromArray_withPageToken_setsPageToken(): void
-    {
-        $params = QueryParams::fromArray(['pageToken' => 'abc']);
-
-        $this->assertSame('abc', $params->pageToken);
-    }
-
-    public function test_fromArray_withLimit_setsLimit(): void
-    {
-        $params = QueryParams::fromArray(['limit' => 50]);
-
-        $this->assertSame(50, $params->limit);
-    }
-
-    public function test_fromArray_withSingleFilter_parsesFilter(): void
-    {
-        $params = QueryParams::fromArray(['filter' => 'type_eq_refund']);
-
-        $this->assertCount(1, $params->filters);
-        $this->assertSame('type', $params->filters[0]['field']);
-        $this->assertSame('eq', $params->filters[0]['operator']);
-        $this->assertSame('refund', $params->filters[0]['value']);
-    }
-
-    public function test_fromArray_withMultipleFilters_parsesFilters(): void
-    {
-        $params = QueryParams::fromArray([
-            'filter' => ['type_eq_refund', 'createdAt_gt_2024-01-01'],
-        ]);
-
-        $this->assertCount(2, $params->filters);
-        $this->assertSame('type', $params->filters[0]['field']);
-        $this->assertSame('createdAt', $params->filters[1]['field']);
-        $this->assertSame('2024-01-01', $params->filters[1]['value']);
-    }
-
-    public function test_fromArray_withNestedField_parsesCorrectly(): void
-    {
-        $params = QueryParams::fromArray(['filter' => 'total.amount_gt_100']);
-
-        $this->assertSame('total.amount', $params->filters[0]['field']);
-        $this->assertSame('gt', $params->filters[0]['operator']);
-        $this->assertSame('100', $params->filters[0]['value']);
     }
 
     public function test_apply_withEmptyParams_returnsUnchangedUri(): void
@@ -349,8 +303,8 @@ class QueryParamsTest extends TestCase
     public function test_apply_withMultipleFilters_addsAllFilters(): void
     {
         $params = QueryParams::create()
-            ->withFilter('type', 'eq', 'refund')
-            ->withFilter('createdAt', 'gt', '2024-01-01');
+            ->withFilter('type', QueryFilterOperator::EQ, 'refund')
+            ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01');
         $uri = new Uri('/transactions');
 
         $result = $params->apply($uri);
@@ -374,8 +328,8 @@ class QueryParamsTest extends TestCase
         $params = QueryParams::create()
             ->withPageToken('page2')
             ->withLimit(100)
-            ->withFilter('type', 'eq', 'sale')
-            ->withFilter('state', 'in', 'authorized,captured');
+            ->withFilter('type', QueryFilterOperator::EQ, 'sale')
+            ->withFilter('state', QueryFilterOperator::IN, 'authorized,captured');
 
         $this->assertSame('page2', $params->pageToken);
         $this->assertSame(100, $params->limit);
@@ -388,7 +342,7 @@ class QueryParamsTest extends TestCase
         $modified = $original
             ->withPageToken('token')
             ->withLimit(50)
-            ->withFilter('type', 'eq', 'sale');
+            ->withFilter('type', QueryFilterOperator::EQ, 'sale');
 
         $this->assertTrue($original->isEmpty());
         $this->assertFalse($modified->isEmpty());

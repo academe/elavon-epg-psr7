@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use DateTimeImmutable;
@@ -26,12 +28,6 @@ class PaymentLink implements DataTransferObject
 {
     use SerializesData;
 
-    // Normalized properties (objects)
-    public readonly ?DebtorAccount $debtorAccount;
-
-    /** @var array<string>|null */
-    public readonly ?array $status;
-
     public function __construct(
         // Response-only fields
         public readonly ?string $href = null,
@@ -44,7 +40,9 @@ class PaymentLink implements DataTransferObject
         public readonly ?DateTimeImmutable $cancelledAt = null,
         public readonly ?string $cancelledBy = null,
         public readonly ?int $conversionCount = null,
-        ?array $status = null,
+        /** @var array<PaymentLinkStatus>|null */
+        #[ArrayOf(PaymentLinkStatus::class)]
+        public readonly ?array $status = null,
 
         // Request/Response fields
         public readonly ?string $account = null,
@@ -56,7 +54,7 @@ class PaymentLink implements DataTransferObject
         public readonly ?string $description = null,
         public readonly ?Money $total = null,
         public readonly ?Money $salesTax = null,
-        DebtorAccount|array|null $debtorAccount = null,
+        public readonly ?DebtorAccount $debtorAccount = null,
         public readonly ?string $orderReference = null,
         public readonly ?string $shopperEmailAddress = null,
         public readonly ?string $shopper = null,
@@ -64,16 +62,6 @@ class PaymentLink implements DataTransferObject
         public readonly ?string $customReference = null,
         public readonly ?CustomFields $customFields = null,
     ) {
-        // Normalize DebtorAccount object
-        $this->debtorAccount = match (true) {
-            $debtorAccount instanceof DebtorAccount => $debtorAccount,
-            is_array($debtorAccount) => DebtorAccount::fromData($debtorAccount),
-            default => null,
-        };
-
-        // Normalize status array
-        $this->status = $status;
-
         $this->validate();
     }
 
@@ -128,10 +116,9 @@ class PaymentLink implements DataTransferObject
 
         // Validate status values
         if ($this->status !== null) {
-            $validStatuses = ['active', 'completed', 'cancelled', 'expired'];
             foreach ($this->status as $statusValue) {
-                if (!in_array($statusValue, $validStatuses, true)) {
-                    throw new InvalidArgumentException("Invalid status value: {$statusValue}");
+                if (!$statusValue instanceof PaymentLinkStatus) {
+                    throw new InvalidArgumentException('Status array must contain PaymentLinkStatus enum values');
                 }
             }
         }

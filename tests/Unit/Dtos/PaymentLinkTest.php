@@ -6,6 +6,7 @@ namespace Academe\Elavon\Epg\Psr7\Tests\Unit\Dtos;
 
 use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
 use Academe\Elavon\Epg\Psr7\Dtos\PaymentLink;
+use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use DateTimeImmutable;
@@ -93,7 +94,7 @@ class PaymentLinkTest extends TestCase
         $this->assertSame('ORD-67890', $paymentLink->orderReference);
         $this->assertSame('shopper@example.com', $paymentLink->shopperEmailAddress);
         $this->assertSame('https://api.example.com/shoppers/s123', $paymentLink->shopper);
-        $this->assertSame(['active'], $paymentLink->status);
+        $this->assertSame([PaymentLinkStatus::ACTIVE], $paymentLink->status);
         $this->assertTrue($paymentLink->useStoredPaymentMethod);
         $this->assertSame('CUST-REF-111', $paymentLink->customReference);
         $this->assertSame(['field1' => 'value1'], $paymentLink->customFields->all());
@@ -213,9 +214,9 @@ class PaymentLinkTest extends TestCase
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid status value: invalid_status');
+        $this->expectExceptionMessage('Status array must contain PaymentLinkStatus enum values');
 
-        // Act
+        // Act - passing a string instead of PaymentLinkStatus enum
         new PaymentLink(
             total: Money::USD(1000),
             expiresAt: $expiresAt,
@@ -267,7 +268,7 @@ class PaymentLinkTest extends TestCase
         $this->assertSame('50000', $paymentLink->total->getAmount());
         $this->assertSame('Payment Link for Invoice', $paymentLink->description);
         $this->assertSame('alice@example.com', $paymentLink->shopperEmailAddress);
-        $this->assertSame(['active', 'completed'], $paymentLink->status);
+        $this->assertSame([PaymentLinkStatus::ACTIVE, PaymentLinkStatus::COMPLETED], $paymentLink->status);
     }
 
     public function test_toData_withMinimalData_returnsArray(): void

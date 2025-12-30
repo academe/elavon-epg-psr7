@@ -7,10 +7,21 @@ namespace Academe\Elavon\Epg\Psr7\Dtos;
 use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\Dtos\AchPayment;
 use Academe\Elavon\Epg\Psr7\Dtos\Contact;
+use Academe\Elavon\Epg\Psr7\Dtos\DebtorAccount;
+use Academe\Elavon\Epg\Psr7\Dtos\DeviceInteraction;
+use Academe\Elavon\Epg\Psr7\Dtos\DoAutoCaptureAfter;
 use Academe\Elavon\Epg\Psr7\Dtos\Failure;
+use Academe\Elavon\Epg\Psr7\Dtos\HistoryEntry;
+use Academe\Elavon\Epg\Psr7\Dtos\PartialAuthorization;
+use Academe\Elavon\Epg\Psr7\Dtos\PointOfInteraction;
 use Academe\Elavon\Epg\Psr7\Dtos\ShopperStatement;
+use Academe\Elavon\Epg\Psr7\Dtos\Signature;
 use Academe\Elavon\Epg\Psr7\Dtos\Surcharge;
+use Academe\Elavon\Epg\Psr7\Dtos\ThreeDSecure;
+use Academe\Elavon\Epg\Psr7\Dtos\VerificationResults;
+use Academe\Elavon\Epg\Psr7\Enums\CredentialOnFileType;
 use Academe\Elavon\Epg\Psr7\Enums\MarkupRateAnnotation;
 use Academe\Elavon\Epg\Psr7\Enums\MarketSegment;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentMethod;
@@ -22,6 +33,7 @@ use Academe\Elavon\Epg\Psr7\Enums\Source;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
 use Academe\Elavon\Epg\Psr7\Enums\TransactionType;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\ValueObjects\CustomFields;
 use Academe\Elavon\Epg\Psr7\ValueObjects\EmailAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\IpAddress;
 use Academe\Elavon\Epg\Psr7\ValueObjects\LanguageTag;
@@ -139,6 +151,59 @@ class Transaction implements DataTransferObject
         public readonly ?bool $isCaptured = null,
         public readonly ?bool $isSettled = null,
         public readonly ?bool $isPartiallyRefunded = null,
+
+        // Debtor account (MCC 6012/6050/6051)
+        public readonly ?DebtorAccount $debtorAccount = null,
+
+        // Subscription
+        public readonly ?string $subscription = null,
+
+        // Credential on file
+        public readonly ?CredentialOnFileType $credentialOnFileType = null,
+
+        // ACH payment details
+        public readonly ?AchPayment $achPayment = null,
+        public readonly ?string $storedAchPayment = null,
+        public readonly ?string $hostedAchPayment = null,
+
+        // Device and point of interaction
+        public readonly ?DeviceInteraction $deviceInteraction = null,
+        public readonly ?PointOfInteraction $pointOfInteraction = null,
+
+        // 3-D Secure
+        public readonly ?ThreeDSecure $threeDSecure = null,
+
+        // Transaction metadata
+        public readonly ?string $createdBy = null,
+        public readonly ?CustomFields $customFields = null,
+
+        // Transaction control flags
+        public readonly ?bool $isHeldForReview = null,
+        public readonly ?bool $isTotalAdjustable = null,
+        public readonly ?bool $doCapture = null,
+        public readonly ?DoAutoCaptureAfter $doAutoCaptureAfter = null,
+        public readonly ?bool $doSendReceipt = null,
+
+        // POS Signature
+        public readonly ?Signature $signature = null,
+
+        // Authorization details
+        public readonly ?PartialAuthorization $partialAuthorization = null,
+        public readonly ?string $authorizationCode = null,
+        public readonly ?string $issuerResponseCode = null,
+        public readonly ?VerificationResults $verificationResults = null,
+
+        // Paze payment
+        public readonly ?string $pazePayment = null,
+
+        // Related transactions
+        /** @var array<string>|null */
+        public readonly ?array $relatedTransactions = null,
+
+        // Transaction history
+        /** @var array<HistoryEntry>|null */
+        #[ArrayOf(HistoryEntry::class)]
+        public readonly ?array $history = null,
     ) {
         $this->validate();
     }

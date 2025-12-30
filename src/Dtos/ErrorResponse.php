@@ -18,16 +18,12 @@ class ErrorResponse implements DataTransferObject
 {
     use SerializesData;
 
-    /** @var ErrorDetail[] */
-    public readonly array $failures;
-
     public function __construct(
         public readonly ?int $status = null,
         /** @var ErrorDetail[]|null */
         #[ArrayOf(ErrorDetail::class)]
-        ?array $failures = null,
+        public readonly?array $failures = null,
     ) {
-        $this->failures = $failures ?? [];
     }
 
     /**

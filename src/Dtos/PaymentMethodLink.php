@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
 use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
 use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
 use Academe\Elavon\Epg\Psr7\Enums\PaymentLinkStatus;
@@ -43,6 +44,8 @@ class PaymentMethodLink implements DataTransferObject
         public readonly ?bool $doCancel = null,
         public readonly ?string $description = null,
         public readonly ?string $shopper = null,
+        /** @var array<PaymentLinkStatus>|null */
+        #[ArrayOf(PaymentLinkStatus::class)]
         public readonly ?array $status = null,
         public readonly ?string $customReference = null,
         public readonly ?CustomFields $customFields = null,

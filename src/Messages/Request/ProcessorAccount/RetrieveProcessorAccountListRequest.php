@@ -41,7 +41,7 @@ class RetrieveProcessorAccountListRequest implements RequestMessage
         $queryParams = $data['queryParams'] ?? new QueryParams();
 
         if (is_array($queryParams)) {
-            $queryParams = QueryParams::fromArray($queryParams);
+            $queryParams = QueryParams::fromData($queryParams);
         }
 
         return new static($queryParams);

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Academe\Elavon\Epg\Psr7\Dtos;
 
+use Academe\Elavon\Epg\Psr7\Attributes\ArrayOf;
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Academe\Elavon\Epg\Psr7\Enums\QueryFilterOperator;
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
@@ -16,43 +20,29 @@ use Psr\Http\Message\UriInterface;
  * ```php
  * $params = QueryParams::create()
  *     ->withLimit(50)
- *     ->withFilter('createdAt', 'gt', '2024-01-01')
- *     ->withFilter('type', 'eq', 'refund');
+ *     ->withFilter('createdAt', QueryFilterOperator::GT, '2024-01-01')
+ *     ->withFilter('type', QueryFilterOperator::EQ, 'refund');
  *
  * $uri = $params->apply($uri);
  * ```
  */
-class QueryParams
+class QueryParams implements DataTransferObject
 {
+    use SerializesData;
+
     private const MIN_LIMIT = 1;
     private const MAX_LIMIT = 200;
 
     /**
-     * Valid filter operators as defined in the Elavon API.
-     */
-    private const VALID_OPERATORS = [
-        'eq',       // equals
-        'ne',       // not equals
-        'gt',       // greater than
-        'ge',       // greater than or equal
-        'lt',       // less than
-        'le',       // less than or equal
-        'like',     // like pattern
-        'in',       // in list
-        'contains', // contains
-        'is',       // is (for null checks)
-        'isnot',    // is not (for null checks)
-    ];
-
-    /**
      * @param string|null $pageToken Opaque continuation token for pagination
      * @param int|null $limit Maximum items per page (1-200)
-     * @param array<int, array{field: string, operator: string, value: string}> $filters
+     * @param array<QueryFilter>|null $filters
      */
     public function __construct(
         public readonly ?string $pageToken = null,
         public readonly ?int $limit = null,
-        public readonly array $filters = []
+        #[ArrayOf(QueryFilter::class)]
+        public readonly ?array $filters = null
     ) {
         if ($limit !== null && ($limit < self::MIN_LIMIT || $limit > self::MAX_LIMIT)) {
             throw new InvalidArgumentException(
@@ -60,15 +50,9 @@ class QueryParams
             );
         }
 
-        foreach ($filters as $filter) {
-            if (! in_array($filter['operator'], self::VALID_OPERATORS, true)) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        "Invalid filter operator '%s'. Valid operators: %s",
-                        $filter['operator'],
-                        implode(', ', self::VALID_OPERATORS)
-                    )
-                );
+        foreach ($filters ?? [] as $filter) {
+            if (! $filter instanceof QueryFilter) {
+                throw new InvalidArgumentException('Filters must be QueryFilter instances');
             }
         }
     }
@@ -79,54 +63,6 @@ class QueryParams
     public static function create(): static
     {
         return new static();
-    }
-
-    /**
-     * Create from an array of raw query parameters.
-     *
-     * Accepts arrays in the format used by http_build_query:
-     * ['pageToken' => 'abc', 'limit' => 50, 'filter' => ['type_eq_refund', 'createdAt_gt_2024']]
-     *
-     * @param array<string, mixed> $params
-     */
-    public static function fromArray(array $params): static
-    {
-        $pageToken = isset($params['pageToken']) ? (string) $params['pageToken'] : null;
-        $limit = isset($params['limit']) ? (int) $params['limit'] : null;
-
-        $filters = [];
-        if (isset($params['filter'])) {
-            $filterStrings = is_array($params['filter']) ? $params['filter'] : [$params['filter']];
-            foreach ($filterStrings as $filterString) {
-                $parsed = self::parseFilterString((string) $filterString);
-                if ($parsed !== null) {
-                    $filters[] = $parsed;
-                }
-            }
-        }
-
-        return new static($pageToken, $limit, $filters);
-    }
-
-    /**
-     * Parse a filter string like "createdAt_gt_2024-01-01" into components.
-     *
-     * @return array{field: string, operator: string, value: string}|null
-     */
-    private static function parseFilterString(string $filter): ?array
-    {
-        // Match pattern: field_operator_value
-        // The operator is one of the known operators
-        $operatorPattern = implode('|', self::VALID_OPERATORS);
-        if (preg_match('/^(.+?)_(' . $operatorPattern . ')_(.+)$/', $filter, $matches)) {
-            return [
-                'field' => $matches[1],
-                'operator' => $matches[2],
-                'value' => $matches[3],
-            ];
-        }
-
-        return null;
     }
 
     /**
@@ -149,17 +85,13 @@ class QueryParams
      * Add a filter condition.
      *
      * @param string $field The field to filter on (e.g., 'createdAt', 'type', 'total.amount')
-     * @param string $operator The operator (eq, ne, gt, ge, lt, le, like, in, contains, is, isnot)
+     * @param QueryFilterOperator $operator The filter operator
      * @param string $value The value to filter by
      */
-    public function withFilter(string $field, string $operator, string $value): static
+    public function withFilter(string $field, QueryFilterOperator $operator, string $value): static
     {
-        $newFilters = $this->filters;
-        $newFilters[] = [
-            'field' => $field,
-            'operator' => $operator,
-            'value' => $value,
-        ];
+        $newFilters = $this->filters ?? [];
+        $newFilters[] = new QueryFilter($field, $operator, $value);
 
         return new static($this->pageToken, $this->limit, $newFilters);
     }
@@ -225,12 +157,7 @@ class QueryParams
         if (! empty($this->filters)) {
             $params['filter'] = [];
             foreach ($this->filters as $filter) {
-                $params['filter'][] = sprintf(
-                    '%s_%s_%s',
-                    $filter['field'],
-                    $filter['operator'],
-                    $filter['value']
-                );
+                $params['filter'][] = $filter->toFilterString();
             }
         }
 
