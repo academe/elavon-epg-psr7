@@ -49,7 +49,7 @@ class UpdateTransactionRequestTest extends TestCase
         $this->assertSame('txn123', $request->transactionId);
     }
 
-    public function test_build_withTransactionObject_createsPatchRequest(): void
+    public function test_build_withTransactionObject_createsPostRequest(): void
     {
         // Arrange
         $updates = new Transaction(
@@ -61,11 +61,11 @@ class UpdateTransactionRequestTest extends TestCase
         $psrRequest = $request->build();
 
         // Assert
-        $this->assertSame('PATCH', $psrRequest->getMethod());
+        $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
     }
 
-    public function test_fromData_withTransactionArray_createsPatchRequest(): void
+    public function test_fromData_withTransactionArray_createsPostRequest(): void
     {
         // Arrange
         $request = UpdateTransactionRequest::fromData([
@@ -80,7 +80,7 @@ class UpdateTransactionRequestTest extends TestCase
         $psrRequest = $request->build();
 
         // Assert
-        $this->assertSame('PATCH', $psrRequest->getMethod());
+        $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertStringEndsWith('/transactions/txn123', (string) $psrRequest->getUri());
     }
 

@@ -13,7 +13,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 /**
  * Update Shopper Request.
  *
- * Builds a PSR-7 request for updating a stored card (PATCH /shoppers/{id}).
+ * Builds a PSR-7 request for updating a shopper (POST /shoppers/{id}).
  *
  * This supports partial updates - only the fields provided will be updated.
  *
@@ -102,9 +102,9 @@ class UpdateShopperRequest implements RequestMessage
         $data = $this->shopper->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        // Build PSR-7 PATCH request
+        // Build PSR-7 POST request (updates use POST, not PUT/PATCH)
         return $this->getRequestFactory()
-            ->createRequest('PATCH', '/shoppers/' . $this->shopperId)
+            ->createRequest('POST', '/shoppers/' . $this->shopperId)
             ->withBody($this->getStreamFactory()->createStream($json));
     }
 }

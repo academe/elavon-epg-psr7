@@ -35,7 +35,7 @@ class UpdateShopperRequestTest extends TestCase
 
         $psr7Request = $request->build();
 
-        $this->assertSame('PATCH', $psr7Request->getMethod());
+        $this->assertSame('POST', $psr7Request->getMethod());
         $this->assertStringContainsString('/shoppers/shopper_789', (string) $psr7Request->getUri());
     }
 }

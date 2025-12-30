@@ -13,7 +13,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 /**
  * Update Transaction Request.
  *
- * Builds a PSR-7 request for updating an existing transaction (PATCH /transactions/{id}).
+ * Builds a PSR-7 request for updating an existing transaction (POST /transactions/{id}).
  *
  * Example usage with ElavonApiFactory:
  * ```php
@@ -102,8 +102,9 @@ class UpdateTransactionRequest implements RequestMessage
     {
         $body = json_encode($this->transaction->toData(), JSON_THROW_ON_ERROR);
 
+        // Build PSR-7 POST request (updates use POST, not PUT/PATCH)
         return $this->getRequestFactory()
-            ->createRequest('PATCH', '/transactions/' . $this->transactionId)
+            ->createRequest('POST', '/transactions/' . $this->transactionId)
             ->withBody($this->getStreamFactory()->createStream($body));
     }
 }

@@ -71,7 +71,7 @@ class UpdateStoredCardRequestTest extends TestCase
         $psrRequest = $request->build();
 
         // Assert
-        $this->assertSame('PATCH', $psrRequest->getMethod());
+        $this->assertSame('POST', $psrRequest->getMethod());
         $this->assertSame('/stored-cards/sc789', (string) $psrRequest->getUri());
     }
 

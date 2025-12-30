@@ -2,7 +2,7 @@
 
 PSR-7 HTTP messages and Data Transfer Object (DTO) classes for the Elavon Payment Gateway (EPG) API.
 
-The [API is described here](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference#section/Overview/Credentials) and the [OpenAPI descrition is here](./docs/openapi.json)
+The [API is described here](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference) and the [OpenAPI description is here](./docs/openapi.json)
 
 ## Overview
 

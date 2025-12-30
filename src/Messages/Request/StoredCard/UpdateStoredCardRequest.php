@@ -13,7 +13,7 @@ use Academe\Elavon\Epg\Psr7\Messages\Request\Concerns\HasPsr17Factories;
 /**
  * Update Stored Card Request.
  *
- * Builds a PSR-7 request for updating a stored card (PATCH /stored-cards/{id}).
+ * Builds a PSR-7 request for updating a stored card (POST /stored-cards/{id}).
  *
  * This supports partial updates - only the fields provided will be updated.
  *
@@ -98,9 +98,9 @@ class UpdateStoredCardRequest implements RequestMessage
         $data = $this->storedCard->toData();
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
-        // Build PSR-7 PATCH request
+        // Build PSR-7 POST request (updates use POST, not PUT/PATCH)
         return $this->getRequestFactory()
-            ->createRequest('PATCH', '/stored-cards/' . $this->storedCardId)
+            ->createRequest('POST', '/stored-cards/' . $this->storedCardId)
             ->withBody($this->getStreamFactory()->createStream($json));
     }
 }
