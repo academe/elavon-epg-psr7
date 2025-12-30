@@ -128,6 +128,15 @@ trait SerializesData
 
     /**
      * Parse money data from array format.
+     * 
+     * Expects array with 'currencyCode' key,
+     * and either 'amount' (decimal major units) or 'amountMinor' (integer minor units).
+     * The 'amountMinor' key is preferred if both are present.
+     * 
+     * Note that Money\Money treats "amount" as minor units, but the Elacon
+     * API treats "amount" as major units (decimal). Our conversion here is
+     * focused on what the API uses, with 'amountMinor' as a convenient alternative
+     * to use if your application has that value to hand.
      */
     private static function parseMoneyData(mixed $data): ?Money
     {
@@ -135,8 +144,21 @@ trait SerializesData
             return $data;
         }
 
-        if (!is_array($data) || !isset($data['amount'], $data['currencyCode'])) {
+        if (
+            !is_array($data)
+            || !isset($data['currencyCode'])
+            || (!isset($data['amount']) && !isset($data['amountMinor']))
+        ) {
             return null;
+        }
+
+        $currency = $data['currencyCode'] instanceof Currency
+            ? $data['currencyCode']
+            : new Currency($data['currencyCode']);
+
+        if (isset($data['amountMinor'])) {
+            // Amount in minor units (integer)
+            return new Money($data['amountMinor'], $currency);
         }
 
         $currencies = new ISOCurrencies();
@@ -144,9 +166,7 @@ trait SerializesData
 
         return $parser->parse(
             (string) $data['amount'],
-            $data['currencyCode'] instanceof Currency
-                ? $data['currencyCode']
-                : new Currency($data['currencyCode'])
+            $currency,
         );
     }
 
@@ -283,7 +303,7 @@ trait SerializesData
      * Returns a shallow array of all non-null properties.
      *
      * Unlike toData(), this does not recurse into nested objects - it returns
-     * the actual object instances, arrays, enums, etc. as-is.
+     * the DTO properties as an array of arrays, enums, etc. as defined.
      *
      * @return array<string, mixed>
      */
@@ -344,7 +364,8 @@ trait SerializesData
             return $value->format(DateTimeInterface::RFC3339_EXTENDED);
         }
 
-        // Money objects - convert to amount + currencyCode
+        // Money objects - convert to amount (major units) + currencyCode.
+        // Note: Elavon API expects amount in major units (decimal string).
         if ($value instanceof Money) {
             $currencies = new ISOCurrencies();
             $formatter = new DecimalMoneyFormatter($currencies);

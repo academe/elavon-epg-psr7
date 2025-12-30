@@ -90,7 +90,7 @@ class PinlessDebitCardSchemeTest extends TestCase
             'cardScheme' => 'Visa',
             'isEnabled' => true,
             'threshold' => [
-                'amount' => '50.00',
+                'amountMinor' => '5000', // Minor units
                 'currencyCode' => 'USD',
             ],
         ];
@@ -206,7 +206,7 @@ class PinlessDebitCardSchemeTest extends TestCase
             'cardScheme' => 'Visa',
             'isEnabled' => true,
             'threshold' => [
-                'amount' => '100.00',
+                'amount' => '100.00', // Major units
                 'currencyCode' => 'EUR',
             ],
         ];
