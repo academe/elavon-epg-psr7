@@ -1,0 +1,15 @@
+{
+  "type": "string",
+  "title": "OrderItemType",
+  "description": "Type, optional and defaults to 'unknown.'\n",
+  "example": "service",
+  "default": "unknown",
+  "enum": [
+    "goods",
+    "service",
+    "tax",
+    "shipping",
+    "discount",
+    "unknown"
+  ]
+}

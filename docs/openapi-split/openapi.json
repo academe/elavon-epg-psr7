@@ -1,0 +1,408 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "version": "2025-10-01",
+    "title": "Elavon Payment Gateway API",
+    "description": "[Elavon Payment Gateway Helpdesk](overview#support)\n\n# Overview\n\nThis HTTP REST API is available for developers integrating with EPG for eCommerce.\n\nThe EPG API follows standard HTTP authentication and response codes and you can use it with most HTTP clients.\n\nThe EPG API tries to be precise with its responses but lenient with its requests. EPG defaults to case insensitivity where case is irrelevant and will use coercion to try resolving unexpected types.\n\nThe system only accepts JSON request bodies and returns UTF-8 encoded JSON response bodies pretty-printed for readability and with most fields included for discoverability.\n\nThe system supports HATEOAS and provides references between resources as hypermedia links. If needed, the system can accept resource IDs in requests instead.\n\nWe take security seriously. Communication with EPG must be over secure HTTP using at least TLS 1.2. EPG suppresses sensitive fields on responses.\n\nPCI compliance is vital, and EPG provides options that allow integrators to reduce their own PCI scope.\n\n## Credentials\n\nTo get a user ID and password, integrators must send a primary email. Elavon sends an email that contains a link to the merchant UI as well as instructions on how to establish a password.\n\nAt the moment, Elavon onboards integrators into the EPG system manually, but the team is working on making this a more automated process in a future release.\n\n## Authentication\n\nEPG's API authenticates using the HTTP BASIC method over secure HTTP using at least Transport Layer Security (TLS) 1.2.\n\nIntegrators receive a pair of API keys: one public and one secret. Elavon manages and provides API keys - future updates will add self-management as an option.\n\nIt's safe to include your public key in client-side code. Only [hosted card](#tag/Hosted-Cards) resource operations authenticate using the public API key. Note that some fields will be suppressed when using a public API key. Check the [hosted card resource](#tag/Hosted-Cards) for details. Their format, when used in actual scenarios, start with 'pk_'. Example:\n\n```\npk_Yp6XYXCwkYjWFj9ByrhbDQD3\n```\n\nNever expose your secret key in client-side code. Only include your secret key in requests sent from a secure server. The API accepts the secret key for all requests. Their format, when used in actual scenarios, start with 'sk_'. Example:\n\n```\nsk_GWhvCdXCx6FWYhDqCRWVwtRk\n```\n\nElavon provides integrators with a unique merchant alias for each merchant they're acting on behalf of.\n\n## Errors\n\nError responses generally have a standard JSON response. A failures array provides more information to help the integrator diagnose the issue.\n\n4xx status codes show a problem with the request. Avoid retrying the request before addressing the problem. The following table shows some common failure codes and the causes that prompts them.\n\n| Failure Code         | Status Code | Failure Description |\n|----------------------|-------------|---------------------|\n| badRequest           | 400         | The request is invalid; correct all issues before resending. |\n| unauthorized         | 401         | A valid API key is required. |\n| forbidden            | 403         | Public API keys may only be used to create and retrieve hosted cards. |\n| notFound             | 404         | The requested resource does not exist. |\n| methodNotAllowed     | 405         | The given method may not be used here. Note that the X-HTTP-Method-Override header can only be used to override POST with either PATCH or DELETE |\n| notAcceptable        | 406         | The Accept request header must specify 'application/json;charset=UTF-8'; the Accept-Version request header if present, must reference a valid API version. |\n| conflict             | 409         | This request does not match the original, or the original request is still processing. |\n| lengthRequired       | 411         | Content-Length must be specified for this request. |\n| payloadTooLarge      | 413         | The request payload is too large. |\n| unsupportedMediaType | 415         | The Content-Type request header must specify 'application/json'|\n| tooManyRequests      | 429         | Too many requests have been received too quickly for this API key. |\n\n5xx status codes show an unexpected server problem. EPG may be unable to return a standard error response for these.\n\n## Versioning\n\nThe current version is \"1\" and future versions will always be integral numbers.\nThe client should specify which version they want using an \"Accept-Version\" request header. If not specified, EPG will assume the current version, but the response will include a \"Warning\" response header.\nThe response will always include a \"Version\" header to show the version used.\nExample:\n\n```\nAccept-Version: 1\n```\n\nElavon will avoid releasing versions with breaking changes. We will release some backwards compatible fixes without revising the version. If you are integrating with EPG, keep an eye out for some of the following changes:\n\n* New resources\n* New optional request query parameters and/or headers\n* New optional fields (Elavon may generate these randomly to ensure compliance)\n* Field order changes (while generally consistent, you should consider the order undefined)\n* New values for enumerated fields\n* New HTTP error codes\n* Changes to the format of IDs\n\n## Pagination\n\nWhen listing resources, the API returns a standard PagedList.\nThis resource includes links to the first and next pages in the list.\nIf next page is null, then there are no more items.\nThe default number of items for a page may vary by resource.\nTo override the default, use the \"limit\" query parameter. By default, the limit is 10. The maximum limit for a pagination object is 200 entries.\nThe \"items\" array contains the resources for the page.\n\nSee the example in Collection Filtering, where the filter \"limit=2\" indicates a limit of 2.\n\n## Collection Filtering\n\nCertain resources have the option to apply filters.\nTo specify a filter, provide one or more query parameters where the name starts with \"filter\" and the value is \"fieldName_operator_value\".\nCheck the [operations](#section/Overview/Operations) to see which fields support filtering and what operators each field supports.\nWhen using more than one filter, the resource must match every one of them.\n\nPossible operators include:\n* eq (equals)\n* ne (not equals)\n* gt (greater than)\n* ge (greater than or equal)\n* lt (less than)\n* le (less than or equal)\n* like\n* in\n* contains\n* is\n* isnot\n\nWhen filtering a field of type \"URL resource\", the value should be an ID (e.g. 6xxFwvM8BqmM6T6DcF3DyTB3).\n\nWhen filtering a field of type \"timestamp string\", format the value as an [RFC3339 Date/Time](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14) in the UTC time zone.\nThe date/time separators, time section, seconds, milliseconds and Zulu time zone designator are all optional.\n\nExample:\n\n```sh\ncurl -X GET \\\n  \"https://api.eu.convergepay.com/transactions?filter=type_eq_refund&filter=createdAt_gt_2020&limit=2\" \\\n  -u 963myjmWbtt2DQgVpGyxcdW9:sk_GWhvCdXCx6FWYhDqCRWVwtRk \\\n  -H 'Accept-Version: 4' \\\n```\n\nThe previous example lists transactions via GET {endpoint}/transactions to retrieve all transactions created after the start of 2020.\n\nThe following sections support filters:\n\n* [Retrieve Accounts](#operation/RetrieveAccounts)\n* [Retrieve Payment Links](#operation/RetrievePaymentLinks)\n* [Retrieve Payment Session](#operation/RetrievePaymentSession)\n* [Retrieve Transactions](#operation/RetrieveTransactions)\n* [Retrieve Notifications](#operation/RetrieveNotifications)\n* [Retrieve Shoppers](#operation/RetrieveShoppers)\n\n## Values\n\n**Resource ID**\n\n<!-- Is this really necessary? Any updates to resource ID's like this should probably result in a version update and list the changes in the change log. -->\n\nA unique string assigned as an identifier to individual resources. Each resource ID omits vowels to avoid confusing characters (O vs 0, for example).\nTreat Resource IDs as opaque strings with a 256 character limit when storing them.\n\n**Resource URL**\n\nA URL to an endpoint that will respond with the contents of an individual resource instance.\nUnder each resource, a dropdown menu displays the available endpoints.\n\n**Timestamps**\n\nTimestamps use [RFC3339 Date/Time](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14) format with the UTC time zone (e.g. \"2018-02-01T05:10:20.152Z\").\n\n**Currency**\n\nEPG represents currency amounts as strings using the natural or base units of the currency.\nA period is the decimal separator when the value needs one (e.g. 99,95€ would be \"99.95\").\n\n## Custom Reference / Custom Fields\n\nSome resources accept integrator defined arbitrary custom fields.\nEPG does not use these fields for any operations. The API stores these fields with the associated resource and returns them when you request the resource.\n\nCustom field names and values must not exceed 64 and 1024 characters, respectively.\n\nAs integrators have their own resources, these should be identified on the integrator side and only optionally provided to Elavon for cross-referencing purposes.\n\n## Operations\n\nEach resource will have an ID that identifies it within a resource collection.\n\nEPG uses commonly accepted HTTP methods to perform standard CRUD operations on resources (where allowed) using consistent resource paths.\n\n| Operation | HTTP Request                      | Successful Status Code |\n|-----------|-----------------------------------|------------------------|\n| Create    | POST {resource-collection}        | 201 Created            |\n| Retrieve  | GET {resource-collection}/{id}    | 200 OK                 |\n| Retrieve  | GET {resource-collection}         | 200 OK                 |\n| Update    | POST {resource-collection}/{id}   | 200 OK                 |\n| Delete    | DELETE {resource-collection}/{id} | 204 No Content         |\n\nCreate operations will return the created resource.\n\n### HTTP Success vs. Transaction Success\n\nNote that when creating and authorizing a transaction, EPG returns a 201 to show the transaction request processed, even if the transaction itself was declined. When creating transactions, use the `state` property of the Transaction to check whether EPG authorized or declined the transaction. If the transaction declined, the `failures` property provides an array of causes.\n\n### Deleting Resources\n\nIf the DELETE method is not allowed from the client, make a POST request instead with the optional request header \"X-HTTP-Method-Override: DELETE\".\n\nThe request for an update operation should only include those fields that have changed. To remove a field set its value to null.\n\n### CORS\n\n**Only** hosted card operations support Cross-Origin Resource Sharing (CORS) requests from a browser. Initiate all\n  other operations from a secure server.\n\n| Resources            | Create                                           | Retrieve                                          | Update                                   | List                                   | Delete                   |\n|----------------------|--------------------------------------------------|---------------------------------------------------|-----------------------|------------------|--------------------------------------|\n| Merchants            |                                                  | [GET /merchants/{id}](#operation/RetrieveMerchant)|                                          |[GET /merchants](#operation/RetrieveMerchants)|\n| Processor Accounts   |                                                  | [GET /processor-accounts/{id}](#operation/RetrieveProcessorAccount) |                        |                                        |\n| Terminals            |                                                  | [GET /terminals/{id}](#operation/RetrieveTerminal)<br/>[GET /terminals/{id}/provisioning-codes](#operation/RetrieveProvisioningCode) |                        |[GET /terminals](#operation/RetrieveTerminals)<br/>[GET /terminals/{id}/emv-keys](#operation/RetrieveEmvKeys) |                                        |    \n| Orders               | [POST /orders](#operation/CreateOrder)           | [GET /orders/{id}](#operation/RetrieveOrder)      | [POST /orders/{id}](#operation/UpdateOrder) | [GET /orders](#operation/RetrieveOrders)|\n| Payment Links        | [POST /payment-links](#operation/CreatePaymentLink)| [GET /payment-links/{id}](#operation/RetrievePaymentLink)| [POST /payment-links/{id}](#operation/UpdatePaymentLink)| [GET /payment-links](#operation/RetrievePaymentLinks)  |\n| Payment Link Events  | [POST /payment-link-events](#operation/CreatePaymentLinkEvent)| [GET /payment-link-events/{id}](#operation/RetrievePaymentLinkEvent)|                                       | [GET /payment-link-events](#operation/RetrievePaymentLinkEvents)  |\n| Payment Sessions     | [POST /payment-sessions](#operation/CreatePaymentSession)| [GET /payment-sessions/{id}](#operation/RetrievePaymentSession)                      |                                        |                                                         |\n| Payment Method Links        | [POST /payment-method-links](#operation/CreatePaymentMethodLink)| [GET /payment-method-links/{id}](#operation/RetrievePaymentMethodLink)| [POST /payment-method-links/{id}](#operation/UpdatePaymentMethodLink)| [GET /payment-method-links](#operation/RetrievePaymentMethodLinks)  |\n| Payment Method Sessions     | [POST /payment-method-sessions](#operation/CreatePaymentMethodSession)| [GET /payment-method-sessions/{id}](#operation/RetrievePaymentMethodSession)| [POST /payment-method-sessions/{id}](#operation/UpdatePaymentMethodSession) | [GET /payment-method-sessions](#operation/RetrievePaymentMethodSessions) |\n| Apple Pay Payment Sessions | [POST /apple-pay-payment-sessions](#operation/CreateApplePayPaymentSession)|                       |                                        |                                                         |\n| Hosted Cards         | [POST /hosted-cards](#operation/CreateHostedCard)| [GET /hosted-cards/{id}](#operation/RetrieveHostedCard) | [POST /hosted-cards/{id}](#operation/UpdateHostedCard)|                 |\n| Hosted ACH Payments  | [POST /hosted-ach-payments](#operation/CreateHostedAchPayment)| [GET /hosted-ach-payments/{id}](#operation/RetrieveHostedAchPayment) |                 |                 |    \n| HsmCard              | [POST /hsm-cards](#operation/CreateHsmCard)| [GET /hsm-cards/{id}](#operation/RetrieveHsmCard) |                                          |                 |\n| Forex Advices        | [POST /forex-advices](#operation/CreateForexAdvice)| [GET /forex-advices/{id}](#operation/RetrieveForexAdvice)|                            |                                         |                     |\n| Transactions         | [POST /transactions](#operation/CreateTransaction)<br/>[POST /transactions/{id}/email-receipt-requests](#operation/CreateEmailReceiptRequest) | [GET /transactions/{id}](#operation/RetrieveTransaction)| [POST /transactions/{id}](#operation/UpdateTransaction)| [GET /transactions](#operation/RetrieveTransactions)   |\n| Apple Pay Payments   | [POST /apple-pay-payments](#operation/CreateApplePayPayment)| [GET /apple-pay-payments/{id}](#operation/RetrieveApplePayPayment)|                                        |                                        |\n| Google Pay Payments  | [POST /google-pay-payments](#operation/CreateGooglePayPayment)| [GET /google-pay-payments/{id}](#operation/RetrieveGooglePayPayment)|                                        |                                        |\n| Paze Payments        | [POST /paze-payments](#operation/CreatePazePayPayment)| [GET /paze-payments/{id}](#operation/RetrievePazePayPayment)|                                        |                                        |\n| Surcharge Advices    | [POST /surcharge-advices](#operation/CreateSurchargeAdvice)| [GET /surcharge-advices/{id}](#operation/RetrieveSurchargeAdvice)|                                        |                                        |\n| Refund Surcharge Advices  | [POST /refund-surcharge-advices](#operation/CreateRefundSurchargeAdvice)| [GET /refund-surcharge-advices/{id}](#operation/RetrieveRefundSurchargeAdvice)|                                        |                                        |\n| Batches              |                                                  | [GET /batches/{id}](#operation/RetrieveBatch)     |                                          | [GET /batches](#operation/RetrieveBatches)|\n| Shoppers             | [POST /shoppers](#operation/CreateShopper)        | [GET /shoppers/{id}](#operation/RetrieveShopper)<br>[GET /shoppers/{id}/storedCard](#operation/RetrieveShoppersStoredCards)| [POST/shoppers/{id}](#operation/UpdateShopper)| [GET /shoppers](#operation/RetrieveShoppers) | [DELETE /shoppers/{id}](#operation/DeleteShopper) |\n| Stored Cards         | [POST /stored-cards](#operation/CreateStoredCard) | [GET /stored-cards/{id}](#operation/RetrieveStoredCard) | [POST /stored-cards/{id)](#operation/UpdateStoredCard)|            | [DELETE /stored-cards/{id}](#operation/DeleteStoredCard)\n| Stored ACH Payments  | [POST /stored-ach-payments](#operation/CreateStoredAchPayment) | [GET /stored-ach-payments/{id}](#operation/RetrieveStoredAchPayment) | [POST /stored-ach-payments/{id)](#operation/UpdateStoredAchPayment)|            | [DELETE /stored-ach-payments/{id}](#operation/DeleteStoredAchPayment)\n| Plans                | [POST /plans](#operation/CreatePlan)              | [GET /plans/{id}](#operation/RetrievePlan)       | [POST /plans/{id}](#operation/UpdatePlan)| [GET /plans](#operation/RetrievePlans) | [DELETE /plans/{id}](#operation/DeletePlan)\n| Subscriptions        | [POST /subscriptions](#operation/CreateSubscription) | [GET /subscriptions/{id}](#operation/RetrieveSubscription)| [POST /subscriptions/{id}](#operation/UpdateSubscription)| [GET /subscriptions](#operation/RetrieveSubscription)\n| Notifications        |                                                   | [GET /notifications/{id}](#operation/RetrieveNotification) |                                | [GET /notifications](#operation/RetrieveNotifications)|\n| Total Adjustments    | [POST /total-adjustments](#operation/CreateTotalAdjustment) | [GET /total-adjustments/{id}](#operation/RetrieveTotalAdjustment) |  | [GET transactions/{id}/total-adjustments](#operation/RetrieveTotalAdjustments) |\n| Manual Batches   | [POST /manual-batches](#operation/CreateManualBatch) | [GET /manual-batches/{id}](#operation/RetrieveManualBatch) | [POST /manual-batches/{id}](#operation/UpdateManualBatch) | [GET manual-batches](#operation/RetrieveManualBatches) |\n\n## Endpoint Health Check\n\nTo easily check if the API endpoint is live, simply send an unauthenticated GET request on the /health path. A 200 OK response with no content indicates a healthy API endpoint.\n\n```\nGET {{API Endpoint}}/health\n```\n\n# Getting Started\n\nTo learn more, read other EPG documentation:\n* [Integration Guide](overview#getting-started) - helps you integrate with EPG and understand the API\n\n# Changelog\n\n## 2025-10-01\n\n* __Resources__\n\n  Added [ManualBatch](#tag/Manual-Batches) resource.\n\n  Updated the following resources:\n\n  - [Account](#tag/Accounts) - New field: autoSettleAt.\n  - [ApplePayPayment](#tag/Apple-Pay-Payments) - New field: account.\n  - [ForexAdvice](#tag/Forex-Advices) - New field: account.\n  - [GooglePayPayment](#tag/Google-Pay-Payments) - New field: account.\n  - [Merchant](#tag/Merchants) - New field: friendlyName.\n  - [Notification](#tag/Notifications) - New field: customReference.\n  - [PaymentSession](#tag/Payment-Sessions) - New field: autoSettleAt.\n  - [ProcessorAccount](#tag/Processor-Accounts) - New fields: legalName and friendlyName.\n  - [Subscription](#tag/Subscriptions) - New fields: surchargeAdvice, initialSurchargeAdvice, and surcharge.\n  - [SurchargeAdvice](#tag/Surcharge-Advices) - New fields: googlePayPayment, applePayPayment, pazePayment, and account.\n  - [Transaction](#tag/Transactions) - New fields: doAutoCaptureAfter and manualBatch.\n\n* __Types__\n\n  Added the following types: AutoSettleAt, DoAutoCaptureAfter, and SubscriptionSurcharge.\n\n* __Enums__\n\n  Updated the following enum:\n\n  - DeviceFormat - New value: roamGenericTdes\n\n## 2025-07-17\n\n* __Resources__\n\n  Added the following resources: [HostedAchPayment](#tag/Hosted-ACH-Payments), [StoredAchPayment](#tag/Stored-ACH-Payments), and [TotalAdjustment](#tag/Total-Adjustments)\n\n  Updated the following resources:\n\n  - [Batches](#tag/Batches) - Added ability to filter batches.\n  - [Forex Advices](#tag/Forex-Advices) - New field: rateProviderName.\n  - [HSM Cards](#tag/Hsm-Cards) - New field: deviceInteraction.\n  - [Payment Sessions](#tag/Payment-Sessions) - New fields:  hostedAchPayment, storedAchPayment, and tip.\n  - [Processor Accounts](#tag/Processor-Accounts) - New fields: debitSteering, pinlessDebit, and isStandaloneRefundEnabled.\n  - [Shoppers](#tag/Shoppers) - New field: defaultStoredAchPayment.\n  - [Subscription](#tag/Subscriptions) - New field: storedAchPayment.\n  - [Surcharge Advice](#tag/Surcharge-Advices) - New field: shopperInteraction.\n  - [Transaction](#tag/Transactions) - New fields: achPayment, hostedAchPayment, storedAchPayment, rateProviderName, purchaserReference, marketSegment, isTotalAdjustable, and tip.\n\n* __Types__\n\n  Added the following types: AchPayment, DebitSteering, PinlessDebit, PinlessDebitCardScheme\n\n* __Enums__\n\n  Added the following enums:  AchAccountType (savingsPersonal, checkingPersonal, checkingBusiness) and DebitSteeringPreference (none, global, usCommonDebit)\n\n  Updated the following enums:\n\n  - EventType - New values: totalAdjustmentAuthorized, totalAdjustmentDeclined, transactionTotalAdjustment\n  - MarketSegment - New value: restaurant\n  - PaymentMethod - New value: ACH\n  - PaymentMethodOrigin: New values: ACH, Unknown wallet\n  - ReourceType - New value: totalAdjustment\n\n* Typographical fixes.\n\n## 2025-05-29\n\n* __Resources__\n\n  Updated the following resources:\n\n  - [Terminal](#tag/Terminals) - New fields: provisionedAt and transactedAt.\n\n## 2025-03-15\n\n* __Resources__\n\n  Added the following resources:\n\n  - PaymentMethodLink\n  - PaymentMethodSession\n\n  Updated the following resources:\n\n  - [Merchant](#tag/Merchants) - Added ability to list merchants.\n  - [Payment Links](#tag/Payment-Links) - New fields: useStoredPaymentMethod and status.\n  - [Payment Sessions](#tag/Payment-Sessions) - New fields: url and useStoredPaymentMethod.\n  - [Stored Cards](#tag/Stored-Cards) - New fields:  paymentMethodLink and paymentMethodSession.\n  - [Surcharge Advices](#tag/Forex-Advices) - New field: hsmCard.\n  - [Transactions](#tag/Transactions) - New fields: processorBatchReference, invoiceNumber, and shipppingDate.\n\n* __Types__\n\n  Deprecated threeDSecureV1.\n\n  Updated the following types:\n\n  - ThreeDSecure - Removed transactionId.\n  - VerificationResults - Removed threeDSecureV1.\n\n* __Enums__\n\n  Added PaymentLinkStatus.\n\n  Updated TransactionAdvice - added consumerMultiUseVirtualCard.\n\nAdded [Endpoint Health Check](#section/Overview/Endpoint-Health-Check).\n\n## 2025-02-04\n\n* __Filters__\n  \n  Support for like, in, contains, is, and isnot operators.\n  \n  Added new filters when retrieving the resources below.\n\n  - [Accounts](#tag/Accounts) - processorAccounts_contains_id\n  - [Payment Links](#tag/Payment-Links) - customReference_eq_string\n  - [Shoppers](#tag/Shoppers) - customReference_eq_string\n  - [Transactions](#tag/Transactions) - paymentGroup_eq_id, terminal_eq_id, description_eq|like_string, total.amount_eq|ge|gt|le|lt_amount, card.holderName_eq|like_string, salesTax.amount_eq|ge|gt|le|lt_amount, tip.amount_eq|ge|gt|le|lt_amount, card.scheme_eq_string, paymentMethod_eq_string, paymentMethodOrigin_eq_string, createdBy_eq_string, state_in_string, parentTransaction_eq|is|isnot_id, doCapture_eq_boolean\n\n## 2024-11-06\n\n* __Resources__\n\n  Added the following resources:\n\n  - [Paze Payments](#tag/Paze-Payments)\n  - [Terminals](#tag/Terminals)\n  - [Hsm Cards](#tag/Hsm-Cards)\n  - [Email Receipt Request](#tag/Transactions/operation/CreateEmailReceiptRequest)\n\n  Updated the following resources:\n\n  - [Forex Advices](#tag/Forex-Advices) - New field: hsmCard.\n  - [Hosted Cards](#tag/Hosted-Cards) - Deprecated: threeDSecureV1.\n  - [Merchant](#tag/Merchants) - New field: regions.\n  - [Payment Sessions](#tag/Payment-Sessions) - New fields: pazePayment and doReset.\n  - [Processor Accounts](#tag/Processor-Accounts) - New fields: marketSegment, region, languageTag, idDccEnabled, isMccEnabled, surcharging, and fieldPolicies.\n  - [Stored Cards](#tag/Stored-Cards) - New fields:  shopperInteraction and credentialOnFileType.\n  - [Surcharge Advices](#tag/Forex-Advices) - New field: hsmCard.\n  - [Transactions](#tag/Transactions) - New fields: processorDirective, terminal, hsmCard, deviceInteraction, pointOfInteraction, signature, partialAuthorization, and pazePayment.\n\n* __Types__\n\n  Added the following types:\n  \n  - DeviceInteraction\n  - EncryptedData\n  - Emv\n  - EmvKey\n  - EmvKeys\n  - PinEncryptedData\n  - PointOfInteraction\n  - ProcessorAccountFieldPolicies\n  - ProcessorAccountTransactionFieldPolicies\n  - ProcessorAccountTransactionPostalOrSecurityCodePolicies\n  - PartialAuthorization\n  - ProvisioningCode\n  - SalesTaxEntry\n  - Signature\n\n  Updated the following type:\n  \n  - VerificationResults - Deprecated: threeDSecureV1.\n  \n  Deprecated the following type:\n  \n  - ThreeDSecureV1\n\n## 2024-05-22\n\n* __Resources__\n\n  Added the following resources:\n\n  - [Refund Surcharge Advices](#tag/Refund-Surcharge-Advices)\n  - [Surcharge Advices](#tag/Surcharge-Advices)\n\n  Updated the following resources:\n\n  - [Payment Sessions](#tag/Payment-Sessions) - Added surchargeAdvice as a new field.\n  - [Transactions](#tag/Transactions) - Added refundSurchargeAdvice, surcharge, and surchargeAdvice as new fields.\n\n* __Types__\n\n  Added the following type:\n  - Surcharge\n\n## 2024-03-20\n\n  Updated the following resources:\n\n  - [Accounts](#tag/Accounts) - Added logoUrl to identify the URL of the merchant's logo.\n  - [Forex Advices](#tag/Forex-Advices) - Added hostedCard to allow hosted card support.\n  - [Payment Sessions](#tag/Payment-Sessions) - Added allowedPaymentMethods and allowedPaymentMethodOrigins to specify the payment methods and origins allowed to be shown in the hosted payments page.\n\n## 2023-09-26\n\n* __Resources__\n\n  Updated the following resources:\n\n  - [Payment Sessions](#tag/Payment-Sessions) - Added blik as a new field.\n  - [Processor Accounts](#tag/Processor-Accounts) - Added supportedPaymentMethods and supportedPaymentMethodOrigins as new fields.    \n  - [Transactions](#tag/Transactions) - Added blik and refundableUntil as new fields.\n\n* __Types__\n\n  Added Blik as a new type.\n  \n  Updated the following types:\n\n  - PanToken - Added cardExpirationMonth and cardExpirationYear.\n  - PaymentMethod - Added BLIK.\n  - PaymentMethodOrigin - Added BLIK.\n  - TransactionState - Added authorizationPending.   \n\n## 2023-06-20\n\n* __Resources__\n\n  Added the following resources:\n\n  - [Apple Pay Payment Sessions](#tag/Apple-Pay-Payment-Sessions)\n  - [Apple Pay Payments](#tag/Apple-Pay-Payments)\n  - [Google Pay Payments](#tag/Google-Pay-Payments)\n\n  Updated the following resources:\n\n  - [Hosted Cards](#tag/Hosted-Cards) - Deprecated threeDSecureV1 and returns a validation error if provided.\n  - [Payment Links](#tag/Payment-Links) - returnUrl can now be used.\n  - [Payment Sessions](#tag/Payment-Sessions)\n    - Added applePayPayment, googlePayPayment as new fields.\n    - originUrl now allows multiple space-delimited URLs.\n  - [Transactions](#tag/Transactions) - Added applePayPayment, googlePayPayment, authorizationExpiresAt, paymentMethod, and paymentMethodOrigin as new fields.\n\n* __Types__\n\n  Updated the following types:\n  - Card - Added paymentAccountReference.\n  - CredentialOnFileType\n    - Added subscription, unscheduledCardholderInitiated, and unscheduledMerchantInitiated\n    - Deprecated initial and unscheduled.\n  - VerificationResults - Added cryptogramSecurity.\n\n## 2023-02-22\n\n* __New Resource__\n\n  - [Payment Link Events](#tag/Payment-Link-Events) - A payment link event is automatically created by the system when certain actions occur concerning a payment link. Examples are transactions made from a payment link or email reminders sent to the customers.\n\n## 2022-07-29\n\n* __Filters__\n\n  Added the following filters when retrieving the resources below.\n\n  - [Notifications](#tag/Notifications) - createdAt_ge|gt|le|lt_timestamp\n  - [Payment Links](#tag/Payment-Links) - account_eq_id\n  - [Payment Sessions](#tag/Payment-Sessions) - customReference_eq_string, paymentLink_eq_id\n  - [Transactions](#tag/Transactions) - customReference_eq_string, paymentLink_eq_id\n\n## 2021-11-02\n\n* __[Subscriptions](#tag/Subscriptions)__\n\n  Added doSendReceipt flag in the Subscriptions resource that controls whether an email receipt will be sent for each transaction generated from that subscription.\n\n* __[Payment Sessions](#tag/Payment-Sessions)__\n\n  Enabled configuration of expiresAt flag in the Payment Sessions resource.\n\n## 2021-06-01\n\n* __[Accounts](#tag/Accounts)__\n\n  Accounts enable the configuration of features across resources\n\n  Accounts are supported on these resources\n  - [Batches](#tag/Batches)\n  - [PaymentSessions](#tag/Payment-Sessions)\n  - [PaymentLinks](#tag/Payment-Links)\n  - [Subscriptions](#tag/Subscriptions)\n  - [Transactions](#tag/Transactions)\n\n* __[Plan Lists](#tag/Plan-Lists)__\n\n  Plans are assignable to Plan Lists\n\n* __[PAN Tokens](#tag/Pan-Tokens)__\n\n  A PAN Token can be created from a Personal Account Number\n\n  PAN Tokens are accepted as an input instead of a PAN (and returned as an output) on the Card object for the following resources:\n  - [Stored Card](#tag/Stored-Cards)\n  - [Transaction](#tag/Transactions)\n  - [Forex Advice](#tag/Forex-Advices)\n\n* __\"Authorise Only\" Transactions__\n\n  [Payment Link](#tag/Payment-Links) transactions can now be set to \"Authorise Only\" using the new doCapture property\n\n  [Payment Session](#tag/Payment-Sessions) transactions can now be set to \"Authorise Only\" using the new doCapture property\n"
+  },
+  "servers": [
+    {
+      "url": "https://uat.api.converge.eu.elavonaws.com",
+      "description": "EPG SandBox"
+    },
+    {
+      "url": "https://api.eu.convergepay.com",
+      "description": "EPG Production"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "Resources",
+      "tags": [
+        "Merchants",
+        "Processor Accounts",
+        "Terminals",
+        "Accounts",
+        "Plan Lists",
+        "Orders",
+        "Payment Links",
+        "Payment Link Events",
+        "Payment Sessions",
+        "Payment Method Links",
+        "Payment Method Sessions",
+        "Apple Pay Payment Sessions",
+        "Total Adjustments",
+        "Hosted Cards",
+        "Hosted ACH Payments",
+        "Hsm Cards",
+        "Forex Advices",
+        "Transactions",
+        "Apple Pay Payments",
+        "Google Pay Payments",
+        "Paze Payments",
+        "Surcharge Advices",
+        "Refund Surcharge Advices",
+        "Batches",
+        "Manual Batches",
+        "Shoppers",
+        "Stored Cards",
+        "Stored ACH Payments",
+        "Plans",
+        "Subscriptions",
+        "Notifications"
+      ]
+    },
+    {
+      "name": "Other",
+      "tags": [
+        "Pan Tokens"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Batches",
+      "description": "Authorized payments awaiting settlement.\n\nElavon Payment Gateway clusters captured transactions into a batch and submits them together for settlement and funding at the end of the day.\n"
+    },
+    {
+      "name": "Manual Batches",
+      "description": "Allows you to mark transactions for manual settlement.\n\nYou can specify a list of transactions IDs, or send an empty list to mark all eligible transactions.\n\nA transaction is eligible for manual settlement batching when it meets ALL of the following criteria:\n\n* **Transaction status**: Marked for capture (`doCapture` = true)\n* **Review status**: Not held for review (`isHeldForReview` = false)\n* **Batch assignment**: Not currently assigned to any settlement batch (both `manualSettlementBatchId` and `settlementBatchId` must be null)\n* **Ownership**: Belongs to the specified merchant ID and account ID in the request\n* **Transaction type**: Matches the specified transaction type (typically SALE). REFUND and VOID are not supported.\n* **Creation date**: Transaction timestamp falls within the specified date range (typically the last 30 days)\n* **Authorization validity**: Has a non-null expiration timestamp that's after the end date of the query range\n* **Payment method**: Not processed using excluded payment methods (`BLIK`, `POLISH_BANK_TRANSFER`, or `ACH`)\n"
+    },
+    {
+      "name": "Hosted Cards",
+      "description": "Hosted cards are single-use cards. This captures all payment details so you can reference them in a transaction without having your server handle card details.\n\nEach hosted card is valid for 30 minutes after creation.\n\nYou can use this resource to create a transaction using the [Transactions](#tag/Transactions) endpoint.\n"
+    },
+    {
+      "name": "Hsm Cards",
+      "description": "The HsmCard resource is used to hold terminal card data so the data is only needed to be decrypted once. The resource expires as soon as it is used in a transaction or in approximately 30 minutes. By using this resource, multiple calls can be made to the server during terminal operations without having to decrypt the data again.\n"
+    },
+    {
+      "name": "Stored Cards",
+      "description": "Persistent card information stored by Elavon Payment Gateway about one of a Merchant's Shopper. This information must be the child of a [Shopper resource](#tag/Shoppers).\n"
+    },
+    {
+      "name": "Merchants",
+      "description": "Information on a Merchant's account.\n\nThis is a read-only resource.\n"
+    },
+    {
+      "name": "Orders",
+      "description": "An order provides information on how much the shopper will have to pay at checkout. Orders also provide options to track:\n\n- What a shopper is paying for\n- What the shipping address is\n- The shopper's email address\n\n## Orders and Hosted Payments Pages\n\nInitiating a [Payment Session](#tag/Payment-Sessions) requires an order to inform how much the payment session should charge to the customer.\n\n## Hosted Payments Data Capture\n\nElavon Payment Gateway captures the `shipTo` and `shopperEmail` properties of a submitted Order. If the Hosted Payments Form is set to display Shipping Address fields to the customer, these fields will automatically populate with the values in the `shipTo` property.\n"
+    },
+    {
+      "name": "Payment Sessions",
+      "description": "A payment session drives the way a transaction will process and sets the presentation for a customer's checkout.\n\n## Creating a Payment Session\n\nTo create a payment session, you will need to have an [Order](#tag/Orders) resource created ahead of time. This Order will inform the payment session on the amount to charge the customer and can pass information on the customer's shipping address to pre-populate fields in the hosted payment form.\n\nSome of the data passed during creation are used to control the payment session behavior. Other fields are updated after the payment session has been created to collect various data needed to create the transaction while the HPP is being used by the customer.\n\nThe following fields can be potentially set after creating the payment session as the customer makes various selections:\n- expiresAt\n- paymentLink\n- forexAdvice\n- surchargeAdvice\n- transaction\n- hostedCard\n- storedCard\n- googlePayPayment\n- applePayPayment\n- pazePayment\n- blik\n- shopper\n- debtorAccount\n- threeDSecure\n- shopperEmailAddress\n- billTo\n- shipTo\n- shopperLanguageTag\n- doReset\n- createdBy\n\nHowever, it is unlikely that these fields need to be set when creating the payment session.\n\n## Checkout Experience\n\nThe payment session sets which display mode a customer will view while checking out.\n\nAfter creating a payment session, you will need to call the payment session using the lightbox script or redirect the customer to the URL of your hosted payments form. For more information on how to do this, refer to the [Hosted Payments Redirect](hosted-payments-redirect) page.\n\nDepending on the information passed when creating the payment session, the checkout page your customer sees will pre-fill billing and shipping address fields.\n\nFor more information on how the payment session displays to the customer, refer to the [Hosted Payment Page Integration Guide](hosted-payments-overview).\n"
+    },
+    {
+      "name": "Payment Method Links",
+      "description": "A payment link contains a URL that may be provided to shoppers in order to take payment using the hosted payment page.\n"
+    },
+    {
+      "name": "Payment Method Sessions",
+      "description": "A payment session securely collects payment details from the shopper using our hosted payment page and sends them directly to our platform, allowing the merchant to minimize PCI DSS scope.\n"
+    },
+    {
+      "name": "Apple Pay Payment Sessions",
+      "description": "This resource contains the elements necessary for initiating a transaction with Apple. The Apple Pay payment session is returned after validation of the supplied fields.\n"
+    },
+    {
+      "name": "Processor Accounts",
+      "description": "Merchant profiles can have more than one processor account. At the moment, Elavon Payment Gateway currently supports one at a time. Each processor account tracks and processes transactions separately.\n\nMultiple processor accounts are a good solution for merchants with the following use cases.\n\n  - Merchants with multiple stores may have a processor account for each store.\n  - Merchants tracking ecommerce separately from card-present purchases.\n\nThis resource is read only.\n"
+    },
+    {
+      "name": "Transactions",
+      "description": "Payment transactions.\n- Create a 'sale' transaction to take payment.\n- Create a 'void' transaction and reference a parent 'sale' transaction to reverse a transaction that hasn't yet settled.\n- If settled, a 'refund' transaction should be created instead.\nCheck the 'isAuthorized' field to see whether or not the transaction was authorized, regardless of type. If not authorized, check the 'failures' array to determine why.\n\n## Sale\n\nA sale transaction authorizes a transaction with a Shopper's card. An authorized transaction will settle as part of batch settlement.\n\n## Void\n\nOnly unsettled transactions are voidable. When you void a transaction, it will not be settled as part of batch settlement and will not be charged to the shoppers card.\n\n## Refund\n\nAfter a transaction has settled, you must refund it to return the settled amount of money (or a portion of the amount) to the customer.\n"
+    },
+    {
+      "name": "Apple Pay Payments",
+      "description": "The Apple Pay Payments resources capture all of the components necessary for processing a payment with the Apple Pay digital wallet. The payment token contains the encrypted payment data needed for transaction processing along with the elements needed for decryption. This cannot be used in conjunction with a Google Pay payment. It may also be used when creating a payment session. The only fields of the request to pass in the Card field is the Contact info, if available.\n"
+    },
+    {
+      "name": "Google Pay Payments",
+      "description": "The Google Pay Payments resources capture all the card information that is encrypted within a transaction that uses Google Pay as a form of payment. This cannot be used in conjunction with an Apple Pay payment. It may also be used when creating a payment session. Pass in the encrypted Google Pay string in the token variable and get the decrypted value in the form of a card object. The only field to pass in the card field in the request is the Contact info.\n"
+    },
+    {
+      "name": "Paze Payments",
+      "description": "This captures all the card information that is encrypted within a transaction that uses PAZE as a form of payment. This cannot be used in conjunction with an ApplePay payment or a GooglePay payment. It may also be used when creating a payment session. Pass in the encrypted PAZE string in the token variable and get the decrypted value in the form of a card object.\n"
+    },
+    {
+      "name": "Surcharge Advices",
+      "description": "A surcharge advice calculates the amount of surcharge and provides an adjusted transaction total for specific card numbers. This feature must be enabled for the merchant.\n\nAt least one of the following is required to create a surcharge advice request: storedCard, hostedCard, cardNumber, or panToken. If the card entered in the request cannot be surcharged, an error code is returned. You will not be able to collect surcharge using that card. You can either request a new surcharge advice with a new card, or proceed with that card and not collect surcharge with it.\n\nNote that surcharge advice support is for NA merchants only.\n"
+    },
+    {
+      "name": "Refund Surcharge Advices",
+      "description": "A refund surcharge advice calculates the amount of refundable surcharge and provides an adjusted refund transaction amount using the previous surcharge advice and the original parent transaction. This feature must be enabled for the merchant.\n\nNote that refund surcharge advice support is for NA merchants only.\n"
+    },
+    {
+      "name": "Forex Advices",
+      "description": "A foreign exchange advice. Forex Advices track the exchange rate of the currency the card is transacting in against the home currency of the card. Forex advices are only available for merchant accounts with Dynamic Currency Conversion enabled.\n\nAt least one of the following is required to create a forex advice request: storedCard, hostedCard, cardNumber, or panToken.\n\n## Creating a sale with a forex advice\n\nAfter creating a forex advice resource, you can use it to initiate a sale using the customer card issuer's currency. To do this, create a transaction with the [Transactions](#tag/Transactions) endpoint and include the forex advice [Resource URL](#section/Overview/Values) in your request. There is no need to set the total amount of transaction if a forex advice resource URL is already included in the request.\n"
+    },
+    {
+      "name": "Payment Links",
+      "description": "A payment link is a link to a Checkout page that a merchant can send to a customer. A payment link has a set expiry timestamp - after this timestamp, the link becomes unusable.\n\nA payment link cannot remain valid for longer than 1 year.\n\nA canceled or expired payment link cannot be used to create a transaction.\n"
+    },
+    {
+      "name": "Payment Link Events",
+      "description": "A payment link event is automatically created by the system when certain actions occur concerning a payment link. Examples are transactions made from a payment link or email reminders sent to the customers.\n\nA payment link event can only be created if the corresponding payment link is active and has not yet reached its conversion limit. In addition, only payment link events with the 'reminderSent' type can be manually created.\n"
+    },
+    {
+      "name": "Subscriptions",
+      "description": "A Subscription applies a [Plan](#tag/Plans) to the [Stored Card](#tag/Stored-Cards) of a [Shopper](#tag/Shoppers). This association applies the instructions for a multi-payment transaction detailed in a Plan.\n"
+    },
+    {
+      "name": "Plans",
+      "description": "A Plan defines a total for a customer to pay and an interval for the bill to repeat.\n"
+    },
+    {
+      "name": "Plan Lists",
+      "description": "A PlanList is associated with an Account.\n\nCannot be updated.\n"
+    },
+    {
+      "name": "Shoppers",
+      "description": "A Shopper resource is a collection of stored information about a shopper. After making a Shopper, Elavon Payment Gateway can display this information in the Elavon Payment Gateway UI and use it for the following use cases:\n\n- Saving frequently used shopper data.\n- Pre-populating fields in the checkout form for a [Payment Session](#tag/Payment-Sessions).\n- Providing information for a [Transaction](#tag/Transactions).\n- Saving payment information for the shopper as a [Stored Card](#tag/Stored-Cards) resource.\n- Applying subscriptions to shoppers with a [Stored Card](#tag/Stored-Cards).\n"
+    },
+    {
+      "name": "Notifications",
+      "description": "A Notification provides details about potentially interesting events happening within our platform\n\nA Notification can also be asynchronously delivered to a Webhook endpoint on your server\n"
+    },
+    {
+      "name": "Accounts",
+      "description": "A merchant may have multiple accounts.\n\nCannot be updated through the API. Accounts are managed in the Back Office UI.\n"
+    },
+    {
+      "name": "Pan Tokens",
+      "description": "Convert one or more PANs into PanTokens\n\n- You can exchange a Personal Account Number (card number) for a PanToken which is a tokenized version of the data that can safely be stored\n- This allows your integration to stay PCI compliant\n- A PanToken is unique to an individual merchantId and PAN combination\n"
+    },
+    {
+      "name": "Total Adjustments",
+      "description": "Make an adjustment to the total and/or tip of an existing transaction. The transaction resource must have *isTotalAdjustable* set to true.\n"
+    },
+    {
+      "name": "Stored ACH Payments",
+      "description": "An ACH payment that is stored for a shopper and may be used for recurring payments."
+    },
+    {
+      "name": "Hosted ACH Payments",
+      "description": "A single-use ACH payment. This captures all payment details so they may be subsequently referenced in a\ntransaction. A hosted payment page integration approach requires the use of this resource.\n"
+    }
+  ],
+  "security": [
+    {
+      "BasicAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BasicAuth": {
+        "description": "The merchant alias should be provided as the username. The appropriate API key should be provided as the password.",
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  },
+  "paths": {
+    "/accounts/{id}": {
+      "$ref": "paths/accounts_{id}.json"
+    },
+    "/accounts": {
+      "$ref": "paths/accounts.json"
+    },
+    "/apple-pay-payment-sessions": {
+      "$ref": "paths/apple-pay-payment-sessions.json"
+    },
+    "/apple-pay-payments": {
+      "$ref": "paths/apple-pay-payments.json"
+    },
+    "/apple-pay-payments/{id}": {
+      "$ref": "paths/apple-pay-payments_{id}.json"
+    },
+    "/batches/{id}": {
+      "$ref": "paths/batches_{id}.json"
+    },
+    "/batches": {
+      "$ref": "paths/batches.json"
+    },
+    "/forex-advices": {
+      "$ref": "paths/forex-advices.json"
+    },
+    "/forex-advices/{id}": {
+      "$ref": "paths/forex-advices_{id}.json"
+    },
+    "/google-pay-payments": {
+      "$ref": "paths/google-pay-payments.json"
+    },
+    "/google-pay-payments/{id}": {
+      "$ref": "paths/google-pay-payments_{id}.json"
+    },
+    "/hosted-ach-payments": {
+      "$ref": "paths/hosted-ach-payments.json"
+    },
+    "/hosted-ach-payments/{id}": {
+      "$ref": "paths/hosted-ach-payments_{id}.json"
+    },
+    "/hosted-cards": {
+      "$ref": "paths/hosted-cards.json"
+    },
+    "/hosted-cards/{id}": {
+      "$ref": "paths/hosted-cards_{id}.json"
+    },
+    "/hsm-cards": {
+      "$ref": "paths/hsm-cards.json"
+    },
+    "/hsm-cards/{id}": {
+      "$ref": "paths/hsm-cards_{id}.json"
+    },
+    "/manual-batches": {
+      "$ref": "paths/manual-batches.json"
+    },
+    "/manual-batches/{id}": {
+      "$ref": "paths/manual-batches_{id}.json"
+    },
+    "/merchants": {
+      "$ref": "paths/merchants.json"
+    },
+    "/merchants/{id}": {
+      "$ref": "paths/merchants_{id}.json"
+    },
+    "/plan-lists/{id}": {
+      "$ref": "paths/plan-lists_{id}.json"
+    },
+    "/plan-lists": {
+      "$ref": "paths/plan-lists.json"
+    },
+    "/notifications/{id}": {
+      "$ref": "paths/notifications_{id}.json"
+    },
+    "/notifications": {
+      "$ref": "paths/notifications.json"
+    },
+    "/orders": {
+      "$ref": "paths/orders.json"
+    },
+    "/orders/{id}": {
+      "$ref": "paths/orders_{id}.json"
+    },
+    "/pan-tokens": {
+      "$ref": "paths/pan-tokens.json"
+    },
+    "/payment-links": {
+      "$ref": "paths/payment-links.json"
+    },
+    "/payment-links/{id}": {
+      "$ref": "paths/payment-links_{id}.json"
+    },
+    "/payment-links/{id}/payment-link-events": {
+      "$ref": "paths/payment-links_{id}_payment-link-events.json"
+    },
+    "/payment-link-events": {
+      "$ref": "paths/payment-link-events.json"
+    },
+    "/payment-link-events/{id}": {
+      "$ref": "paths/payment-link-events_{id}.json"
+    },
+    "/payment-sessions/{id}": {
+      "$ref": "paths/payment-sessions_{id}.json"
+    },
+    "/paze-payments": {
+      "$ref": "paths/paze-payments.json"
+    },
+    "/paze-payments/{id}": {
+      "$ref": "paths/paze-payments_{id}.json"
+    },
+    "/plans": {
+      "$ref": "paths/plans.json"
+    },
+    "/plans/{id}": {
+      "$ref": "paths/plans_{id}.json"
+    },
+    "/processor-accounts": {
+      "$ref": "paths/processor-accounts.json"
+    },
+    "/payment-sessions": {
+      "$ref": "paths/payment-sessions.json"
+    },
+    "/payment-method-links": {
+      "$ref": "paths/payment-method-links.json"
+    },
+    "/payment-method-links/{id}": {
+      "$ref": "paths/payment-method-links_{id}.json"
+    },
+    "/payment-method-sessions": {
+      "$ref": "paths/payment-method-sessions.json"
+    },
+    "/payment-method-sessions/{id}": {
+      "$ref": "paths/payment-method-sessions_{id}.json"
+    },
+    "/processor-accounts/{id}": {
+      "$ref": "paths/processor-accounts_{id}.json"
+    },
+    "/refund-surcharge-advices": {
+      "$ref": "paths/refund-surcharge-advices.json"
+    },
+    "/refund-surcharge-advices/{id}": {
+      "$ref": "paths/refund-surcharge-advices_{id}.json"
+    },
+    "/shoppers": {
+      "$ref": "paths/shoppers.json"
+    },
+    "/shoppers/{id}": {
+      "$ref": "paths/shoppers_{id}.json"
+    },
+    "/shoppers/{id}/stored-cards": {
+      "$ref": "paths/shoppers_{id}_stored-cards.json"
+    },
+    "/stored-ach-payments": {
+      "$ref": "paths/stored-ach-payments.json"
+    },
+    "/stored-ach-payments/{id}": {
+      "$ref": "paths/stored-ach-payments_{id}.json"
+    },
+    "/stored-cards": {
+      "$ref": "paths/stored-cards.json"
+    },
+    "/stored-cards/{id}": {
+      "$ref": "paths/stored-cards_{id}.json"
+    },
+    "/subscriptions": {
+      "$ref": "paths/subscriptions.json"
+    },
+    "/subscriptions/{id}": {
+      "$ref": "paths/subscriptions_{id}.json"
+    },
+    "/surcharge-advices": {
+      "$ref": "paths/surcharge-advices.json"
+    },
+    "/surcharge-advices/{id}": {
+      "$ref": "paths/surcharge-advices_{id}.json"
+    },
+    "/terminals": {
+      "$ref": "paths/terminals.json"
+    },
+    "/terminals/{id}": {
+      "$ref": "paths/terminals_{id}.json"
+    },
+    "/terminals/{id}/emv-keys": {
+      "$ref": "paths/terminals_{id}_emv-keys.json"
+    },
+    "/terminals/{id}/provisioning-codes": {
+      "$ref": "paths/terminals_{id}_provisioning-codes.json"
+    },
+    "/transactions": {
+      "$ref": "paths/transactions.json"
+    },
+    "/transactions/{id}": {
+      "$ref": "paths/transactions_{id}.json"
+    },
+    "/transactions/{id}/email-receipt-requests": {
+      "$ref": "paths/transactions_{id}_email-receipt-requests.json"
+    },
+    "/transactions/{id}/total-adjustments": {
+      "$ref": "paths/transactions_{id}_total-adjustments.json"
+    },
+    "/total-adjustments": {
+      "$ref": "paths/total-adjustments.json"
+    },
+    "/total-adjustments/{id}": {
+      "$ref": "paths/total-adjustments_{id}.json"
+    }
+  }
+}

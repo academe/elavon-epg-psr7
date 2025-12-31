@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "SalesTaxDefaultEntryMethod",
+  "description": "",
+  "enum": [
+    "amount",
+    "percentage"
+  ]
+}

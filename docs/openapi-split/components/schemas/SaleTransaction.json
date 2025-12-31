@@ -1,0 +1,255 @@
+{
+  "title": "Sale Transaction",
+  "description": "Sale Transaction",
+  "allOf": [
+    {
+      "$ref": "./TransactionInput.json"
+    },
+    {
+      "properties": {
+        "source": {
+          "allOf": [
+            {
+              "$ref": "./Source.json"
+            }
+          ]
+        },
+        "processorAccount": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<ProcessorAccount>",
+          "description": "ProcessorAccount [Resource URL](#section/Overview/Values)"
+        },
+        "account": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<Account>",
+          "description": "Account [Resource URL](#section/Overview/Values). Defaults to merchant."
+        },
+        "total": {
+          "description": "Transaction total",
+          "allOf": [
+            {
+              "$ref": "./PositiveAmountAndCurrency.json"
+            }
+          ]
+        },
+        "salesTax": {
+          "type": "object",
+          "description": "Sales Tax",
+          "allOf": [
+            {
+              "$ref": "./NonNegativeAmountAndCurrency.json"
+            }
+          ]
+        },
+        "forexAdvice": {
+          "type": "string",
+          "format": "url",
+          "writeOnly": true,
+          "title": "ResourceURL<ForexAdvice>",
+          "description": "ForexAdvice [Resource URL](#section/Overview/Values) obtained through the Create ForexAdvice API call, not returned."
+        },
+        "surchargeAdvice": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<SurchargeAdvice>",
+          "description": "Surcharge Advice [Resource URL](#section/Overview/Values) obtained through the create surchargeAdvice API call.",
+          "writeOnly": true
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Description, which appears on the dashboard and might appear on receipts",
+          "example": "March 2017 Rent"
+        },
+        "shopperStatement": {
+          "description": "Dynamic overrides of what might appear on a shopper's statement",
+          "allOf": [
+            {
+              "$ref": "./ShopperStatement.json"
+            }
+          ]
+        },
+        "debtorAccount": {
+          "description": "Account information required for MCC 6012/6050/6051 merchants",
+          "allOf": [
+            {
+              "$ref": "./DebtorAccount.json"
+            }
+          ]
+        },
+        "customReference": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Optional reference provided by the merchant"
+        },
+        "shopperReference": {
+          "type": "string",
+          "maxLength": 255,
+          "example": "PO 4358",
+          "description": "Optional reference provided by the shopper, such as a purchase order"
+        },
+        "orderReference": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Optional order reference which we'll display in the merchant dashboard. We'll automatically copy this from a 'sale'"
+        },
+        "shopperInteraction": {
+          "$ref": "./ShopperInteraction.json"
+        },
+        "shopper": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<Shopper>",
+          "description": "Shopper [Resource URL](#section/Overview/Values)\n\nShopper, if applicable.\n"
+        },
+        "shipTo": {
+          "description": "Shipping contact details",
+          "allOf": [
+            {
+              "$ref": "./Contact.json"
+            }
+          ]
+        },
+        "shopperEmailAddress": {
+          "type": "string",
+          "example": "shopper@gmail.com",
+          "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+          "maxLength": 254
+        },
+        "shopperIpAddress": {
+          "type": "string",
+          "example": "10.9.234.22",
+          "description": "Shopper's IP address, useful for fraud detection"
+        },
+        "shopperLanguageTag": {
+          "type": "string",
+          "maxLength": 255,
+          "example": "en-GB",
+          "description": "Shopper's IETF language tag, useful for localising the receipt."
+        },
+        "shopperTimeZone": {
+          "type": "string",
+          "example": "Europe/Berlin",
+          "description": "Shopper's time zone, specified by the IANA Time Zone Database name.\n"
+        },
+        "order": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<Order>",
+          "description": "Order [Resource URL](#section/Overview/Values)"
+        },
+        "credentialOnFileType": {
+          "allOf": [
+            {
+              "$ref": "./CredentialOnFileType.json"
+            }
+          ]
+        },
+        "credentialOnFileData": {
+          "type": "string",
+          "maxLength": 29,
+          "description": "Value returned when creating an initial transaction for an integrator-managed card. This should be saved and set for succeeding transactions with the same integrator-managed card."
+        },
+        "card": {
+          "$ref": "./Card.json"
+        },
+        "hostedCard": {
+          "type": "string",
+          "format": "url",
+          "writeOnly": true,
+          "title": "ResourceURL<HostedCard>",
+          "description": "HostedCard [Resource URL](#section/Overview/Values) obtained through the Create HostedCard API call, not returned. Required for 'ecommerce' 'sale' transactions."
+        },
+        "storedCard": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<StoredCard>",
+          "description": "StoredCard [Resource URL](#section/Overview/Values)"
+        },
+        "achPayment": {
+          "description": "ACH payment details",
+          "allOf": [
+            {
+              "$ref": "./AchPayment.json"
+            }
+          ],
+          "readOnly": true
+        },
+        "storedAchPayment": {
+          "type": "string",
+          "format": "url",
+          "description": "StoredAchPayment [Resource URL](#section/Overview/Values)",
+          "title": "ResourceURL<StoredAchPayment>",
+          "readOnly": true
+        },
+        "hostedAchPayment": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<HostedAchPayment>",
+          "description": "HostedAchPayment [Resource URL](#section/Overview/Values)",
+          "readOnly": true
+        },
+        "blik": {
+          "writeOnly": true,
+          "allOf": [
+            {
+              "$ref": "./Blik.json"
+            }
+          ]
+        },
+        "paymentLink": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<PaymentLink>",
+          "description": "PaymentLink [Resource URL](#section/Overview/Values)"
+        },
+        "paymentSession": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<PaymentSession>",
+          "description": "PaymentSession [Resource URL](#section/Overview/Values)"
+        },
+        "threeDSecure": {
+          "description": "Additional data that's only needed for 3-D Secure version 2 processing.",
+          "allOf": [
+            {
+              "$ref": "./ThreeDSecure.json"
+            }
+          ]
+        },
+        "createdBy": {
+          "type": "string",
+          "maxLength": 255,
+          "example": "user@gmail.com",
+          "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question."
+        },
+        "customFields": {
+          "description": "Custom fields, an object containing arbitrary string values. Field names and values must not exceed 64 and 1024 characters, respectively.",
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        "doCapture": {
+          "type": "boolean",
+          "example": false,
+          "description": "If false, authorize only; if true (default), authorize and capture funds for settlement"
+        },
+        "doAutoCaptureAfter": {
+          "allOf": [
+            {
+              "$ref": "./DoAutoCaptureAfter.json"
+            }
+          ]
+        },
+        "doSendReceipt": {
+          "type": "boolean",
+          "example": false,
+          "description": "Send receipt to shopper's email address. Default value is based on the merchant's back office configuration."
+        }
+      }
+    }
+  ]
+}

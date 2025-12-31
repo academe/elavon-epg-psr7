@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfPlans",
+  "description": "Paged list of Plans",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of Plans",
+          "readOnly": true,
+          "items": {
+            "$ref": "./Plan.json"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "title": "DeviceInteraction",
+  "description": "Information when using a hardware terminal.",
+  "required": [
+    "posEntryCapabilities",
+    "isCardPresent",
+    "isAttendedTerminal",
+    "cardholderVerificationMethod",
+    "cardholderVerificationCapabilities",
+    "pinLengthCapability",
+    "cardDataOutputCapabilities",
+    "terminalOutputCapabilities",
+    "cardholderActivatedTerminalType",
+    "mobilePosAcceptanceDeviceType"
+  ],
+  "properties": {
+    "emv": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./Emv.json"
+        }
+      ]
+    },
+    "accountEntryMode": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./AccountEntryMode.json"
+        }
+      ]
+    },
+    "posEntryCapabilities": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./PosEntryCapability.json"
+        }
+      ]
+    },
+    "isCardPresent": {
+      "type": "boolean",
+      "description": ""
+    },
+    "isAttendedTerminal": {
+      "type": "boolean",
+      "description": ""
+    },
+    "cardholderVerificationMethod": {
+      "description": "Indicates how the terminal verified the customer.",
+      "allOf": [
+        {
+          "$ref": "./CardholderVerificationMethod.json"
+        }
+      ]
+    },
+    "cardholderVerificationCapabilities": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./CardholderVerificationCapability.json"
+        }
+      ]
+    },
+    "pinLengthCapability": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./PinLengthCapability.json"
+        }
+      ]
+    },
+    "cardDataOutputCapabilities": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./CardDataOutputCapability.json"
+        }
+      ]
+    },
+    "terminalOutputCapabilities": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./TerminalOutputCapability.json"
+        }
+      ]
+    },
+    "cardholderActivatedTerminalType": {
+      "description": "Indicates if terminal was unattended for soda machines, gas stations, etc ",
+      "allOf": [
+        {
+          "$ref": "./CardholderActivatedTerminalType.json"
+        }
+      ]
+    },
+    "mobilePosAcceptanceDeviceType": {
+      "description": "Indicates attributes of the mobile device if it is used as a terminal.",
+      "allOf": [
+        {
+          "$ref": "./MobilePosAcceptanceDeviceType.json"
+        }
+      ]
+    }
+  }
+}

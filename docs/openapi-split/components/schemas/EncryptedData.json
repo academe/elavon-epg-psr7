@@ -1,0 +1,16 @@
+{
+  "title": "EncryptedData",
+  "description": "",
+  "required": [
+    "deviceFormat"
+  ],
+  "properties": {
+    "deviceFormat": {
+      "allOf": [
+        {
+          "$ref": "./DeviceFormat.json"
+        }
+      ]
+    }
+  }
+}

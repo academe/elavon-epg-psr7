@@ -1,0 +1,8 @@
+{
+  "description": "API version.",
+  "required": true,
+  "schema": {
+    "type": "string",
+    "example": "1"
+  }
+}

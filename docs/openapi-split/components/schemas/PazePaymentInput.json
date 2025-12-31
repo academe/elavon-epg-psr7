@@ -1,0 +1,46 @@
+{
+  "title": "PazePaymentInput",
+  "description": "This captures all the card information that is encrypted within a transaction that uses PAZE as a form of payment. This cannot be used in conjunction with an ApplePay payment or a GooglePay payment. It may also be used when creating a payment session. Pass in the encrypted PAZE string in the token variable and get the decrypted value in the form of a card object.",
+  "required": [
+    "payloadId",
+    "sessionId"
+  ],
+  "properties": {
+    "card": {
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Google Pay payment info.",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "payloadId": {
+      "type": "string",
+      "example": "afbexyzf-021x-ca50-e22e-1d15abc2ec01",
+      "description": "An alphanumeric string returned from PAZE that refers to the current token and sessionId.",
+      "maxLength": 64
+    },
+    "sessionId": {
+      "type": "string",
+      "example": "pr9i793q4lwcqnr5123",
+      "description": "An alphanumeric string returned from PAZE that refers to the current token and payloadId.",
+      "maxLength": 255
+    },
+    "token": {
+      "type": "string",
+      "description": "The encrypted payment data in JWT format associated with the payload ID and session ID that is to be decrypted to gather the card info within"
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

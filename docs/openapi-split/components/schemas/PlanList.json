@@ -1,0 +1,50 @@
+{
+  "title": "PlanList",
+  "description": "A Plan list associated with an account",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PlanList>",
+      "description": "PlanList [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "f9g699w9v43r9gcp77y2bxq4rjcx",
+      "title": "Resource<PlanList>",
+      "description": "PlanList [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:33.567Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "name": {
+      "type": "string",
+      "example": "Sirius Cybernetics Corporation",
+      "description": "Name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional Description"
+    }
+  }
+}

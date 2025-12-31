@@ -1,0 +1,330 @@
+{
+  "description": "A payment session securely collects payment details from the shopper using our hosted payment page and sends them directly to our platform, allowing the merchant to minimize PCI DSS scope.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/payment-sessions/rd8y9xhx7qh9yj6r4vpxpqcv",
+      "format": "url",
+      "title": "ResourceURL<PaymentSession>",
+      "description": "PaymentSession [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "rd8y9xhx7qh9yj6r4vpxpqcv",
+      "title": "ResourceID<PaymentSession>",
+      "description": "PaymentSession [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "example": "2017-02-22T13:01:23.123Z",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp",
+      "example": "2017-02-22T13:11:23.123Z"
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "url": {
+      "type": "string",
+      "description": "URL that shoppers will use",
+      "readOnly": true
+    },
+    "order": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/orders/p7hxrvrpgfc68w6gm7q3b47y",
+      "format": "url",
+      "title": "ResourceURL<Order>",
+      "description": "Order [Resource URL](#section/Overview/Values) for which payment is being requested",
+      "readOnly": true
+    },
+    "allowedPaymentMethods": {
+      "type": "array",
+      "description": "Used to specify the payment methods allowed to be shown in the hosted payments page.",
+      "items": {
+        "$ref": "./PaymentMethod.json"
+      },
+      "readOnly": true
+    },
+    "allowedPaymentMethodOrigins": {
+      "type": "array",
+      "description": "The allowed origins of the payment methods listed in the allowedPaymentMethods field.",
+      "items": {
+        "$ref": "./PaymentMethodOrigin.json"
+      },
+      "readOnly": true
+    },
+    "paymentLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentLink>",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values)"
+    },
+    "salesTax": {
+      "type": "object",
+      "description": "Sales Tax",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "tip": {
+      "type": "object",
+      "description": "tip",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "forexAdvice": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/forex-advices/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<ForexAdvice>",
+      "description": "ForexAdvice [Resource URL](#section/Overview/Values)"
+    },
+    "surchargeAdvice": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<SurchargeAdvice>",
+      "description": "Surcharge Advice [Resource URL](#section/Overview/Values)"
+    },
+    "transaction": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/transaction/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values)"
+    },
+    "hostedCard": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/hosted-cards/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<HostedCard>",
+      "description": "HostedCard [Resource URL](#section/Overview/Values)"
+    },
+    "storedCard": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/stored-cards/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)"
+    },
+    "hostedAchPayment": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/hosted-ach-payments/1It7ipiNiDruyoFEJasinAfR",
+      "format": "url",
+      "title": "ResourceURL<HostedAchPayment>",
+      "description": "HostedAchPayment [Resource URL](#section/Overview/Values)"
+    },
+    "storedAchPayment": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/stored-sch-payments/splg4brigEdifrocukobruvi",
+      "format": "url",
+      "title": "ResourceURL<StoredAchPayment>",
+      "description": "StoredAchPayment [Resource URL](#section/Overview/Values)"
+    },
+    "googlePayPayment": {
+      "type": "string",
+      "example": "[ACM]",
+      "format": "url",
+      "description": "GooglePayPayment obtained through the create Google Pay payment API call. Required for 'ecommerce' 'sale' transactions."
+    },
+    "applePayPayment": {
+      "type": "string",
+      "example": "[ACM]",
+      "format": "url",
+      "description": "ApplePayPayment obtained through the create Apple Pay payment API call. Required for 'ecommerce' 'sale' transactions."
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment obtained through the create Paze payment API call. Required for 'ecommerce' 'sale' transactions."
+    },
+    "blik": {
+      "allOf": [
+        {
+          "$ref": "./Blik.json"
+        }
+      ]
+    },
+    "shopper": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/shoppers/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)"
+    },
+    "debtorAccount": {
+      "description": "Account information required for MCC 6012/6050/6051 merchants",
+      "allOf": [
+        {
+          "$ref": "./DebtorAccount.json"
+        }
+      ]
+    },
+    "threeDSecure": {
+      "description": "Additional data that's only needed for 3-D Secure version 2 processing.",
+      "allOf": [
+        {
+          "$ref": "./ThreeDSecure.json"
+        }
+      ]
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+      "maxLength": 254
+    },
+    "billTo": {
+      "description": "Billing contact details that will be used by default for the hosted card",
+      "allOf": [
+        {
+          "$ref": "./Contact.json"
+        }
+      ]
+    },
+    "shipTo": {
+      "description": "Shipping contact details",
+      "allOf": [
+        {
+          "$ref": "./Contact.json"
+        }
+      ]
+    },
+    "hppType": {
+      "description": "Hosted payments page type indicates the type of hosted payments page for the payment session, defaults to fullPageRedirect",
+      "allOf": [
+        {
+          "$ref": "./HppType.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "returnUrl": {
+      "type": "string",
+      "example": "https://merchant.com/return",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "description": "URL to redirect to after payment details are collected. Required for hppType = fullPageRedirect. Must be null for lightbox and HPF.",
+      "readOnly": true
+    },
+    "cancelUrl": {
+      "type": "string",
+      "example": "https://merchant.com/cancel",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "description": "URL to redirect to if the shopper cancels. Required for hppType = fullPageRedirect. Must be null for lightbox and HPF.",
+      "readOnly": true
+    },
+    "originUrl": {
+      "type": "string",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "description": "Origin where the hosted payment page will be embedded. Required if using the lightbox. Multiple origin URLs are allowed. Each URL must be separated by a space and each URL must follow the regex.",
+      "readOnly": true
+    },
+    "defaultLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Default IETF language tag, a tag that represents language names and countries, to be used in the Hosted Payment Page, such as en-GB meaning 'English (Great Britain)'.",
+      "example": "en-GB",
+      "readOnly": true
+    },
+    "shopperLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "The IETF language tag optionally chosen by the shopper in the Hosted Payment Page, which may vary from the defaultLanguageTag.",
+      "example": "en-GB"
+    },
+    "shopperInteraction": {
+      "$ref": "./ShopperInteraction.json"
+    },
+    "doCreateTransaction": {
+      "type": "boolean",
+      "default": false,
+      "description": "Determines whether or not a Hosted Payment Page will perform an end to end transaction. If set to 'true', information a cardholder submits into a hosted payment form will automatically be used to create a Transaction resource. If set to 'false', the information submitted through the hosted payment form will automatically be used to generate a [HostedCard resource](#tag/Hosted-Cards). This value defaults to false. For more information on using the hosted payment form, see the [integration guide](/docs/converge/hosted-payments-overview).\n\nIn addition, if set to 'false', then digital wallets are not prompted in the hosted payments page (HPP).\n",
+      "readOnly": true
+    },
+    "doCapture": {
+      "type": "boolean",
+      "default": true,
+      "description": "This value will be passed along to any transaction created later in the payment flow. See doCapture on transaction",
+      "readOnly": true
+    },
+    "doThreeDSecure": {
+      "type": "boolean",
+      "description": "Determines whether or not the HPP will perform 3-D secure validation",
+      "readOnly": true
+    },
+    "doReset": {
+      "type": "boolean",
+      "description": "Determines whether or not the HPP will be reset"
+    },
+    "useStoredPaymentMethod": {
+      "type": "boolean",
+      "example": true,
+      "readOnly": true,
+      "description": "When 'true', a shopper must be provided. The HPP will force the use of a stored payment method: \ncustomer will either pick an existing one (if applicable) or the payment information they \nenter will get saved to the associated shopper.\n\nWhen 'false', HPP will not present any existing stored payment methods to the customer and the \ncustomer will not be asked if they would like to save the payment method to their profile.\n\nWhen 'null' or not provided, if a shopper is associated with the payment session, the user will \nhave the option to select from any stored payment methods attached to their shopper record. They \nwill also be able to enter new payment information and optionally save it to their profile.\n"
+    },
+    "createdBy": {
+      "type": "string",
+      "description": "Who or what created the payment session?",
+      "maxLength": 255
+    },
+    "previousTransactions": {
+      "type": "array",
+      "description": "Previous transactions",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Transaction.json"
+      }
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

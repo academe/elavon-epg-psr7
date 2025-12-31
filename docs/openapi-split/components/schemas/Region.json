@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "Region",
+  "description": "",
+  "enum": [
+    "eu",
+    "na",
+    "unknown"
+  ]
+}

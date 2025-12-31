@@ -1,0 +1,22 @@
+{
+  "title": "AmountAndCurrency",
+  "description": "Represents currency",
+  "required": [
+    "amount",
+    "currencyCode"
+  ],
+  "properties": {
+    "amount": {
+      "type": "string",
+      "description": "[Currency](#section/Overview/Values) amount. At most 9 integer digits and at most 4 fractional digits.",
+      "example": "1.23"
+    },
+    "currencyCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "ISO 4217 three-letter currency code, a three-letter code where the first two letters are the same as the code for the country name, while the third letter often corresponds to the first letter of the currency name (e.g. USD for US dollar, CHF for Swiss franc, etc.)",
+      "example": "EUR"
+    }
+  }
+}

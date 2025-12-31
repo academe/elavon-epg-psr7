@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "TerminalOutputCapability",
+  "description": "",
+  "enum": [
+    "printer",
+    "display"
+  ]
+}

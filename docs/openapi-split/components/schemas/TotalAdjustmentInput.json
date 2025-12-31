@@ -1,0 +1,80 @@
+{
+  "title": "TotalAdjustmentInput",
+  "description": "An adjustment to the total and/or tip of an existing transaction. Check the 'isAuthorized' field to see whether or not the adjustment was authorized. If not authorized, check the 'failures' array  to determine why.",
+  "required": [
+    "transaction"
+  ],
+  "properties": {
+    "transaction": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/transactions/teKosOTAwec6blDRlD0iXeWo",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values), suppressed when a public API key is used"
+    },
+    "total": {
+      "description": "The cumulative new total amount.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "totalAdjustment": {
+      "description": "The positive or negative adjustment to the prior authorized amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "salesTax": {
+      "description": "The cumulative new sales tax.",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "salesTaxAdjustment": {
+      "description": "The positive or negative adjustment to the prior salesTax amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "tip": {
+      "description": "Tip amount.",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "tipAdjustment": {
+      "description": "The positive or negative adjustment to the prior tip amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "doCapture": {
+      "type": "boolean",
+      "description": "If false, authorize only; if true (default), authorize and capture funds for settlement."
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

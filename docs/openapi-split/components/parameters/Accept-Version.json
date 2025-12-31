@@ -1,0 +1,10 @@
+{
+  "name": "Accept-Version",
+  "in": "header",
+  "description": "API version requested by client.",
+  "schema": {
+    "type": "integer",
+    "format": "int32",
+    "example": 1
+  }
+}

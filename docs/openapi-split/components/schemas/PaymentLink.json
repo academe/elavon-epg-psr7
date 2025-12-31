@@ -1,0 +1,179 @@
+{
+  "type": "object",
+  "description": "A PaymentLink contains the details necessary to create a Transaction via HPP",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "description": "PaymentLink [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values). Suppressed when a public API key is used",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "url": {
+      "type": "string",
+      "format": "url",
+      "description": "The external URL which is shared with the card holder",
+      "readOnly": true
+    },
+    "returnUrl": {
+      "type": "string",
+      "format": "url",
+      "description": "URL to redirect to after payment details are collected.",
+      "readOnly": true,
+      "example": "https://merchant.com/return"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "createdBy": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Who or what created the payment link?",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp.",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "An expiration timestamp."
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "Cancellation timestamp",
+      "readOnly": true
+    },
+    "cancelledBy": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Who or what cancelled the payment link?",
+      "readOnly": true
+    },
+    "doCancel": {
+      "type": "boolean",
+      "description": "Cancel payment link. Defaults to false."
+    },
+    "doCapture": {
+      "type": "boolean",
+      "default": true,
+      "description": "This value will be passed along to any transaction created later in the payment flow. See doCapture on transaction",
+      "readOnly": true
+    },
+    "conversionCount": {
+      "type": "integer",
+      "description": "The number of authorized transactions created from this PaymentLink",
+      "readOnly": true
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Descriptive text indicating the purpose of the PaymentLink",
+      "readOnly": true
+    },
+    "total": {
+      "description": "Total payment amount",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "salesTax": {
+      "type": "object",
+      "description": "Sales Tax",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "debtorAccount": {
+      "description": "Account information required for MCC 6012/6050/6051 merchants",
+      "allOf": [
+        {
+          "$ref": "./DebtorAccount.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "orderReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional order reference which we'll display in the merchant dashboard.",
+      "readOnly": true
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+      "maxLength": 254,
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/shoppers/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)"
+    },
+    "status": {
+      "type": "array",
+      "description": "The  status of the paymentMethodLink.",
+      "readOnly": true,
+      "items": {
+        "$ref": "./PaymentLinkStatus.json"
+      }
+    },
+    "useStoredPaymentMethod": {
+      "type": "boolean",
+      "example": true,
+      "description": "When 'true', a shopper must be provided. The HPP will force the use of a stored payment method: \ncustomer will either pick an existing one (if applicable) or the payment information they \nenter will get saved to the associated shopper.\n\nWhen 'false', HPP will not present any existing stored payment methods to the customer and the \ncustomer will not be asked if they would like to save the payment method to their profile.\n\nWhen 'null' or not provided, if a shopper is associated with the payment session, the user will \nhave the option to select from any stored payment methods attached to their shopper record. They \nwill also be able to enter new payment information and optionally save it to their profile.\n"
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

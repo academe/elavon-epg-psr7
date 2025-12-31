@@ -1,0 +1,15 @@
+{
+  "type": "string",
+  "title": "CardholderActivatedTerminalType",
+  "description": "",
+  "enum": [
+    "notApplicable",
+    "limitedAmountTerminal",
+    "automatedDispensingMachine",
+    "selfServiceTerminal",
+    "inFlightCommerce",
+    "internet",
+    "transponder",
+    "remoteIndicator"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "description": "Media type of the response body.",
+  "required": true,
+  "schema": {
+    "type": "string",
+    "example": "application/json;charset=UTF-8"
+  }
+}

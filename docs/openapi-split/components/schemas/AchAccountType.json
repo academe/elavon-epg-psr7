@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "AchAccountType",
+  "description": "",
+  "enum": [
+    "savingsPersonal",
+    "checkingPersonal",
+    "checkingBusiness"
+  ]
+}

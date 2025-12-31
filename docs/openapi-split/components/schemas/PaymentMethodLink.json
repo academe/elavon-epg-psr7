@@ -1,0 +1,124 @@
+{
+  "type": "object",
+  "description": "A link containing a URL that may be provided to shoppers in order to capture payment method using the HPP without requiring a transaction.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/payament-method-links/q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+      "format": "url",
+      "title": "ResourceURL<PaymentMethodLink>",
+      "description": "PaymentMethodLink [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "93yx3m43dk7qchrb93b2m3mv7j63",
+      "title": "ResourceURL<PaymentMethodLink>",
+      "description": "Unique identifier assigned by server",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/yfv23vhdptrgd3c3dpg3khydw22f",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values),d",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values), defaults to Merchant",
+      "example": "https://uat.api.converge.eu.elavonaws.com/accounts/XrDXRBh9XHxwqQTj2Cmq7j49",
+      "readOnly": true
+    },
+    "url": {
+      "type": "string",
+      "description": "URL to send to shoppers",
+      "readOnly": true
+    },
+    "returnUrl": {
+      "type": "string",
+      "description": "URL to redirect to after payment details are collected",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "readOnly": true,
+      "example": "https://merchant.com/return"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:33.567Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "An expiration timestamp."
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "Cancellation timestamp",
+      "readOnly": true
+    },
+    "cancelledBy": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Who or what cancelled the payment link?"
+    },
+    "doCancel": {
+      "type": "boolean",
+      "description": "Cancel payment link. Defaults to false.",
+      "default": false,
+      "example": false
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Description of the payment.",
+      "example": "March 2017 Rent",
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/shoppers/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values). Unique identifier of Shopper's information.",
+      "readOnly": true
+    },
+    "status": {
+      "type": "array",
+      "description": "The  status of the paymentMethodLink.",
+      "readOnly": true,
+      "items": {
+        "$ref": "./PaymentLinkStatus.json"
+      }
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

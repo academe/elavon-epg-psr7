@@ -1,0 +1,23 @@
+{
+  "title": "SalesTaxEntry",
+  "description": "",
+  "properties": {
+    "isEnabled": {
+      "type": "boolean",
+      "description": "Sales tax is allowed"
+    },
+    "defaultMethod": {
+      "type": "string",
+      "description": "Method of sales tax entry",
+      "allOf": [
+        {
+          "$ref": "./SalesTaxDefaultEntryMethod.json"
+        }
+      ]
+    },
+    "defaultPercent": {
+      "type": "string",
+      "description": "Value of percentage tax"
+    }
+  }
+}

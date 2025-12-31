@@ -1,0 +1,99 @@
+{
+  "type": "object",
+  "description": "A PaymentLink contains the details necessary to complete a Transaction via HPP",
+  "required": [
+    "expiresAt",
+    "total"
+  ],
+  "properties": {
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values). Defaults to merchant."
+    },
+    "returnUrl": {
+      "type": "string",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "description": "URL to redirect a shopper to after collecting payment details.",
+      "example": "https://merchant.com/return"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "The expiration timestamp. A payment link must expire within 1 year of its creation."
+    },
+    "doCancel": {
+      "type": "boolean",
+      "description": "Cancel payment link. Defaults to false."
+    },
+    "doCapture": {
+      "type": "boolean",
+      "default": true,
+      "description": "This value will be passed along to any transaction created later in the payment flow. See doCapture on transaction"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descriptive text indicating the purpose of the PaymentLink"
+    },
+    "total": {
+      "description": "Total payment amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "conversionLimit": {
+      "type": "integer",
+      "example": 50,
+      "description": "Number of times the PaymentLink may be used to complete a Transaction"
+    },
+    "debtorAccount": {
+      "description": "Account information required for MCC 6012/6050/6051 merchants",
+      "allOf": [
+        {
+          "$ref": "./DebtorAccount.json"
+        }
+      ]
+    },
+    "orderReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional order reference which we'll display in the merchant dashboard."
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+      "maxLength": 254
+    },
+    "useStoredPaymentMethod": {
+      "type": "boolean",
+      "example": true,
+      "description": "When 'true', a shopper must be provided. The HPP will force the use of a stored payment method: \ncustomer will either pick an existing one (if applicable) or the payment information they \nenter will get saved to the associated shopper.\n\nWhen 'false', HPP will not present any existing stored payment methods to the customer and the \ncustomer will not be asked if they would like to save the payment method to their profile.\n\nWhen 'null' or not provided, if a shopper is associated with the payment session, the user will \nhave the option to select from any stored payment methods attached to their shopper record. They \nwill also be able to enter new payment information and optionally save it to their profile.\n"
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "shopper": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/shoppers/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)"
+    }
+  }
+}

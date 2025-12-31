@@ -1,0 +1,9 @@
+{
+  "title": "HistoryEntry",
+  "description": "History Entry",
+  "properties": {
+    "additionalProperties": {
+      "type": "object"
+    }
+  }
+}

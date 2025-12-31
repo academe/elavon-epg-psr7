@@ -1,0 +1,40 @@
+{
+  "title": "ApplePayPaymentSession",
+  "description": "Contains the elements necessary for initiating a transaction with Apple. The Apple Pay payment session is returned after validation of the supplied fields.",
+  "required": [
+    "initiativeContext"
+  ],
+  "properties": {
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/7btv9vr8cq3nq8r7p4wjmjkk58bt",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values) (self link), suppressed when a public API key is used",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/accounts/7btv9vr8cq3nq8r7p4wjmjkk58bt",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)"
+    },
+    "displayName": {
+      "type": "string",
+      "example": "My Store",
+      "description": "DBA name of the store.",
+      "readOnly": true
+    },
+    "initiativeContext": {
+      "type": "string",
+      "example": "mystore.example.com",
+      "description": "Fully qualified domain name that has been registered with Apple. It does not include the protocol (e.g., http, https)."
+    },
+    "paymentSession": {
+      "type": "string",
+      "description": "Apple Pay payment session object.",
+      "readOnly": true
+    }
+  }
+}

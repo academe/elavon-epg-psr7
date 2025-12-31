@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "title": "RefundSurchargeAdvice",
+  "description": "A refund surcharge advice calculates the amount of refundable surcharge and provides an adjusted refund transaction amount using the previous surcharge advice and the original parent transaction.",
+  "required": [
+    "parentTransaction"
+  ],
+  "properties": {
+    "parentTransaction": {
+      "type": "string",
+      "example": "https://uat.api.converge.eu.elavonaws.com/transactions/99qmrqcpjt2h8cm6q67gwd7kxywy",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values) of the parent transaction for surcharge."
+    },
+    "total": {
+      "description": "The refund total excluding the surcharge amount. A value for partial refund can be specified.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Transaction",
+  "description": "A payment transaction. Create a 'sale' transaction to take payment. Create a 'void' transaction and reference a parent 'sale' transaction to attempt to reverse a transaction that hasn't yet settled. If settled a 'refund' transaction should be created instead. Check the 'isAuthorized' field to see whether or not the transaction was authorized, regardless of type. If not authorized, check the 'failures' array to determine why.",
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Type of transaction, defaults to 'sale'",
+      "default": "sale"
+    }
+  },
+  "discriminator": {
+    "propertyName": "type",
+    "mapping": {
+      "sale": "./SaleTransaction.json",
+      "refund": "./RefundTransaction.json",
+      "void": "./VoidTransaction.json",
+      "SaleTransaction": "./SaleTransaction.json",
+      "RefundTransaction": "./RefundTransaction.json",
+      "VoidTransaction": "./VoidTransaction.json"
+    }
+  }
+}

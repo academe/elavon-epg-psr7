@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "DebitSteeringPreference",
+  "description": "",
+  "enum": [
+    "none",
+    "global",
+    "usCommonDebit"
+  ]
+}

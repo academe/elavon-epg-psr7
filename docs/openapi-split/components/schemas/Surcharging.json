@@ -1,0 +1,15 @@
+{
+  "title": "Surcharging",
+  "description": "",
+  "properties": {
+    "isEnabled": {
+      "type": "boolean",
+      "description": "Surcharging is allowed"
+    },
+    "rate": {
+      "type": "string",
+      "description": "Surcharging rate percentage. A value of 0.0399 means 3.99%",
+      "example": "0.0399"
+    }
+  }
+}

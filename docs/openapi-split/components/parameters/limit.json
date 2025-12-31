@@ -1,0 +1,12 @@
+{
+  "name": "limit",
+  "in": "query",
+  "description": "Maximum number of items to return on this page.\nElavon Payment Gateway can return a maximum of 200 items per page.",
+  "schema": {
+    "type": "integer",
+    "format": "int32",
+    "minimum": 1,
+    "maximum": 200,
+    "default": 10
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": "CardholderVerificationCapability",
+  "description": "",
+  "enum": [
+    "pinEncipheredOnline",
+    "pinEncipheredOffline",
+    "pinPlaintextOffline",
+    "signature",
+    "noCvm"
+  ]
+}

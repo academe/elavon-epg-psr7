@@ -1,0 +1,920 @@
+{
+  "post": {
+    "summary": "Create Transaction",
+    "description": "Create a Transaction.",
+    "tags": [
+      "Transactions"
+    ],
+    "operationId": "CreateTransaction",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (Transaction)",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/TransactionInput.json"
+          },
+          "examples": {
+            "saleexpiredcard": {
+              "summary": "Create 'sale' transaction with expired card",
+              "description": "Shows how creating a transaction that passes validation successfully creates a declined transaction. Note that 'isAuthorized' is 'false' and there are 'failures'.",
+              "value": {
+                "total": {
+                  "amount": "45.23",
+                  "currencyCode": "EUR"
+                },
+                "card": {
+                  "holderName": "John Smith",
+                  "number": "xxxx xxxx xxxx 0007",
+                  "expirationMonth": "1",
+                  "expirationYear": "2010"
+                },
+                "shopperInteraction": "telephoneOrder"
+              }
+            },
+            "salehostedcard": {
+              "summary": "Create 'sale' transaction with a hosted card.",
+              "description": "Shows a successfully authorized transaction. In this sample, the request provides card details through a hosted card. Most field values are provided default values, but we've opted to override the default 'doCapture' value.",
+              "value": {
+                "total": {
+                  "amount": "6.00",
+                  "currencyCode": "EUR"
+                },
+                "hostedCard": "https://api.eu.convergepay.com/hosted-cards/jqm7yjf83bydgytbpcmxbm49",
+                "doCapture": "false"
+              }
+            },
+            "voidsaletransaction": {
+              "summary": "Create 'void' transaction for 'sale' transaction",
+              "description": "Shows how to void a transaction by creating a new 'void' transaction with 'parentTransaction' set to the transaction's 'href'.",
+              "value": {
+                "type": "void",
+                "parentTransaction": "https://api.eu.convergepay.com/transactions/vmq47jxwv82q7w2htvqj2byr"
+              }
+            },
+            "fullrefundsale": {
+              "summary": "Create full 'refund' transaction for 'sale' transaction",
+              "description": "Shows how omitting 'total' on a 'refund' transaction will refund the full amount of the original 'sale' transaction.",
+              "value": {
+                "type": "refund",
+                "parentTransaction": "https://api.eu.convergepay.com/transactions/bdt22gvkywfh6fd492xhd2j7"
+              }
+            },
+            "partialrefundsale": {
+              "summary": "Create partial 'refund' transaction for 'sale' transaction",
+              "description": "Shows how the 'total' field may be used to specify exactly how much of the original 'sale' transaction's 'total' to refund. Subsequent partial refunds are possible as long as the original 'sale' transaction's 'total' isn't exceeded.",
+              "value": {
+                "type": "refund",
+                "total": {
+                  "amount": "75.00",
+                  "currencyCode": "GBP"
+                },
+                "parentTransaction": "https://api.eu.convergepay.com/transactions/3rdtf3y7h99tjcfkjwqxxhr4"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/Transaction.json"
+            },
+            "examples": {
+              "saleexpiredcard": {
+                "summary": "Create 'sale' transaction with expired card",
+                "description": "Shows how creating a transaction that passes validation creates a declined transaction. Note that 'isAuthorized' is 'false' and there are 'failures'.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions/xdthhybp77468cp68b8v62rk",
+                  "id": "xdthhybp77468cp68b8v62rk",
+                  "createdAt": "2019-04-22T18:52:08.173Z",
+                  "modifiedAt": "2019-04-22T18:52:08.173Z",
+                  "type": "sale",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "total": {
+                    "amount": "45.23",
+                    "currencyCode": "EUR"
+                  },
+                  "totalRefunded": null,
+                  "parentTransaction": null,
+                  "description": null,
+                  "shopperStatement": null,
+                  "customReference": null,
+                  "shopperReference": null,
+                  "processorReference": "HAQMP6JGDI4",
+                  "issuerReference": null,
+                  "orderReference": null,
+                  "shopperInteraction": "telephoneOrder",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperIpAddress": null,
+                  "shopperLanguageTag": null,
+                  "shopperTimeZone": null,
+                  "order": null,
+                  "subscription": null,
+                  "credentialOnFileType": "none",
+                  "credentialOnFileData": null,
+                  "card": {
+                    "holderName": "John Smith",
+                    "panFingerprint": "3rkd4vvcgywtvdcj7ch4mptm",
+                    "expirationMonth": 1,
+                    "expirationYear": 2010,
+                    "billTo": null,
+                    "maskedNumber": "XXXX XXXX XXXX 0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "createdBy": null,
+                  "isHeldForReview": false,
+                  "doCapture": true,
+                  "doSendReceipt": false,
+                  "isAuthorized": false,
+                  "authorizationCode": null,
+                  "verificationResults": {
+                    "name": "unsupported",
+                    "securityCode": "unprovided",
+                    "addressStreet": "unprovided",
+                    "addressPostalCode": "unprovided"
+                  },
+                  "state": "declined",
+                  "batch": null,
+                  "customFields": null,
+                  "relatedTransactions": [],
+                  "failures": [
+                    {
+                      "code": "declinedByProcessor",
+                      "description": "Transaction was declined by the payment processor",
+                      "field": null
+                    },
+                    {
+                      "code": "cardExpired",
+                      "description": "Transaction was declined because the card has expired",
+                      "field": null
+                    }
+                  ],
+                  "history": []
+                }
+              },
+              "salehostedcard": {
+                "summary": "Create 'sale' transaction with hosted card",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions/bdf87mqhtj4rjpvhy49cvdpp",
+                  "id": "bdf87mqhtj4rjpvhy49cvdpp",
+                  "createdAt": "2019-04-22T18:52:17.990Z",
+                  "modifiedAt": "2019-04-22T18:52:17.990Z",
+                  "type": "sale",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "total": {
+                    "amount": "6.00",
+                    "currencyCode": "EUR"
+                  },
+                  "totalRefunded": null,
+                  "parentTransaction": null,
+                  "description": null,
+                  "shopperStatement": null,
+                  "customReference": null,
+                  "shopperReference": null,
+                  "processorReference": "HARJSDUEPE6",
+                  "issuerReference": "919112156106790",
+                  "orderReference": null,
+                  "shopperInteraction": "ecommerce",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperIpAddress": null,
+                  "shopperLanguageTag": null,
+                  "shopperTimeZone": null,
+                  "order": null,
+                  "subscription": null,
+                  "credentialOnFileType": "none",
+                  "credentialOnFileData": null,
+                  "card": {
+                    "holderName": "Ela Von",
+                    "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                    "expirationMonth": 1,
+                    "expirationYear": 2020,
+                    "billTo": {
+                      "fullName": "Ela Von",
+                      "company": "Company",
+                      "street1": "2 Concourse Parkway",
+                      "street2": "Suite A",
+                      "city": "Atlanta",
+                      "region": "GA",
+                      "postalCode": "30328",
+                      "countryCode": "USA",
+                      "primaryPhone": "+1 678-731-5000",
+                      "alternatePhone": "+1 678-731-5001",
+                      "fax": "+1 678-731-5002",
+                      "email": "noreply@elavon.com"
+                    },
+                    "maskedNumber": "XXXXXXXXXXXX0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "createdBy": null,
+                  "isHeldForReview": false,
+                  "doCapture": false,
+                  "doSendReceipt": false,
+                  "isAuthorized": true,
+                  "authorizationCode": "405225",
+                  "verificationResults": {
+                    "name": "unsupported",
+                    "securityCode": "matched",
+                    "addressStreet": "matched",
+                    "addressPostalCode": "matched"
+                  },
+                  "state": "authorized",
+                  "batch": null,
+                  "customFields": null,
+                  "relatedTransactions": [],
+                  "failures": [],
+                  "history": []
+                }
+              },
+              "voidsaletransaction": {
+                "summary": "Create 'void' transaction for 'sale' transaction",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions/fw7b7m839whtr2x7gdh7wg84",
+                  "id": "fw7b7m839whtr2x7gdh7wg84",
+                  "createdAt": "2019-04-22T18:52:21.640Z",
+                  "modifiedAt": "2019-04-22T18:52:21.640Z",
+                  "type": "void",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "total": {
+                    "amount": "100.00",
+                    "currencyCode": "GBP"
+                  },
+                  "totalRefunded": null,
+                  "parentTransaction": "https://api.eu.convergepay.com/transactions/vmq47jxwv82q7w2htvqj2byr",
+                  "description": null,
+                  "shopperStatement": null,
+                  "customReference": null,
+                  "shopperReference": null,
+                  "processorReference": null,
+                  "issuerReference": null,
+                  "orderReference": null,
+                  "shopperInteraction": "ecommerce",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperIpAddress": null,
+                  "shopperLanguageTag": null,
+                  "shopperTimeZone": null,
+                  "order": null,
+                  "subscription": null,
+                  "credentialOnFileType": "none",
+                  "credentialOnFileData": null,
+                  "card": {
+                    "holderName": "Jane Doe",
+                    "panFingerprint": "3rkd4vvcgywtvdcj7ch4mptm",
+                    "expirationMonth": 1,
+                    "expirationYear": 2030,
+                    "billTo": null,
+                    "maskedNumber": "XXXX XXXX XXXX 0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "createdBy": null,
+                  "isHeldForReview": false,
+                  "doCapture": null,
+                  "doSendReceipt": null,
+                  "isAuthorized": true,
+                  "authorizationCode": null,
+                  "verificationResults": null,
+                  "state": "authorized",
+                  "batch": null,
+                  "customFields": null,
+                  "relatedTransactions": [],
+                  "failures": [],
+                  "history": []
+                }
+              },
+              "fullrefundsale": {
+                "summary": "Create full 'refund' transaction for 'sale' transaction",
+                "description": "Shows how omitting 'total' on a 'refund' transaction will refund the full amount of the original 'sale' transaction.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions/c2fkpt276g6rf6pwmfxmbyjf",
+                  "id": "c2fkpt276g6rf6pwmfxmbyjf",
+                  "createdAt": "2019-04-22T18:52:24.256Z",
+                  "modifiedAt": "2019-04-22T18:52:24.256Z",
+                  "type": "refund",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "total": {
+                    "amount": "100.00",
+                    "currencyCode": "GBP"
+                  },
+                  "totalRefunded": null,
+                  "parentTransaction": "https://api.eu.convergepay.com/transactions/bdt22gvkywfh6fd492xhd2j7",
+                  "description": null,
+                  "shopperStatement": null,
+                  "customReference": null,
+                  "shopperReference": null,
+                  "processorReference": null,
+                  "issuerReference": null,
+                  "orderReference": null,
+                  "shopperInteraction": "ecommerce",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperIpAddress": null,
+                  "shopperLanguageTag": null,
+                  "shopperTimeZone": null,
+                  "order": null,
+                  "subscription": null,
+                  "credentialOnFileType": "none",
+                  "credentialOnFileData": null,
+                  "card": {
+                    "holderName": "Jane Doe",
+                    "panFingerprint": "3rkd4vvcgywtvdcj7ch4mptm",
+                    "expirationMonth": 1,
+                    "expirationYear": 2030,
+                    "billTo": null,
+                    "maskedNumber": "XXXX XXXX XXXX 0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "createdBy": null,
+                  "isHeldForReview": false,
+                  "doCapture": null,
+                  "doSendReceipt": false,
+                  "isAuthorized": true,
+                  "authorizationCode": null,
+                  "verificationResults": null,
+                  "state": "authorized",
+                  "batch": null,
+                  "customFields": null,
+                  "relatedTransactions": [],
+                  "failures": [],
+                  "history": []
+                }
+              },
+              "partialrefundsale": {
+                "summary": "Create partial 'refund' transaction for 'sale' transaction",
+                "description": "Shows how the 'total' field may be used to specify exactly how much of the original 'sale' transaction's 'total' to refund. Subsequent partial refunds are possible as long as the original 'sale' transaction's 'total' isn't exceeded.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions/cwdgw42hd6vfy3pt89xk2j3v",
+                  "id": "cwdgw42hd6vfy3pt89xk2j3v",
+                  "createdAt": "2019-04-22T18:52:26.431Z",
+                  "modifiedAt": "2019-04-22T18:52:26.431Z",
+                  "type": "refund",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "total": {
+                    "amount": "75.00",
+                    "currencyCode": "GBP"
+                  },
+                  "totalRefunded": null,
+                  "parentTransaction": "https://api.eu.convergepay.com/transactions/3rdtf3y7h99tjcfkjwqxxhr4",
+                  "description": null,
+                  "shopperStatement": null,
+                  "customReference": null,
+                  "shopperReference": null,
+                  "processorReference": null,
+                  "issuerReference": null,
+                  "orderReference": null,
+                  "shopperInteraction": "ecommerce",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperIpAddress": null,
+                  "shopperLanguageTag": null,
+                  "shopperTimeZone": null,
+                  "order": null,
+                  "subscription": null,
+                  "credentialOnFileType": "none",
+                  "credentialOnFileData": null,
+                  "card": {
+                    "holderName": "Jane Doe",
+                    "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                    "expirationMonth": 1,
+                    "expirationYear": 2030,
+                    "billTo": null,
+                    "maskedNumber": "XXXX XXXX XXXX 0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "createdBy": null,
+                  "isHeldForReview": false,
+                  "doCapture": null,
+                  "doSendReceipt": false,
+                  "isAuthorized": true,
+                  "authorizationCode": null,
+                  "verificationResults": null,
+                  "state": "authorized",
+                  "batch": null,
+                  "customFields": null,
+                  "relatedTransactions": [],
+                  "failures": [],
+                  "history": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  },
+  "get": {
+    "summary": "Retrieve Transactions",
+    "description": "Retrieve all Transactions.\n\nSupported [Filters](#section/Overview/Collection-Filtering):\n\n* shopper_eq_id\n* subscription_eq_id\n* account_eq_id\n* isHeldForReview_eq_boolean\n* batch_eq_id\n* createdAt_ge|gt|le|lt_timestamp\n* type_ne|eq|in_string\n* orderReference_eq_string\n* paymentLink_eq_id\n* customReference_eq_string\n* card.last4_eq_string\n* paymentGroup_eq_id\n* terminal_eq_id\n* description_eq|like_string\n* total.amount_eq|ge|gt|le|lt_amount\n* card.holderName_eq|like_string\n* salesTax.amount_eq|ge|gt|le|lt_amount\n* tip.amount_eq|ge|gt|le|lt_amount\n* card.scheme_eq_string\n* paymentMethod_eq_string\n* paymentMethodOrigin_eq_string\n* createdBy_eq_string\n* state_in_string\n* parentTransaction_eq|is|isnot_id\n* doCapture_eq_boolean\n",
+    "tags": [
+      "Transactions"
+    ],
+    "operationId": "RetrieveTransactions",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/limit.json"
+      },
+      {
+        "$ref": "../components/parameters/pageToken.json"
+      },
+      {
+        "$ref": "../components/parameters/queryParams.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PagedListOfTransactions.json"
+            },
+            "examples": {
+              "ListRecentTransactions": {
+                "summary": "List recent transactions",
+                "description": "Shows how to list a resource using a custom page limit.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions?limit=3",
+                  "first": "https://api.eu.convergepay.com/transactions?limit=3",
+                  "next": "https://api.eu.convergepay.com/transactions?pageToken=MCwz&limit=3",
+                  "pageToken": null,
+                  "nextPageToken": "MCwz",
+                  "limit": 3,
+                  "items": [
+                    {
+                      "href": "https://api.eu.convergepay.com/transactions/cwdgw42hd6vfy3pt89xk2j3v",
+                      "id": "cwdgw42hd6vfy3pt89xk2j3v",
+                      "createdAt": "2019-04-22T18:52:26.431Z",
+                      "modifiedAt": "2019-04-22T18:52:26.597Z",
+                      "type": "refund",
+                      "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "total": {
+                        "amount": "75.00",
+                        "currencyCode": "GBP"
+                      },
+                      "totalRefunded": null,
+                      "parentTransaction": "https://api.eu.convergepay.com/transactions/3rdtf3y7h99tjcfkjwqxxhr4",
+                      "description": null,
+                      "shopperStatement": null,
+                      "customReference": null,
+                      "shopperReference": null,
+                      "processorReference": null,
+                      "issuerReference": null,
+                      "orderReference": null,
+                      "shopperInteraction": "ecommerce",
+                      "shipTo": null,
+                      "shopperEmailAddress": null,
+                      "shopperIpAddress": null,
+                      "shopperLanguageTag": null,
+                      "shopperTimeZone": null,
+                      "order": null,
+                      "subscription": null,
+                      "credentialOnFileType": "none",
+                      "credentialOnFileData": null,
+                      "card": {
+                        "holderName": "Jane Doe",
+                        "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                        "expirationMonth": 1,
+                        "expirationYear": 2030,
+                        "billTo": null,
+                        "maskedNumber": "XXXX XXXX XXXX 0007",
+                        "last4": "0007",
+                        "bin": "400880",
+                        "scheme": "Visa",
+                        "brand": "Visa",
+                        "fundingSource": "credit",
+                        "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                        "issuingCountry": "GBR",
+                        "issuingCurrency": "GBP",
+                        "isDebit": "false",
+                        "isCorporate": "false",
+                        "isDccAllowed": "true"
+                      },
+                      "createdBy": null,
+                      "isHeldForReview": false,
+                      "doCapture": null,
+                      "doSendReceipt": false,
+                      "isAuthorized": true,
+                      "authorizationCode": null,
+                      "verificationResults": null,
+                      "state": "captured",
+                      "batch": null,
+                      "customFields": null,
+                      "relatedTransactions": [],
+                      "failures": [],
+                      "history": [
+                        {
+                          "state": "authorized",
+                          "modifiedAt": "2019-04-22T18:52:26.431Z"
+                        }
+                      ]
+                    },
+                    {
+                      "href": "https://api.eu.convergepay.com/transactions/3rdtf3y7h99tjcfkjwqxxhr4",
+                      "id": "3rdtf3y7h99tjcfkjwqxxhr4",
+                      "createdAt": "2019-04-22T18:52:25.256Z",
+                      "modifiedAt": "2019-04-22T18:52:25.786Z",
+                      "type": "sale",
+                      "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "total": {
+                        "amount": "100.00",
+                        "currencyCode": "GBP"
+                      },
+                      "totalRefunded": {
+                        "amount": "75.00",
+                        "currencyCode": "GBP"
+                      },
+                      "parentTransaction": null,
+                      "description": null,
+                      "shopperStatement": null,
+                      "customReference": null,
+                      "shopperReference": null,
+                      "processorReference": "HAS88EHR7IL",
+                      "issuerReference": "919112323457227",
+                      "orderReference": null,
+                      "shopperInteraction": "telephoneOrder",
+                      "shipTo": null,
+                      "shopperEmailAddress": null,
+                      "shopperIpAddress": null,
+                      "shopperLanguageTag": null,
+                      "shopperTimeZone": null,
+                      "order": null,
+                      "card": {
+                        "holderName": "Jane Doe",
+                        "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                        "expirationMonth": 1,
+                        "expirationYear": 2030,
+                        "billTo": null,
+                        "maskedNumber": "XXXX XXXX XXXX 0007",
+                        "last4": "0007",
+                        "bin": "400880",
+                        "scheme": "Visa",
+                        "brand": "Visa",
+                        "fundingSource": "credit",
+                        "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                        "issuingCountry": "GBR",
+                        "issuingCurrency": "GBP",
+                        "isDebit": "false",
+                        "isCorporate": "false",
+                        "isDccAllowed": "true"
+                      },
+                      "createdBy": null,
+                      "isHeldForReview": false,
+                      "doCapture": true,
+                      "doSendReceipt": false,
+                      "isAuthorized": true,
+                      "authorizationCode": "405232",
+                      "verificationResults": {
+                        "name": "unsupported",
+                        "securityCode": "unprovided",
+                        "addressStreet": "unprovided",
+                        "addressPostalCode": "unprovided"
+                      },
+                      "state": "captured",
+                      "batch": null,
+                      "customFields": null,
+                      "relatedTransactions": [
+                        "https://api.eu.convergepay.com/transactions/cwdgw42hd6vfy3pt89xk2j3v"
+                      ],
+                      "failures": [],
+                      "history": [
+                        {
+                          "state": "authorized",
+                          "modifiedAt": "2019-04-22T18:52:25.256Z"
+                        }
+                      ]
+                    },
+                    {
+                      "href": "https://api.eu.convergepay.com/transactions/c2fkpt276g6rf6pwmfxmbyjf",
+                      "id": "c2fkpt276g6rf6pwmfxmbyjf",
+                      "createdAt": "2019-04-22T18:52:24.256Z",
+                      "modifiedAt": "2019-04-22T18:52:24.429Z",
+                      "type": "refund",
+                      "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "total": {
+                        "amount": "100.00",
+                        "currencyCode": "GBP"
+                      },
+                      "totalRefunded": null,
+                      "parentTransaction": "https://api.eu.convergepay.com/transactions/bdt22gvkywfh6fd492xhd2j7",
+                      "description": null,
+                      "shopperStatement": null,
+                      "customReference": null,
+                      "shopperReference": null,
+                      "processorReference": null,
+                      "issuerReference": null,
+                      "orderReference": null,
+                      "shopperInteraction": "ecommerce",
+                      "shipTo": null,
+                      "shopperEmailAddress": null,
+                      "shopperIpAddress": null,
+                      "shopperLanguageTag": null,
+                      "shopperTimeZone": null,
+                      "order": null,
+                      "card": {
+                        "holderName": "Jane Doe",
+                        "panFingerprint": "3rkd4vvcgywtvdcj7ch4mptm",
+                        "expirationMonth": 1,
+                        "expirationYear": 2030,
+                        "billTo": null,
+                        "maskedNumber": "XXXX XXXX XXXX 0007",
+                        "last4": "0007",
+                        "bin": "400880",
+                        "scheme": "Visa",
+                        "brand": "Visa",
+                        "fundingSource": "credit",
+                        "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                        "issuingCountry": "GBR",
+                        "issuingCurrency": "GBP",
+                        "isDebit": "false",
+                        "isCorporate": "false",
+                        "isDccAllowed": "true"
+                      },
+                      "createdBy": null,
+                      "isHeldForReview": false,
+                      "doCapture": null,
+                      "doSendReceipt": false,
+                      "isAuthorized": true,
+                      "authorizationCode": null,
+                      "verificationResults": null,
+                      "state": "captured",
+                      "batch": null,
+                      "customFields": null,
+                      "relatedTransactions": [],
+                      "failures": [],
+                      "history": [
+                        {
+                          "state": "authorized",
+                          "modifiedAt": "2019-04-22T18:52:24.256Z"
+                        }
+                      ]
+                    }
+                  ],
+                  "size": 3
+                }
+              },
+              "ListTransactionswithFilters": {
+                "summary": "List transactions with filters",
+                "description": "Shows how to list a resource using a few filters.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/transactions?limit=2&filter=type_eq_refund&filter=createdAt_gt_2019",
+                  "first": "https://api.eu.convergepay.com/transactions?limit=2&filter=type_eq_refund&filter=createdAt_gt_2019",
+                  "next": "https://api.eu.convergepay.com/transactions?pageToken=MCwy&limit=2&filter=type_eq_refund&filter=createdAt_gt_2019",
+                  "pageToken": null,
+                  "nextPageToken": "MCwy",
+                  "limit": 2,
+                  "items": [
+                    {
+                      "href": "https://api.eu.convergepay.com/transactions/cwdgw42hd6vfy3pt89xk2j3v",
+                      "id": "cwdgw42hd6vfy3pt89xk2j3v",
+                      "createdAt": "2019-04-22T18:52:26.431Z",
+                      "modifiedAt": "2019-04-22T18:52:26.597Z",
+                      "type": "refund",
+                      "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "total": {
+                        "amount": "75.00",
+                        "currencyCode": "GBP"
+                      },
+                      "totalRefunded": null,
+                      "parentTransaction": "https://api.eu.convergepay.com/transactions/3rdtf3y7h99tjcfkjwqxxhr4",
+                      "description": null,
+                      "shopperStatement": null,
+                      "customReference": null,
+                      "shopperReference": null,
+                      "processorReference": null,
+                      "issuerReference": null,
+                      "orderReference": null,
+                      "shopperInteraction": "ecommerce",
+                      "shipTo": null,
+                      "shopperEmailAddress": null,
+                      "shopperIpAddress": null,
+                      "shopperLanguageTag": null,
+                      "shopperTimeZone": null,
+                      "order": null,
+                      "card": {
+                        "holderName": "Jane Doe",
+                        "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                        "expirationMonth": 1,
+                        "expirationYear": 2030,
+                        "billTo": null,
+                        "maskedNumber": "XXXX XXXX XXXX 0007",
+                        "last4": "0007",
+                        "bin": "400880",
+                        "scheme": "Visa",
+                        "brand": "Visa",
+                        "fundingSource": "credit",
+                        "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                        "issuingCountry": "GBR",
+                        "issuingCurrency": "GBP",
+                        "isDebit": "false",
+                        "isCorporate": "false",
+                        "isDccAllowed": "true"
+                      },
+                      "createdBy": null,
+                      "isHeldForReview": false,
+                      "doCapture": null,
+                      "doSendReceipt": false,
+                      "isAuthorized": true,
+                      "authorizationCode": null,
+                      "verificationResults": null,
+                      "state": "captured",
+                      "batch": null,
+                      "customFields": null,
+                      "relatedTransactions": [],
+                      "failures": [],
+                      "history": [
+                        {
+                          "state": "authorized",
+                          "modifiedAt": "2019-04-22T18:52:26.431Z"
+                        }
+                      ]
+                    },
+                    {
+                      "href": "https://api.eu.convergepay.com/transactions/c2fkpt276g6rf6pwmfxmbyjf",
+                      "id": "c2fkpt276g6rf6pwmfxmbyjf",
+                      "createdAt": "2019-04-22T18:52:24.256Z",
+                      "modifiedAt": "2019-04-22T18:52:24.429Z",
+                      "type": "refund",
+                      "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "total": {
+                        "amount": "100.00",
+                        "currencyCode": "GBP"
+                      },
+                      "totalRefunded": null,
+                      "parentTransaction": "https://api.eu.convergepay.com/transactions/bdt22gvkywfh6fd492xhd2j7",
+                      "description": null,
+                      "shopperStatement": null,
+                      "customReference": null,
+                      "shopperReference": null,
+                      "processorReference": null,
+                      "issuerReference": null,
+                      "orderReference": null,
+                      "shopperInteraction": "ecommerce",
+                      "shipTo": null,
+                      "shopperEmailAddress": null,
+                      "shopperIpAddress": null,
+                      "shopperLanguageTag": null,
+                      "shopperTimeZone": null,
+                      "order": null,
+                      "card": {
+                        "holderName": "Jane Doe",
+                        "panFingerprint": "3rkd4vvcgywtvdcj7ch4mptm",
+                        "expirationMonth": 1,
+                        "expirationYear": 2030,
+                        "billTo": null,
+                        "maskedNumber": "XXXX XXXX XXXX 0007",
+                        "last4": "0007",
+                        "bin": "400880",
+                        "scheme": "Visa",
+                        "brand": "Visa",
+                        "fundingSource": "credit",
+                        "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                        "issuingCountry": "GBR",
+                        "issuingCurrency": "GBP",
+                        "isDebit": "false",
+                        "isCorporate": "false",
+                        "isDccAllowed": "true"
+                      },
+                      "createdBy": null,
+                      "isHeldForReview": false,
+                      "doCapture": null,
+                      "doSendReceipt": false,
+                      "isAuthorized": true,
+                      "authorizationCode": null,
+                      "verificationResults": null,
+                      "state": "captured",
+                      "batch": null,
+                      "customFields": null,
+                      "relatedTransactions": [],
+                      "failures": [],
+                      "history": [
+                        {
+                          "state": "authorized",
+                          "modifiedAt": "2019-04-22T18:52:24.256Z"
+                        }
+                      ]
+                    }
+                  ],
+                  "size": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

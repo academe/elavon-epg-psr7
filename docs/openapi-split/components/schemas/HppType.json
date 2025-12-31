@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "example": "fullPageRedirect",
+  "title": "HppType",
+  "description": "Type of HPP",
+  "enum": [
+    "lightbox",
+    "paymentLink",
+    "fullPageRedirect",
+    "hostedPaymentFields"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "title": "Subscription",
+  "description": "A subscription associates a shopper with a plan, detailing exactly how and when the shopper will be billed",
+  "required": [
+    "plan",
+    "storedCard",
+    "firstBillAt",
+    "timeZoneId"
+  ],
+  "properties": {
+    "plan": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Plan>",
+      "description": "Plan [Resource URL](#section/Overview/Values).\n\nPlan determines the billing details and their frequency.\n"
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values). Defaults to merchant."
+    },
+    "doSendReceipt": {
+      "type": "string",
+      "description": "Send receipt to shopper's email address. The default value is 'DEFAULT', which will use the merchant setting for sending receipts for recurring sales",
+      "default": "DEFAULT",
+      "enum": [
+        true,
+        false,
+        "DEFAULT"
+      ]
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)\n\nStoredCard to which all payments will be billed and which must belong to the provided Shopper.\n"
+    },
+    "storedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredAchPayment>",
+      "description": "An ACH payment that is stored for a shopper and may be used for recurring payments."
+    },
+    "surchargeAdvice": {
+      "type": "string",
+      "format": "url",
+      "writeOnly": true,
+      "title": "ResourceURL<SurchargeAdvice>",
+      "description": "SurchargeAdvice obtained through the create surchargeAdvice API call."
+    },
+    "initialSurchargeAdvice": {
+      "type": "string",
+      "format": "url",
+      "writeOnly": true,
+      "title": "ResourceURL<SurchargeAdvice>",
+      "description": "SurchargeAdvice obtained through the create surchargeAdvice API call for initial bills."
+    },
+    "billCount": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "description": "The total number of bills. May only be provided if not defined in plan."
+    },
+    "timeZoneId": {
+      "type": "string",
+      "description": "The time zone ID for date fields in the subscription. This follows the IANA Timezone Database Name convention.",
+      "example": "Europe/London"
+    },
+    "firstBillAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "description": "The first bill date. This value anchors the billing interval and determines all future bill dates.\nFor monthly and yearly billing intervals, if the first bill date occurs on the last day of the month then all future bill dates will be adjusted to occur on the last day of the month."
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

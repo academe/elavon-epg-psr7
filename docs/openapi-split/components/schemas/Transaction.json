@@ -1,0 +1,599 @@
+{
+  "title": "Transaction",
+  "description": "A payment transaction. Create a 'sale' transaction to take payment. Create a 'void' transaction and reference a parent 'sale' transaction to attempt to reverse a transaction that hasn't yet settled. If settled, a 'refund' transaction should be created instead. Check the 'isAuthorized' field to see whether or not the transaction was authorized, regardless of type. If not authorized, check the 'failures' array to determine why.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "title": "ResourceID<Transaction>",
+      "description": "Transaction [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "authorizationExpiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Transaction's expiration timestamp",
+      "readOnly": true
+    },
+    "refundableUntil": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-02-22T13:01:23.123Z",
+      "description": "Refundable until timestamp",
+      "readOnly": true
+    },
+    "type": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./TransactionType.json"
+        }
+      ]
+    },
+    "processorDirective": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./ProcessorDirective.json"
+        }
+      ]
+    },
+    "paymentMethod": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PaymentMethod.json"
+        }
+      ]
+    },
+    "paymentMethodOrigin": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PaymentMethodOrigin.json"
+        }
+      ]
+    },
+    "paymentMethodQualifier": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PaymentMethodQualifier.json"
+        }
+      ]
+    },
+    "source": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Source.json"
+        }
+      ]
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "terminal": {
+      "title": "ResourceURL<Terminal>",
+      "description": "Terminal [Resource URL](#section/Overview/Values)"
+    },
+    "total": {
+      "description": "Transaction total",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "totalRefunded": {
+      "description": "The sum of all refunds against this transaction",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "issuerTotal": {
+      "description": "Total in the target currency",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "tip": {
+      "type": "object",
+      "description": "Tip amount.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "salesTax": {
+      "type": "object",
+      "description": "Sales Tax",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "conversionRate": {
+      "type": "string",
+      "description": "The currency exchange rate (1 unit of total currency = 11.89 units of issuer currency)",
+      "example": "11.89",
+      "readOnly": true
+    },
+    "markupRate": {
+      "type": "string",
+      "description": "The markup percent. A value of 0.0399 means 3.99%",
+      "example": "0.0399",
+      "readOnly": true
+    },
+    "markupRateAnnotation": {
+      "$ref": "./MarkupRateAnnotation.json"
+    },
+    "rateProviderName": {
+      "type": "string",
+      "description": "Rate provider name",
+      "example": "US Bank",
+      "readOnly": true
+    },
+    "forexAdvice": {
+      "type": "string",
+      "format": "url",
+      "readOnly": true,
+      "title": "ResourceURL<ForexAdvice>",
+      "description": "ForexAdvice [Resource URL](#section/Overview/Values)"
+    },
+    "surcharge": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Surcharge.json"
+        }
+      ]
+    },
+    "parentTransaction": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values) of the parent Transaction",
+      "readOnly": true
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Description, which appears on the dashboard and might appear on receipts",
+      "example": "March 2017 Rent",
+      "readOnly": true
+    },
+    "shopperStatement": {
+      "description": "Dynamic overrides of what might appear on a shopper's statement",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./ShopperStatement.json"
+        }
+      ]
+    },
+    "debtorAccount": {
+      "description": "Account information required for MCC 6012/6050/6051 merchants",
+      "allOf": [
+        {
+          "$ref": "./DebtorAccount.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "shopperReference": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "PO 4358",
+      "description": "Optional reference provided by the shopper, such as a purchase order",
+      "readOnly": true
+    },
+    "purchaserReference": {
+      "type": "string",
+      "maxLength": 17,
+      "description": "Optional identifier provided by the merchant/integrator to represent the shopper.",
+      "readOnly": true
+    },
+    "processorReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true
+    },
+    "issuerReference": {
+      "type": "string",
+      "description": "Reference assigned by the card issuer",
+      "readOnly": true
+    },
+    "orderReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional order reference which we'll display in the merchant dashboard. We'll automatically copy this from a 'sale'",
+      "readOnly": true
+    },
+    "invoiceNumber": {
+      "type": "string",
+      "maxLength": 25,
+      "description": "Optional invoice number."
+    },
+    "marketSegment": {
+      "description": "Market segment for this transaction, to be sent on to processor",
+      "allOf": [
+        {
+          "$ref": "./MarketSegment.json"
+        }
+      ]
+    },
+    "shopperInteraction": {
+      "allOf": [
+        {
+          "$ref": "./ShopperInteraction.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)\n\nShopper, if applicable.\n",
+      "readOnly": true
+    },
+    "shipTo": {
+      "description": "Shipping contact details",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Contact.json"
+        }
+      ]
+    },
+    "shippingDate": {
+      "type": "string",
+      "format": "local-date",
+      "example": "2024-05-17",
+      "description": "Optional shipping date."
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, useful for fraud detection and to provide a receipt",
+      "readOnly": true
+    },
+    "shopperIpAddress": {
+      "type": "string",
+      "example": "10.9.234.22",
+      "description": "Shopper's IP address, useful for fraud detection",
+      "readOnly": true
+    },
+    "shopperLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "en-GB",
+      "description": "Shopper's IETF language tag, useful for localising the receipt",
+      "readOnly": true
+    },
+    "shopperTimeZone": {
+      "type": "string",
+      "example": "Europe/Berlin",
+      "description": "Shopper's time zone, specified by the IANA Time Zone Database name",
+      "readOnly": true
+    },
+    "order": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Order>",
+      "description": "Order [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "subscription": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Subscription>",
+      "description": "Subscription [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "credentialOnFileType": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./CredentialOnFileType.json"
+        }
+      ]
+    },
+    "credentialOnFileData": {
+      "type": "string",
+      "maxLength": 29,
+      "description": "Value returned when creating an initial transaction for an integrator-managed card. This should be saved and set for succeeding transactions with the same integrator-managed card."
+    },
+    "card": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "readOnly": true,
+      "title": "ResourceURL<HostedCard>",
+      "description": "HostedCard [Resource URL](#section/Overview/Values) obtained through the Create HostedCard API call, not returned. Required for 'ecommerce' 'sale' transactions."
+    },
+    "hsmCard": {
+      "type": "string",
+      "format": "url",
+      "readOnly": true,
+      "title": "ResourceURL<HsmCard>",
+      "description": "HsmCard [Resource URL](#section/Overview/Values) obtained through the card present API call, not returned."
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "readOnly": true,
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)"
+    },
+    "achPayment": {
+      "description": "ACH payment details",
+      "allOf": [
+        {
+          "$ref": "./AchPayment.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "storedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "StoredAchPayment [Resource URL](#section/Overview/Values)",
+      "title": "ResourceURL<StoredAchPayment>",
+      "readOnly": true
+    },
+    "hostedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HostedAchPayment>",
+      "description": "HostedAchPayment [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "deviceInteraction": {
+      "description": "Information when using a hardware terminal.",
+      "allOf": [
+        {
+          "$ref": "./DeviceInteraction.json"
+        }
+      ]
+    },
+    "pointOfInteraction": {
+      "description": "Information about location of interaction.",
+      "allOf": [
+        {
+          "$ref": "./PointOfInteraction.json"
+        }
+      ]
+    },
+    "paymentLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentLink>",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "paymentSession": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentSession>",
+      "description": "PaymentSession [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "threeDSecure": {
+      "description": "Additional data that's only needed for 3-D Secure version 2 processing.",
+      "allOf": [
+        {
+          "$ref": "./ThreeDSecure.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "createdBy": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "user@gmail.com",
+      "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question.",
+      "readOnly": true
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "isHeldForReview": {
+      "type": "boolean",
+      "example": false,
+      "description": "If true, the transaction was authorized but has been held for review. While this is true, no further processing will occur for this transaction. All held transactions can be reviewed by the merchant in their dashboard. To approve with the API, update this field to false. To decline instead, create a 'void' transaction."
+    },
+    "isTotalAdjustable": {
+      "type": "boolean",
+      "example": true,
+      "description": "If true, the authorized total for the transaction can be adjusted."
+    },
+    "doCapture": {
+      "type": "boolean",
+      "example": false,
+      "description": "If false, authorize only; if true (default), authorize and capture funds for settlement"
+    },
+    "doAutoCaptureAfter": {
+      "allOf": [
+        {
+          "$ref": "./DoAutoCaptureAfter.json"
+        }
+      ]
+    },
+    "doSendReceipt": {
+      "type": "boolean",
+      "example": false,
+      "description": "Send receipt to shopper's email address. Default value is based on the merchant's back office configuration."
+    },
+    "signature": {
+      "description": "Point of Sale Signature",
+      "allOf": [
+        {
+          "$ref": "./Signature.json"
+        }
+      ]
+    },
+    "isAuthorized": {
+      "type": "boolean",
+      "example": true,
+      "description": "Indicates whether a transaction is authorized. Transactions of type 'sale' are authorized by the gateway, the processor, and the issuer. Transactions of type 'void' and 'refund' are authorized by the gateway.",
+      "readOnly": true
+    },
+    "partialAuthorization": {
+      "description": "Partial Authorization Information",
+      "allOf": [
+        {
+          "$ref": "./PartialAuthorization.json"
+        }
+      ]
+    },
+    "authorizationCode": {
+      "type": "string",
+      "example": "546584",
+      "description": "Authorization code",
+      "readOnly": true
+    },
+    "issuerResponseCode": {
+      "type": "string",
+      "example": "00",
+      "description": "Issuer response code",
+      "readOnly": true
+    },
+    "verificationResults": {
+      "description": "Verification results, if available",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./VerificationResults.json"
+        }
+      ]
+    },
+    "state": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./TransactionState.json"
+        }
+      ]
+    },
+    "batch": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Batch>",
+      "description": "Batch [Resource URL](#section/Overview/Values). The Batch in which this Transaction was settled.",
+      "readOnly": true
+    },
+    "manualBatch": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ManualBatch>",
+      "description": "ManualBatch [Resource URL](#section/Overview/Values). The Manual Batch the transaction belongs to.",
+      "readOnly": true
+    },
+    "processorBatchReference": {
+      "type": "string",
+      "description": "Processor Batch reference txn is  settled in.",
+      "readOnly": true
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PazePayment>",
+      "description": "PazePayment [Resource URL](#section/Overview/Values). PazePayment used to create a transaction.",
+      "readOnly": true
+    },
+    "relatedTransactions": {
+      "type": "array",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values)(s) related to this Transaction (e.g. refunds)",
+      "readOnly": true,
+      "items": {
+        "type": "string",
+        "format": "url"
+      }
+    },
+    "failures": {
+      "type": "array",
+      "description": "Failure details, if the transaction was not authorized",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Failure.json"
+      }
+    },
+    "history": {
+      "type": "array",
+      "description": "History",
+      "readOnly": true,
+      "items": {
+        "$ref": "./HistoryEntry.json"
+      }
+    }
+  }
+}

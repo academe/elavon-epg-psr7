@@ -1,0 +1,82 @@
+{
+  "type": "object",
+  "title": "SurchargeAdvice",
+  "description": "A surcharge advice calculates the amount of available surcharge and provides an adjusted transaction total for specific personal account numbers or stored cards. At least one of the following is required to create a surcharge advice request: storedCard, hostedCard, cardNumber, or panToken.",
+  "required": [
+    "total"
+  ],
+  "properties": {
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)",
+      "writeOnly": true
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HostedCard>",
+      "description": "HostedCard [Resource URL](#section/Overview/Values)",
+      "writeOnly": true
+    },
+    "cardNumber": {
+      "type": "string",
+      "minLength": 13,
+      "maxLength": 23,
+      "pattern": "\\D*(?:\\d\\D*){13,19}",
+      "writeOnly": true,
+      "description": "Personal account number (PAN), not returned.",
+      "example": "XXXX XXXX XXXX XXXX"
+    },
+    "googlePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "GooglePayPayment used to create a surcharge advice for a transaction."
+    },
+    "applePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "ApplePayPayment used to create a surcharge advice for a transaction."
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment used to create a surcharge advice for a transaction."
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "total": {
+      "description": "The transaction total excluding the surcharge amount.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

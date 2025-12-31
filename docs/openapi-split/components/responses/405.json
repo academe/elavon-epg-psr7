@@ -1,0 +1,31 @@
+{
+  "description": "The given method may not be used here. Note that the X-HTTP-Method-Override header can only be used to override POST with either PATCH or DELETE",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 405,
+            "failures": [
+              {
+                "code": "methodNotAllowed",
+                "description": "The given method may not be used here. Note that the X-HTTP-Method-Override header can only be used to override POST with either PATCH or DELETE"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

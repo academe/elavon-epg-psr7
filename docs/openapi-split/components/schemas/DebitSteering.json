@@ -1,0 +1,39 @@
+{
+  "type": "string",
+  "title": "DebitSteering",
+  "description": "Debit steering",
+  "properties": {
+    "visa": {
+      "description": "Visa debit steering preference",
+      "allOf": [
+        {
+          "$ref": "./DebitSteeringPreference.json"
+        }
+      ]
+    },
+    "masterCard": {
+      "description": "Mastercard debit steering preference",
+      "allOf": [
+        {
+          "$ref": "./DebitSteeringPreference.json"
+        }
+      ]
+    },
+    "discover": {
+      "description": "Discover debit steering preference",
+      "allOf": [
+        {
+          "$ref": "./DebitSteeringPreference.json"
+        }
+      ]
+    },
+    "americanExpress": {
+      "description": "American Express debit steering preference",
+      "allOf": [
+        {
+          "$ref": "./DebitSteeringPreference.json"
+        }
+      ]
+    }
+  }
+}

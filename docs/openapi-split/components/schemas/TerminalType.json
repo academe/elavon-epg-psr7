@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "TerminalType",
+  "description": "",
+  "enum": [
+    "hardware",
+    "software"
+  ]
+}

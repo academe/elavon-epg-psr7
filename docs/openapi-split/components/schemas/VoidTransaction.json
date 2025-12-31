@@ -1,0 +1,106 @@
+{
+  "title": "Void Transaction",
+  "description": "Void Transaction",
+  "required": [
+    "parentTransaction",
+    "type"
+  ],
+  "allOf": [
+    {
+      "$ref": "./TransactionInput.json"
+    },
+    {
+      "properties": {
+        "source": {
+          "allOf": [
+            {
+              "$ref": "./Source.json"
+            }
+          ]
+        },
+        "processorAccount": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<ProcessorAccount>",
+          "description": "ProcessorAccount [Resource URL](#section/Overview/Values)"
+        },
+        "account": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<Account>",
+          "description": "Account [Resource URL](#section/Overview/Values). Defaults to merchant."
+        },
+        "salesTax": {
+          "type": "object",
+          "description": "Sales Tax",
+          "allOf": [
+            {
+              "$ref": "./NonNegativeAmountAndCurrency.json"
+            }
+          ]
+        },
+        "parentTransaction": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<Transaction>",
+          "description": "Transaction [Resource URL](#section/Overview/Values) of the parent Transaction"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Description, which appears on the dashboard and might appear on receipts",
+          "example": "March 2017 Rent"
+        },
+        "customReference": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Optional reference provided by the merchant"
+        },
+        "shopperReference": {
+          "type": "string",
+          "maxLength": 255,
+          "example": "PO 4358",
+          "description": "Optional reference provided by the shopper, such as a purchase order"
+        },
+        "shopperInteraction": {
+          "$ref": "./ShopperInteraction.json"
+        },
+        "shopperIpAddress": {
+          "type": "string",
+          "example": "10.9.234.22",
+          "description": "Shopper's IP address, useful for fraud detection"
+        },
+        "paymentLink": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<PaymentLink>",
+          "description": "PaymentLink [Resource URL](#section/Overview/Values)"
+        },
+        "paymentSession": {
+          "type": "string",
+          "format": "url",
+          "title": "ResourceURL<PaymentSession>",
+          "description": "PaymentSession [Resource URL](#section/Overview/Values)"
+        },
+        "createdBy": {
+          "type": "string",
+          "maxLength": 255,
+          "example": "user@gmail.com",
+          "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question."
+        },
+        "customFields": {
+          "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        "doCapture": {
+          "type": "boolean",
+          "example": false,
+          "description": "If false, authorize only; if true (default), authorize and capture funds for settlement"
+        }
+      }
+    }
+  ]
+}

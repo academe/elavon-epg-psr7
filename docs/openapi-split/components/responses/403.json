@@ -1,0 +1,31 @@
+{
+  "description": "Public API keys may only be used to create and retrieve hosted cards",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 403,
+            "failures": [
+              {
+                "code": "forbidden",
+                "description": "Public API keys may only be used to create and retrieve hosted cards"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

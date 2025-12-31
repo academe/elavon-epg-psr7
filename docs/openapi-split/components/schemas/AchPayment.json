@@ -1,0 +1,51 @@
+{
+  "title": "AchPayment",
+  "description": "ACH Payment details",
+  "required": [
+    "achAccountType",
+    "accountName"
+  ],
+  "properties": {
+    "bankRoutingNumber": {
+      "type": "string",
+      "description": "Bank routing number. Must be 9 digits.",
+      "pattern": "^\\\\d{9}?",
+      "example": "987654321"
+    },
+    "bankAccountNumber": {
+      "type": "string",
+      "description": "Bank account number. Must be 5 to 16 digits.",
+      "pattern": "^\\\\d{5,16}?",
+      "example": "1234567890"
+    },
+    "bankAccountToken": {
+      "description": "Bank account number token.",
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "achFingerprint": {
+      "type": "string",
+      "description": " ACH fingerprint",
+      "readOnly": true
+    },
+    "last4": {
+      "type": "string",
+      "description": "Last 4 digits of the bank account number.",
+      "pattern": "^\\\\d{4}?",
+      "readOnly": true
+    },
+    "achAccountType": {
+      "type": "string",
+      "description": "ACH account type",
+      "$ref": "./AchAccountType.json"
+    },
+    "accountName": {
+      "type": "string",
+      "description": "The ACH account name",
+      "maxLength": 255
+    }
+  }
+}

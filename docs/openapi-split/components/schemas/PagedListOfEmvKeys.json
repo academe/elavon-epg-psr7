@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfEmvKeys",
+  "description": "Paged list of EMV Keys",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of EMV Keys",
+          "readOnly": true,
+          "items": {
+            "$ref": "./EmvKey.json"
+          }
+        }
+      }
+    }
+  ]
+}

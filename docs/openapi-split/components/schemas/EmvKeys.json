@@ -1,0 +1,25 @@
+{
+  "title": "EmvKeys",
+  "description": "",
+  "properties": {
+    "clientLastUpdatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Client's date of last key update"
+    },
+    "hostLastUpdatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Host's date of last key update",
+      "readOnly": true
+    },
+    "isUpdateNeeded": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./TrueFalseOrUnknown.json"
+        }
+      ]
+    }
+  }
+}

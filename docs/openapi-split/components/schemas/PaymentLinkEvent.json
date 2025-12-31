@@ -1,0 +1,61 @@
+{
+  "type": "object",
+  "description": "An event for a payment link, such as making a payment or sending an email reminder.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "PaymentLinkEvent [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "dhpymb8bc6q76mhdfq6ddbw3kbdh",
+      "description": "PaymentLinkEvent [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values). Suppressed when a public API key is used.",
+      "readOnly": true
+    },
+    "paymentLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentLink>",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values)"
+    },
+    "type": {
+      "$ref": "./PaymentLinkEventType.json"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-02-07T18:49:20.886Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "createdBy": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "user@gmail.com",
+      "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question."
+    },
+    "transaction": {
+      "type": "string",
+      "format": "url",
+      "example": "https://api.eu.convergepay.com/transaction/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values), required if event type is 'payment'.",
+      "readOnly": true
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, required if event type is 'reminderSent'."
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "CardDataOutputCapability",
+  "description": "",
+  "enum": [
+    "magneticStripe",
+    "emvContact",
+    "emvContactless"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "description": "Base for PagedListXXX schemas.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "[Resource URL](#section/Overview/Values) (Self link)",
+      "readOnly": true
+    },
+    "first": {
+      "type": "string",
+      "format": "url",
+      "description": "First page link",
+      "readOnly": true
+    },
+    "next": {
+      "type": "string",
+      "format": "url",
+      "description": "Next page link, null if no more items",
+      "readOnly": true
+    },
+    "pageToken": {
+      "type": "string",
+      "description": "An opaque continuation token for this page, null for the first page",
+      "readOnly": true
+    },
+    "nextPageToken": {
+      "type": "string",
+      "description": "An opaque continuation token for the next page, null if no more items",
+      "readOnly": true
+    },
+    "limit": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Maximum number of items to return for this page. By default, returns 10 entries. The maximum possible number of entries returned is 200.",
+      "default": 10,
+      "readOnly": true
+    },
+    "size": {
+      "type": "integer",
+      "format": "int32",
+      "example": 10,
+      "description": "The size of the items array for this page",
+      "readOnly": true
+    }
+  }
+}

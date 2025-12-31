@@ -1,0 +1,225 @@
+{
+  "get": {
+    "tags": [
+      "Payment Links"
+    ],
+    "summary": "Retrieve PaymentLink",
+    "description": "Retrieve a Payment Link by ID.",
+    "operationId": "RetrievePaymentLink",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "PaymentLink [Resource ID](#section/Overview/Values).",
+        "required": true,
+        "example": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PaymentLink.json"
+            },
+            "examples": {
+              "PaymentLink": {
+                "summary": "PaymentLink",
+                "value": {
+                  "description": "Special Sale Offer",
+                  "total": {
+                    "amount": "1.23",
+                    "currencyCode": "EUR"
+                  },
+                  "customReference": "Marketing Campaign #1",
+                  "expiresAt": "2017-02-22T13:11:23.123Z",
+                  "maximumNumberOfUses": 50,
+                  "url": "https://api.converge.eu.elavon.net/payment-links/wrKK4HcHCXcK3KkXwFRMXVjQ",
+                  "numberOfClicks": 0,
+                  "numberOfConversions": 0,
+                  "customFields": {
+                    "merchantField1": "Merchant Value 1"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  },
+  "post": {
+    "tags": [
+      "Payment Links"
+    ],
+    "summary": "Update PaymentLink",
+    "description": "Overwrite an existing Payment Link.",
+    "operationId": "UpdatePaymentLink",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "PaymentLink [Resource ID](#section/Overview/Values).",
+        "required": true,
+        "example": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/PaymentLink.json"
+          },
+          "examples": {
+            "UpdateCustomReference": {
+              "summary": "Update Custom Reference",
+              "value": {
+                "customReference": "Marketing Campaign #2"
+              }
+            },
+            "UpdateCustomFields": {
+              "summary": "Update Custom Fields",
+              "value": {
+                "customFields": {
+                  "merchantField1": "Merchant Value 2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PaymentLink.json"
+            },
+            "examples": {
+              "UpdatedCustomReference": {
+                "summary": "Updated Custom Reference",
+                "value": {
+                  "description": "Special Sale Offer",
+                  "total": {
+                    "amount": "1.23",
+                    "currencyCode": "EUR"
+                  },
+                  "customReference": "Marketing Campaign #2",
+                  "expiresAt": "2017-02-22T13:11:23.123Z",
+                  "maximumNumberOfUses": 50,
+                  "url": "https://api.converge.eu.elavon.net/payment-links/sdghjkfdghjfhdjgfhdjlkgf",
+                  "numberOfClicks": 0,
+                  "numberOfConversions": 0,
+                  "customFields": {
+                    "merchantField1": "Merchant Value 1"
+                  }
+                }
+              },
+              "UpdatedCustomFields": {
+                "summary": "Updated Custom Fields",
+                "value": {
+                  "description": "Special Sale Offer",
+                  "total": {
+                    "amount": "1.23",
+                    "currencyCode": "EUR"
+                  },
+                  "customReference": "Marketing Campaign #1",
+                  "expiresAt": "2017-02-22T13:11:23.123Z",
+                  "maximumNumberOfUses": 50,
+                  "url": "https://api.converge.eu.elavon.net/payment-links/sdghjkfdghjfhdjgfhdjlkgf",
+                  "numberOfClicks": 0,
+                  "numberOfConversions": 0,
+                  "customFields": {
+                    "merchantField1": "Merchant Value 2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

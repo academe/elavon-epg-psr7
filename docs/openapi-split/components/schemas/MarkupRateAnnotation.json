@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": "MarkupRateAnnotation",
+  "description": "Markup Rate Annotation",
+  "example": "none",
+  "readOnly": true,
+  "enum": [
+    "none",
+    "aboveEcb",
+    "belowEcb"
+  ]
+}

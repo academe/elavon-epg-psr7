@@ -1,0 +1,27 @@
+{
+  "title": "PinEncryptedData",
+  "description": "",
+  "required": [
+    "encryptedData",
+    "keySerialNumber",
+    "deviceFormat"
+  ],
+  "properties": {
+    "encryptedData": {
+      "type": "string",
+      "description": ""
+    },
+    "keySerialNumber": {
+      "type": "string",
+      "description": ""
+    },
+    "deviceFormat": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./PinDeviceFormat.json"
+        }
+      ]
+    }
+  }
+}

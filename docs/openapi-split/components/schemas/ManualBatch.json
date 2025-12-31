@@ -1,0 +1,54 @@
+{
+  "description": "A settlement batch. Transactions are captured into a batch and submitted together for settlement and subsequent funding.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ManualBatch>",
+      "description": "Manual Batch [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true,
+      "example": "https://api.eu.convergepay.com/manual-batches/6xxFwvM8BqmM6T6DcF3DyTB3"
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "title": "ResourceID<ManualBatch>",
+      "description": "Manual Batch [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/6xxFwvM8BqmM6T6DcF3DyTB3",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

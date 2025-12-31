@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "title": "TrueFalseOrUnknown",
+  "description": "True / False / Unknown",
+  "example": "true",
+  "enum": [
+    true,
+    false,
+    "unknown"
+  ]
+}

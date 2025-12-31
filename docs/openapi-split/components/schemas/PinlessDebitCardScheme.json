@@ -1,0 +1,23 @@
+{
+  "title": "PinlessDebitCardScheme",
+  "description": "",
+  "properties": {
+    "cardScheme": {
+      "description": "Card scheme",
+      "$ref": "./CardScheme.json"
+    },
+    "isEnabled": {
+      "type": "boolean",
+      "description": "Enable pinless debit.",
+      "example": true
+    },
+    "threshold": {
+      "description": "Pinless debit threshold",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    }
+  }
+}

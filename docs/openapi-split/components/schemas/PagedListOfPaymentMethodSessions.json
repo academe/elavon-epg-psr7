@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfPaymentMethodSessions",
+  "description": "Paged list of PaymentMethodSessions",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of PaymentMethodSessions",
+          "readOnly": true,
+          "items": {
+            "$ref": "./PaymentMethodSession.json"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "title": "Blik",
+  "description": "BLIK object containing a six-digit code. This value is not returned.",
+  "required": [
+    "code"
+  ],
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "\\\\d{6}",
+      "description": "Six-digit BLIK code.",
+      "example": "777777"
+    }
+  }
+}

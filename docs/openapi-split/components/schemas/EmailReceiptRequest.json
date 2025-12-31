@@ -1,0 +1,14 @@
+{
+  "title": "EmailReceiptRequest",
+  "description": "A email receipt request for transaction. This provides a way for integrators to send a transaction email receipt after the transaction has been created and authorized.",
+  "required": [
+    "shopperEmailAddress"
+  ],
+  "properties": {
+    "shopperEmailAddress": {
+      "type": "string",
+      "description": "Email address of the shopper, useful to provide a receipt",
+      "example": "shopper@gmail.com"
+    }
+  }
+}

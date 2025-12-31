@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": "FieldPolicy",
+  "description": "",
+  "enum": [
+    "required",
+    "recommended",
+    "optional",
+    "prohibited",
+    "doNotPrompt"
+  ]
+}

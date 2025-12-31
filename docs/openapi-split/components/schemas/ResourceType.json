@@ -1,0 +1,32 @@
+{
+  "type": "string",
+  "title": "ResourceType",
+  "description": "The type resource affected, if applicable.",
+  "example": "transaction",
+  "readOnly": true,
+  "enum": [
+    "merchant",
+    "processorAccount",
+    "account",
+    "planList",
+    "order",
+    "paymentLink",
+    "paymentSession",
+    "hostedCard",
+    "storedCard",
+    "forexAdvice",
+    "transaction",
+    "batch",
+    "shopper",
+    "plan",
+    "subscription",
+    "surchargeAdvice",
+    "refundSurchargeAdvice",
+    "notification",
+    "googlePayPayment",
+    "applePayPayment",
+    "applePayPaymentSession",
+    "totalAdjustment",
+    "unknown"
+  ]
+}

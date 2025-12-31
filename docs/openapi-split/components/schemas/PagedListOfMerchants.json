@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfMerchants",
+  "description": "Paged list of Merchants",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of Merchants",
+          "readOnly": true,
+          "items": {
+            "$ref": "./Merchant.json"
+          }
+        }
+      }
+    }
+  ]
+}

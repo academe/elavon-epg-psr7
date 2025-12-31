@@ -1,0 +1,66 @@
+{
+  "get": {
+    "summary": "Retrieve PaymentLinks PaymentLinkEvents",
+    "description": "Retrieve a list of Payment Link Events associated with a Payment Link.",
+    "operationId": "RetrievePaymentLinksPaymentLinkEvents",
+    "tags": [
+      "Payment Links"
+    ],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "description": "PaymentLink [Resource ID](#section/Overview/Values).",
+        "required": true,
+        "example": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/pageToken.json"
+      },
+      {
+        "$ref": "../components/parameters/limit.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PagedListOfPaymentLinkEvents.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

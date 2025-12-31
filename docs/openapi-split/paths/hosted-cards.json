@@ -1,0 +1,162 @@
+{
+  "post": {
+    "summary": "Create HostedCard",
+    "description": "Creates a HostedCard resource.",
+    "tags": [
+      "Hosted Cards"
+    ],
+    "operationId": "CreateHostedCard",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (HostedCard)",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/HostedCardInput.json"
+          },
+          "examples": {
+            "HostedCard": {
+              "summary": "Create HostedCard",
+              "value": {
+                "card": {
+                  "holderName": "Erlich Bachman",
+                  "number": "XXXXXXXXXXXX0007",
+                  "expirationMonth": 1,
+                  "expirationYear": 2020,
+                  "securityCode": "321",
+                  "billTo": {
+                    "fullName": "Full Name",
+                    "company": "Company",
+                    "street1": "2 Concourse Parkway",
+                    "street2": "Suite A",
+                    "city": "Atlanta",
+                    "region": "GA",
+                    "postalCode": "30328",
+                    "countryCode": "USA",
+                    "primaryPhone": "+1 678-731-5000",
+                    "alternatePhone": "+1 678-731-5001",
+                    "fax": "+1 678-731-5002",
+                    "email": "noreply@elavon.com"
+                  }
+                }
+              }
+            },
+            "HostedCardError": {
+              "summary": "Create HostedCard Error",
+              "value": {
+                "card": {
+                  "number": "XXXXXXXXXXXX0007",
+                  "expirationYear": 2020
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/HostedCard.json"
+            },
+            "examples": {
+              "CreatedHostedCard": {
+                "summary": "Created HostedCard",
+                "value": {
+                  "href": "https://api.converge.eu.elavon.net/hosted-cards/8Pmhg2rh8c7wytV9vb27X6VT",
+                  "id": "8Pmhg2rh8c7wytV9vb27X6VT",
+                  "createdAt": "2018-08-09T17:16:47.272Z",
+                  "modifiedAt": "2018-08-09T17:16:47.272Z",
+                  "expiresAt": "2018-08-09T18:16:47.272Z",
+                  "merchant": null,
+                  "card": {
+                    "holderName": "Erlich Bachman",
+                    "expirationMonth": 1,
+                    "expirationYear": 2020,
+                    "billTo": {
+                      "fullName": "Full Name",
+                      "company": "Company",
+                      "street1": "2 Concourse Parkway",
+                      "street2": "Suite A",
+                      "city": "Atlanta",
+                      "region": "GA",
+                      "postalCode": "30328",
+                      "countryCode": "USA",
+                      "primaryPhone": "+1 678-731-5000",
+                      "alternatePhone": "+1 678-731-5001",
+                      "fax": "+1 678-731-5002",
+                      "email": "noreply@elavon.com"
+                    },
+                    "maskedNumber": "XXXXXXXXXXXX0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

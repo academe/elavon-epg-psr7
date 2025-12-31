@@ -1,0 +1,9 @@
+{
+  "title": "DoAutoCaptureAfterTimeUnit",
+  "description": "Time unit. Can only be \"day\" or \"hour\". Case insensitive (i.e. hOuR is still valid).",
+  "example": "day",
+  "enum": [
+    "hour",
+    "day"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "ApplePayPaymentInput",
+  "description": "This captures all of the components necessary for processing a payment with the Apple Pay digital wallet. The payment token contains the encrypted payment data needed for transaction processing along with the elements needed for decryption. This cannot be used in conjunction with a Google Pay payment. It may also be used when creating a payment session. The only fields of the request to pass in the Card field is the Contact info, if available.",
+  "properties": {
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "card": {
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Apple Pay payment info.",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "token": {
+      "type": "string",
+      "description": "The Apple transaction id, encrypted payment data and data elements used for decryption."
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

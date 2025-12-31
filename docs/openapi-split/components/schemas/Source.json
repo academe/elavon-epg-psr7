@@ -1,0 +1,20 @@
+{
+  "type": "string",
+  "example": "directApiCall",
+  "title": "Source",
+  "description": "Provided by the API caller to help identify how the transaction is submitted, defaults to 'directApiCall'.",
+  "enum": [
+    "directApiCall",
+    "hppSubmitRedirect",
+    "hppIframeLightbox",
+    "hppIframeEmbedded",
+    "hppSdk",
+    "virtualTerminal",
+    "gatewayRecurring",
+    "payByLink",
+    "monitoring",
+    "hppFields",
+    "physicalTerminal",
+    "unknown"
+  ]
+}

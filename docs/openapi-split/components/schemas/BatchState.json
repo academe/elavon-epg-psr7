@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": "BatchState",
+  "description": "State of a batch",
+  "readOnly": true,
+  "enum": [
+    "submitted",
+    "settled",
+    "rejected",
+    "failed",
+    "unknown"
+  ]
+}

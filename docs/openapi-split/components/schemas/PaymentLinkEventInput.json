@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "description": "An event for a payment link, such as making a payment or sending an email reminder.",
+  "required": [
+    "paymentLink",
+    "type",
+    "shopperEmailAddress"
+  ],
+  "properties": {
+    "paymentLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentLink>",
+      "description": "PaymentLink [Resource URL](#section/Overview/Values)"
+    },
+    "type": {
+      "$ref": "./PaymentLinkEventType.json"
+    },
+    "createdBy": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "user@gmail.com",
+      "description": "Who or what created the transaction? When created in Elavon's virtual terminal, this will be the email address of the currently logged in user. When created otherwise, the integrator may optionally provide any value that helps answer this question."
+    },
+    "shopperEmailAddress": {
+      "type": "string",
+      "example": "shopper@gmail.com",
+      "description": "Shopper's email address, required if event type is 'reminderSent'."
+    }
+  }
+}

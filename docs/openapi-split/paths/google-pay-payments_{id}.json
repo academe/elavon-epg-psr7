@@ -1,0 +1,51 @@
+{
+  "get": {
+    "summary": "Retrieve GooglePayPayment",
+    "description": "Retrieve a Google Pay payment resource by ID.",
+    "operationId": "RetrieveGooglePayPayment",
+    "tags": [
+      "Google Pay Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "GooglePayPayment [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/GooglePayPayment.json"
+            }
+          }
+        }
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "title": "BillingInterval",
+  "description": "BillingInterval",
+  "required": [
+    "timeUnit",
+    "count"
+  ],
+  "properties": {
+    "timeUnit": {
+      "$ref": "./TimeUnit.json"
+    },
+    "count": {
+      "type": "integer",
+      "format": "int32",
+      "example": 3,
+      "description": "A count of time units.",
+      "minimum": 1
+    }
+  }
+}

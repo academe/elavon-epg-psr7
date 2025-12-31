@@ -1,0 +1,23 @@
+{
+  "title": "ShopperStatement",
+  "description": "Shopper Statement",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 25,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "GLOBE THEATRE*OTHELLO"
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "[\\w \\-+:()/]*",
+      "example": "02079021409"
+    },
+    "url": {
+      "type": "string",
+      "maxLength": 13,
+      "example": "GLOBE"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "description": "A valid API key is required",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "InvalidApiKey": {
+          "value": {
+            "status": 401,
+            "failures": [
+              {
+                "code": "unauthorized",
+                "description": "A valid API key is required",
+                "field": "Authorization header"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "post": {
+    "summary": "Create Manual Batch",
+    "description": "Mark transactions for manual settlement.",
+    "tags": [
+      "Manual Batches"
+    ],
+    "operationId": "CreateManualBatch",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (ManualBatch)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/ManualBatchInput.json"
+          },
+          "examples": {
+            "CreateManualBatch": {
+              "summary": "Mark specific transactions for manual settlement.",
+              "description": "Mark specific transactions for manual settlement. Transaction URL or ID can be used.",
+              "value": {
+                "account": "xAPeTrathuspostl9opeqacL",
+                "transactions": [
+                  "j91EchOjl2o52plmospiqobr",
+                  "bikL66Me1abeqohosw0qlchi",
+                  "fidrlwrAcUjenlfIS1lMefrl"
+                ]
+              }
+            },
+            "CreateManualBatchAllEligible": {
+              "summary": "Mark all eligible transactions.",
+              "description": "Sending an empty transactions list will search all eligible transactions under your merchant and account, and mark them for manual settlement.",
+              "value": {
+                "account": "xAPeTrathuspostl9opeqacL",
+                "transactions": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Created",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/ManualBatch.json"
+            },
+            "examples": {
+              "CreateManualBatch": {
+                "value": {
+                  "href": "https://dev1.api.converge.eu.elavonaws.com/manual-batches/mk4bx6yvcdb24yqh2rmrtg727cyx",
+                  "id": "mk4bx6yvcdb24yqh2rmrtg727cyx",
+                  "createdAt": "2025-09-23T20:50:06.086Z",
+                  "modifiedAt": "2025-09-23T20:50:06.086Z",
+                  "merchant": "https://dev1.api.converge.eu.elavonaws.com/merchants/jUq2bLwAQ1DrLprOy1po8efR",
+                  "account": "https://dev1.api.converge.eu.elavonaws.com/accounts/xAPeTrathuspostl9opeqacL",
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  },
+  "get": {
+    "summary": "Retrieve Manual Batches",
+    "operationId": "RetrieveManualBatches",
+    "tags": [
+      "Manual Batches"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/pageToken.json"
+      },
+      {
+        "$ref": "../components/parameters/limit.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PagedListOfManualBatches.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

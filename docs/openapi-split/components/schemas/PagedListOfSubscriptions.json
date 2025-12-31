@@ -1,0 +1,22 @@
+{
+  "title": "PagedListOfSubscription",
+  "description": "Paged list of Subscriptions",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of Subscriptions",
+          "readOnly": true,
+          "items": {
+            "$ref": "./Subscription.json"
+          }
+        }
+      }
+    }
+  ]
+}

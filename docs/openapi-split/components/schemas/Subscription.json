@@ -1,0 +1,192 @@
+{
+  "type": "object",
+  "title": "Subscription",
+  "description": "A subscription associates a shopper with a plan, and details exactly how and when the shopper will be billed",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "Subscription [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "description": "Subscription [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "plan": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Plan>",
+      "description": "Plan [Resource URL](#section/Overview/Values)\n\nPlan determines the billing details and their frequency\n",
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "debtorAccount": {
+      "description": "Account information required for MCC 6012 merchants when collecting debt payments.",
+      "allOf": [
+        {
+          "$ref": "./DebtorAccount.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "doSendReceipt": {
+      "type": "string",
+      "description": "Send receipt to shopper's email address. The default value is 'DEFAULT', which will use the merchant setting for sending receipts for recurring sales",
+      "default": "DEFAULT",
+      "enum": [
+        true,
+        false,
+        "DEFAULT"
+      ]
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)\n\nStoredCard to which all payments will be billed and which must belong to the provided Shopper\n",
+      "readOnly": true
+    },
+    "storedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredAchPayment>",
+      "description": "An ACH payment that is stored for a shopper and may be used for recurring payments."
+    },
+    "surchargeAdvice": {
+      "type": "string",
+      "format": "url",
+      "writeOnly": true,
+      "title": "ResourceURL<SurchargeAdvice>",
+      "description": "SurchargeAdvice obtained through the create surchargeAdvice API call."
+    },
+    "initialSurchargeAdvice": {
+      "type": "string",
+      "format": "url",
+      "writeOnly": true,
+      "title": "ResourceURL<SurchargeAdvice>",
+      "description": "SurchargeAdvice obtained through the create surchargeAdvice API call for initial bills."
+    },
+    "surcharge": {
+      "$ref": "./SubscriptionSurcharge.json"
+    },
+    "billCount": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "description": "The total number of bills. May only be provided if not defined in plan",
+      "readOnly": true
+    },
+    "timeZoneId": {
+      "type": "string",
+      "description": "The time zone ID for date fields in the subscription.",
+      "example": "Europe/London",
+      "readOnly": true
+    },
+    "firstBillAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "description": "First bill date, which anchors the billing interval and determines all future bill dates. For monthly and yearly billing intervals, if the first bill date occurs on the last day of the month then all future bill dates will be adjusted to occur on the last day of the month.",
+      "readOnly": true
+    },
+    "nextBillAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "description": "Next bill date as calculated from the first or previous bill date according to the plan's billing interval",
+      "readOnly": true
+    },
+    "previousBillAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "description": "The most recent bill date, regardless of whether or not the payment has been successfully made",
+      "readOnly": true
+    },
+    "finalBillAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "readOnly": true,
+      "description": "The date of final bill if not open ended payment plan"
+    },
+    "cancelRequestedAt": {
+      "type": "string",
+      "format": "date",
+      "example": "2017-02-22",
+      "description": "The date in which cancel was requested",
+      "readOnly": true
+    },
+    "cancelAfterBillNumber": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The bill number after which no further billings will occur"
+    },
+    "nextBillNumber": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The number of the next bill according to the plan's schedule",
+      "readOnly": true
+    },
+    "subscriptionState": {
+      "$ref": "./SubscriptionState.json",
+      "readOnly": true
+    },
+    "failureCount": {
+      "type": "integer",
+      "description": "The count of consecutive failures performing current payment",
+      "example": 1,
+      "readOnly": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

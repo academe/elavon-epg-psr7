@@ -1,0 +1,8 @@
+{
+  "description": "Accepted",
+  "headers": {
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  }
+}

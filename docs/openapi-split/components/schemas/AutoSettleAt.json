@@ -1,0 +1,21 @@
+{
+  "title": "AutoSettleAt",
+  "description": "Auto-settle properties.",
+  "required": [
+    "time",
+    "timeZoneId"
+  ],
+  "properties": {
+    "time": {
+      "type": "string",
+      "example": "23:00",
+      "format": "full-time",
+      "description": "Time in 24-hour format. Must always be four digits (e.g., 2:00 is invalid; use 02:00)."
+    },
+    "timeZoneId": {
+      "type": "string",
+      "example": "Europe/Berlin",
+      "description": "Settlement time zone, specified by the IANA Time Zone Database name"
+    }
+  }
+}

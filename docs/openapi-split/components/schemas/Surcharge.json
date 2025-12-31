@@ -1,0 +1,39 @@
+{
+  "title": "Surcharge",
+  "description": "Surcharge information if surchargeAdvice or refundSurchargeAdvice was created for the transaction.",
+  "properties": {
+    "unadjustedTotal": {
+      "description": "Transaction total before adding surcharge total.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "unadjustedRefundableTotal": {
+      "description": "Amount of original unadjusted transaction still available for refund.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "surchargeTotal": {
+      "description": "Surcharge total.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "rate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "example": "0.035",
+      "readOnly": true
+    }
+  }
+}

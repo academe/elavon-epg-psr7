@@ -1,0 +1,48 @@
+{
+  "title": "Address",
+  "description": "Address",
+  "properties": {
+    "street1": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "221 Baker St",
+      "description": "Street line 1"
+    },
+    "street2": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "Suite B",
+      "description": "Street line 2"
+    },
+    "city": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "London",
+      "description": "Locality/Town/City"
+    },
+    "region": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "England",
+      "description": "State/Province/Region"
+    },
+    "postalCode": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "example": "NW1 6XE",
+      "description": "Zip/Postal code"
+    },
+    "countryCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "example": "GBR",
+      "description": "ISO 3166-1 Alpha-3 country code, a three-letter country code that represents countries, dependent territories, and special areas of geographical interest"
+    }
+  }
+}

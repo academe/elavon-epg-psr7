@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfPaymentLinkEvents",
+  "description": "Paged list of PaymentLinkEvents",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of PaymentLinkEvents",
+          "readOnly": true,
+          "items": {
+            "$ref": "./PaymentLinkEvent.json"
+          }
+        }
+      }
+    }
+  ]
+}

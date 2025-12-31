@@ -1,0 +1,80 @@
+{
+  "get": {
+    "summary": "Retrieve RefundSurchargeAdvice",
+    "description": "Retrieve a refund surcharge advice resource by ID.",
+    "operationId": "RetrieveRefundSurchargeAdvice",
+    "tags": [
+      "Refund Surcharge Advices"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "RefundSurchargeAdvice [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "388jcqbr7mf73xtj77phbpdbcb86",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/RefundSurchargeAdvice.json"
+            },
+            "examples": {
+              "RetrieveRefundSurchargeAdvice": {
+                "summary": "Retrieve a refund surcharge advice.",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/refund-surcharge-advices/388jcqbr7mf73xtj77phbpdbcb86",
+                  "id": "388jcqbr7mf73xtj77phbpdbcb86",
+                  "createdAt": "2023-07-05T19:41:48.886Z",
+                  "expiresAt": "2023-07-05T20:11:48.886Z",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "processorAccount": "https://uat.api.converge.eu.elavonaws.com/processor-accounts/prrgxhfwxw4ptwxvqdp7q9qydbd9",
+                  "parentTransaction": "https://uat.api.converge.eu.elavonaws.com/transactions/99qmrqcpjt2h8cm6q67gwd7kxywy",
+                  "total": {
+                    "amount": "5.00",
+                    "currencyCode": "USD"
+                  },
+                  "surchargeRate": "0.01",
+                  "surchargeTotal": {
+                    "amount": "0.05",
+                    "currencyCode": "USD"
+                  },
+                  "adjustedTotal": {
+                    "amount": "5.05",
+                    "currencyCode": "USD"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      }
+    }
+  }
+}

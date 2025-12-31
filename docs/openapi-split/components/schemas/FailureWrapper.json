@@ -1,0 +1,20 @@
+{
+  "title": "FailureWrapper",
+  "description": "Wrapper for status and Failures",
+  "properties": {
+    "status": {
+      "type": "integer",
+      "description": "Http status code returned by the server",
+      "readOnly": true,
+      "example": "401"
+    },
+    "failures": {
+      "type": "array",
+      "description": "Failures",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Failure.json"
+      }
+    }
+  }
+}

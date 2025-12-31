@@ -1,0 +1,99 @@
+{
+  "parameters": [
+    {
+      "$ref": "../components/parameters/Accept.json"
+    },
+    {
+      "$ref": "../components/parameters/Accept-Version.json"
+    },
+    {
+      "name": "id",
+      "in": "path",
+      "description": "Batch [Resource ID](#section/Overview/Values).",
+      "required": true,
+      "example": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve Batch",
+    "description": "Retrieve a single batch of transactions by ID.",
+    "tags": [
+      "Batches"
+    ],
+    "operationId": "RetrieveBatch",
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/Batch.json"
+            },
+            "examples": {
+              "Batch": {
+                "summary": "Single Batch",
+                "value": {
+                  "href": "https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ",
+                  "id": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+                  "createdAt": "2018-07-31T00:00:01.508Z",
+                  "modifiedAt": "2018-07-31T00:00:12.074Z",
+                  "merchant": "https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorAccount": "https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "processorReference": "21280002",
+                  "state": "settled",
+                  "credits": {
+                    "count": 0,
+                    "total": {
+                      "amount": "0.00",
+                      "currencyCode": "EUR"
+                    }
+                  },
+                  "debits": {
+                    "count": 3,
+                    "total": {
+                      "amount": "22.00",
+                      "currencyCode": "EUR"
+                    }
+                  },
+                  "net": {
+                    "count": 3,
+                    "total": {
+                      "amount": "22.00",
+                      "currencyCode": "EUR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": "Verification",
+  "description": "Result of a test of a submitted field",
+  "enum": [
+    "matched",
+    "unmatched",
+    "unprovided",
+    "unsupported",
+    "unavailable",
+    "unknown"
+  ]
+}

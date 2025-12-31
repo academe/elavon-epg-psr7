@@ -1,0 +1,51 @@
+{
+  "get": {
+    "summary": "Retrieve PazePayment",
+    "description": "Retrieve a Paze payment resource by ID.",
+    "operationId": "RetrievePazePayment",
+    "tags": [
+      "Paze Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "PazePayment [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PazePayment.json"
+            }
+          }
+        }
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      }
+    }
+  }
+}

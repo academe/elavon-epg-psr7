@@ -1,0 +1,79 @@
+{
+  "get": {
+    "tags": [
+      "Payment Link Events"
+    ],
+    "summary": "Retrieve PaymentLinkEvent",
+    "description": "Retrieve a Payment Link Event by ID.",
+    "operationId": "RetrievePaymentLinkEvent",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "PaymentLinkEvent [Resource ID](#section/Overview/Values).",
+        "required": true,
+        "example": "dhpymb8bc6q76mhdfq6ddbw3kbdh",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PaymentLinkEvent.json"
+            },
+            "examples": {
+              "PaymentLinkEvent": {
+                "summary": "PaymentLinkEvent",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/payment-link-events/dhpymb8bc6q76mhdfq6ddbw3kbdh",
+                  "id": "dhpymb8bc6q76mhdfq6ddbw3kbdh",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/8dkkmt7yh4w4vdcwfk3mtg4qb9qt",
+                  "paymentLink": "https://uat.api.converge.eu.elavonaws.com/payment-links/xhvm3qm4yxh8h9tbdj9fm3ycgpdp",
+                  "type": "reminderSent",
+                  "createdAt": "2023-02-07T18:49:20.886Z",
+                  "createdBy": null,
+                  "transaction": null,
+                  "shopperEmailAddress": "john.doe@email.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "PaymentMethod",
+  "description": "Payment method, such as a card issued by a bank or a local payment method.",
+  "enum": [
+    "Card",
+    "BLIK",
+    "ACH"
+  ]
+}

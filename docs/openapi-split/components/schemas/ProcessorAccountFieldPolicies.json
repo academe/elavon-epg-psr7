@@ -1,0 +1,15 @@
+{
+  "title": "ProcessorAccountFieldPolicies",
+  "description": "",
+  "properties": {
+    "transaction": {
+      "type": "string",
+      "description": "Field policies for transaction",
+      "allOf": [
+        {
+          "$ref": "./ProcessorAccountTransactionFieldPolicies.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "title": "Account",
+  "description": "A merchant may have multiple accounts",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "f9g699w9v43r9gcp77y2bxq4rjcx",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:33.567Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/6xxFwvM8BqmM6T6DcF3DyTB3",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccounts": {
+      "type": "array",
+      "description": "List of processor accounts for this account",
+      "readOnly": true,
+      "items": {
+        "$ref": "./ProcessorAccount.json"
+      }
+    },
+    "name": {
+      "type": "string",
+      "example": "Sirius Corporation",
+      "description": "Name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional Description",
+      "example": "A fintech company."
+    },
+    "tradeName": {
+      "type": "string",
+      "description": "Trading as, operating as, doing business as, fictitious, or assumed name, which may be different than the legal name.",
+      "example": "Gringotts",
+      "readOnly": true
+    },
+    "businessAddress": {
+      "type": "string",
+      "description": "Business address",
+      "readOnly": true
+    },
+    "businessPhone": {
+      "type": "string",
+      "description": "Business phone",
+      "example": "+44 020 7946 0123",
+      "readOnly": true
+    },
+    "businessEmail": {
+      "type": "string",
+      "description": "Business email",
+      "example": "sales@gringotts.com",
+      "readOnly": true
+    },
+    "businessWebsite": {
+      "type": "string",
+      "description": "Business website",
+      "example": "www.gringotts.com",
+      "readOnly": true
+    },
+    "planList": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/plan-lists/f9g699w9v43r9gcp77y2bxq4rjcx",
+      "format": "url",
+      "title": "ResourceURL<PlanList>",
+      "description": "PlanList [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "salesTaxEntry": {
+      "type": "string",
+      "description": "Sales tax entry",
+      "readOnly": true
+    },
+    "signatureVerification": {
+      "type": "string",
+      "description": "Signature verification",
+      "readOnly": true
+    },
+    "logoUrl": {
+      "type": "string",
+      "description": "Logo URL",
+      "example": "https://cf.media.eu.convergepay.com/61d4279d216486c6bbfb7cfcee18a2e9b85f61d5383fb87c97697d49ebcff917/media/logo.jpg",
+      "readOnly": true
+    },
+    "autoSettleAt": {
+      "$ref": "./AutoSettleAt.json"
+    }
+  }
+}

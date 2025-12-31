@@ -1,0 +1,46 @@
+{
+  "description": "An item in an order.",
+  "required": [
+    "total"
+  ],
+  "properties": {
+    "total": {
+      "description": "Total for this item, accounting for quantity",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Description of the item",
+      "example": "Oil change"
+    },
+    "unitPrice": {
+      "description": "Cost of an individual unit in the order.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "quantity": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "description": "The number of units being purchased.",
+      "default": 1
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant."
+    },
+    "type": {
+      "$ref": "./OrderItemType.json"
+    }
+  }
+}

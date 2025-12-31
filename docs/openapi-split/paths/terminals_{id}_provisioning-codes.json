@@ -1,0 +1,63 @@
+{
+  "get": {
+    "summary": "Retrieve Provisioning Code",
+    "description": "Retrieve the provisioning code.",
+    "operationId": "RetrieveProvisioningCode",
+    "tags": [
+      "Terminals"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "Terminal [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "f6whp4",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/ProvisioningCode.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

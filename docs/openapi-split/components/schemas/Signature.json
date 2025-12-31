@@ -1,0 +1,24 @@
+{
+  "title": "Signature",
+  "description": "",
+  "properties": {
+    "isExpected": {
+      "type": "boolean",
+      "description": "Is signature expected?"
+    },
+    "isAvailable": {
+      "type": "boolean",
+      "description": "Is signature available?",
+      "readOnly": true
+    },
+    "wasBypassed": {
+      "readOnly": true,
+      "description": "Was signature input requested but shopper declined to provide it?",
+      "allOf": [
+        {
+          "$ref": "./TrueFalseOrUnknown.json"
+        }
+      ]
+    }
+  }
+}

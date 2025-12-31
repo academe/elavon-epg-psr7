@@ -1,0 +1,34 @@
+{
+  "title": "HostedCardInput",
+  "description": "(Create) a single-use card for payment.",
+  "required": [
+    "card"
+  ],
+  "properties": {
+    "card": {
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "doVerify": {
+      "type": "boolean",
+      "default": false,
+      "title": "doVerify",
+      "description": "If true, verify Card."
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant."
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values. Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

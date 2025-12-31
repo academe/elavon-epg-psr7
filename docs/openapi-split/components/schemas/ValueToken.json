@@ -1,0 +1,25 @@
+{
+  "title": "ValueToken",
+  "description": "Tokenized value",
+  "required": [
+    "provider",
+    "token",
+    "type"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Tokenized representation of a sensitive value, like a credit card number"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Provider or method that generated the token"
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of token as defined by the provider"
+    }
+  }
+}

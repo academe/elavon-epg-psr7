@@ -1,0 +1,54 @@
+{
+  "title": "VerificationResults",
+  "description": "Represents card verification results",
+  "properties": {
+    "name": {
+      "description": "Credit card holder name result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    },
+    "securityCode": {
+      "description": "Credit card security code result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    },
+    "addressStreet": {
+      "description": "Credit card billing address street result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    },
+    "addressPostalCode": {
+      "description": "Credit card billing address postal code result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    },
+    "threeDSecureV2": {
+      "description": "Credit card 3-D secure authentication V2 result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    },
+    "cryptogramSecurity": {
+      "description": "Credit card eWallet authentication result",
+      "allOf": [
+        {
+          "$ref": "./Verification.json"
+        }
+      ]
+    }
+  }
+}

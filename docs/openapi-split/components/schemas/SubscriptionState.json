@@ -1,0 +1,15 @@
+{
+  "type": "string",
+  "title": "SubscriptionState",
+  "example": "active",
+  "description": "Current state of the subscription",
+  "readOnly": true,
+  "enum": [
+    "active",
+    "completed",
+    "cancelled",
+    "unpaid",
+    "pastDue",
+    "unknown"
+  ]
+}

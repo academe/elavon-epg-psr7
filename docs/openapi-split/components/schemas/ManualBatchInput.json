@@ -1,0 +1,33 @@
+{
+  "description": "A settlement batch. Transactions are captured into a batch and submitted together for settlement and subsequent funding.",
+  "required": [
+    "account"
+  ],
+  "properties": {
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "transactions": {
+      "type": "array",
+      "example": "[\"j2t4vdxg3r8vr4th3cmbvfgd6897\", \"b3b97xqcx9fftcbrrhv636p3t922\", \"b38gtyj2kpyg3637cmhv3tj498rb\"]",
+      "description": "Transactions to settle. You can specify the transaction ID or the full resource URL. If empty, marks all the account's eligible transactions for settlement.",
+      "writeOnly": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

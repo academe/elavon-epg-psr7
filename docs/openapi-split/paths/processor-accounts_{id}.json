@@ -1,0 +1,86 @@
+{
+  "parameters": [
+    {
+      "$ref": "../components/parameters/Accept.json"
+    },
+    {
+      "$ref": "../components/parameters/Accept-Version.json"
+    },
+    {
+      "name": "id",
+      "in": "path",
+      "description": "ProcessorAccount [Resource ID](#section/Overview/Values).",
+      "required": true,
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve ProcessorAccount",
+    "description": "Retrieve a Processor Account by resource ID.",
+    "tags": [
+      "Processor Accounts"
+    ],
+    "operationId": "RetrieveProcessorAccount",
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/ProcessorAccount.json"
+            },
+            "examples": {
+              "RetrieveProcessorAccount": {
+                "summary": "Retrieve Processor Account",
+                "description": "Shows the provided read-only processor account resource referenced by transactions.",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "id": "KmvmfQJpCBJpXHyP2kgrK2hD",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "processorReference": "2100187113",
+                  "tradeName": "PRINCE CORPORATION",
+                  "businessAddress": {
+                    "street1": "10 Downing Street",
+                    "street2": null,
+                    "city": "London",
+                    "region": null,
+                    "postalCode": "SW1A 2AA",
+                    "countryCode": "GBR"
+                  },
+                  "businessPhone": "+353 72683105804",
+                  "businessEmail": "info@aviato.com",
+                  "businessWebsite": "www.aviato.com",
+                  "merchantCategoryCode": "4722",
+                  "settlementCurrencyCode": "EUR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

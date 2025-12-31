@@ -1,0 +1,31 @@
+{
+  "description": "Unsupported Media Type. The Content-Type request header must specify 'application/json;charset=UTF-8'",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 415,
+            "failures": [
+              {
+                "code": "unsupportedMediaType",
+                "description": "Unsupported Media Type. The Content-Type request header must specify 'application/json;charset=UTF-8'"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

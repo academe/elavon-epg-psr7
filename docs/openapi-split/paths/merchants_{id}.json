@@ -1,0 +1,76 @@
+{
+  "get": {
+    "summary": "Retrieve Merchant",
+    "description": "Retrieve a Merchant",
+    "tags": [
+      "Merchants"
+    ],
+    "operationId": "RetrieveMerchant",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Merchant [Resource ID](#section/Overview/Values).",
+        "example": "kFhR9MJ396fvKPmg6GJg8R4G",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/Merchant.json"
+            },
+            "examples": {
+              "RetrieveMerchant": {
+                "summary": "Retrieve Merchant",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "id": "XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "legalName": "PRINCE CORPORATION"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

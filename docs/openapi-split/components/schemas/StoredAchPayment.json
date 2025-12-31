@@ -1,0 +1,75 @@
+{
+  "type": "object",
+  "title": "StoredAchPayment",
+  "description": "An ACH payment that is stored for a Shopper and may be used for recurring payments.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "StoredAchPayment [Resource URL](#section/Overview/Values) (self link).",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "thl3tLtobOfriy2spepro9ep",
+      "description": "StoredAchPayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp.",
+      "readOnly": true
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deletion timestamp.",
+      "example": "2017-02-22T13:01:33.567Z",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "achPayment": {
+      "description": "ACH payment details. Only accountName can be updated.",
+      "allOf": [
+        {
+          "$ref": "./AchPayment.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

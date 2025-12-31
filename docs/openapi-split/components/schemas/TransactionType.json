@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "title": "TransactionType",
+  "description": "Type of transaction",
+  "example": "sale",
+  "enum": [
+    "sale",
+    "refund",
+    "void"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "string",
+  "title": "AccountEntryMode",
+  "description": "",
+  "enum": [
+    "keyEntered",
+    "magneticStripe",
+    "emvContactless",
+    "emvChip",
+    "emvChipWithCvv",
+    "emvChipFallbackToMagneticStripe",
+    "emvContactlessFallbackToEmvChip"
+  ]
+}

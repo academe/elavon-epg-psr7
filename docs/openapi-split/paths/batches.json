@@ -1,0 +1,143 @@
+{
+  "get": {
+    "summary": "Retrieve Batches",
+    "description": "Retrieve a list of batches in descending chronological order. This resource supports filtering.",
+    "operationId": "RetrieveBatches",
+    "tags": [
+      "Batches"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/pageToken.json"
+      },
+      {
+        "$ref": "../components/parameters/limit.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PagedListOfBatches.json"
+            },
+            "examples": {
+              "ListOfBatches": {
+                "summary": "List Of Batches",
+                "value": {
+                  "href": "https://api.converge.eu.elavon.net/batches?limit=10",
+                  "first": "https://api.converge.eu.elavon.net/batches?limit=10",
+                  "next": null,
+                  "pageToken": null,
+                  "nextPageToken": null,
+                  "limit": 10,
+                  "size": 2,
+                  "items": [
+                    {
+                      "href": "https://api.converge.eu.elavon.net/batches/wrKK4HcHCXcK3KkXwFRMXVjQ",
+                      "id": "wrKK4HcHCXcK3KkXwFRMXVjQ",
+                      "createdAt": "2018-07-31T00:00:01.508Z",
+                      "modifiedAt": "2018-07-31T00:00:12.074Z",
+                      "merchant": "https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "processorReference": "21280002",
+                      "state": "settled",
+                      "credits": {
+                        "count": 0,
+                        "total": {
+                          "amount": "0.00",
+                          "currencyCode": "EUR"
+                        }
+                      },
+                      "debits": {
+                        "count": 3,
+                        "total": {
+                          "amount": "22.00",
+                          "currencyCode": "EUR"
+                        }
+                      },
+                      "net": {
+                        "count": 3,
+                        "total": {
+                          "amount": "22.00",
+                          "currencyCode": "EUR"
+                        }
+                      }
+                    },
+                    {
+                      "href": "https://api.converge.eu.elavon.net/batches/DTTpbrDvwQQprQfg9dXr3gdP",
+                      "id": "DTTpbrDvwQQprQfg9dXr3gdP",
+                      "createdAt": "2018-07-30T00:00:05.088Z",
+                      "modifiedAt": "2018-07-30T00:00:13.073Z",
+                      "merchant": "https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                      "processorAccount": "https://api.converge.eu.elavon.net/processor-accounts/KmvmfQJpCBJpXHyP2kgrK2hD",
+                      "processorReference": "21180001",
+                      "state": "settled",
+                      "credits": {
+                        "count": 1,
+                        "total": {
+                          "amount": "100.00",
+                          "currencyCode": "EUR"
+                        }
+                      },
+                      "debits": {
+                        "count": 5,
+                        "total": {
+                          "amount": "318.00",
+                          "currencyCode": "EUR"
+                        }
+                      },
+                      "net": {
+                        "count": 6,
+                        "total": {
+                          "amount": "218.00",
+                          "currencyCode": "EUR"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "EmptyListOfBatches": {
+                "summary": "Empty List Of Batches",
+                "value": {
+                  "href": "https://api.converge.eu.elavon.net/batches?limit=10",
+                  "first": "https://api.converge.eu.elavon.net/batches?limit=10",
+                  "limit": 10,
+                  "size": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

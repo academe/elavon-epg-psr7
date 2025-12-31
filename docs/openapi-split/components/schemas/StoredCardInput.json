@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "title": "StoredCard",
+  "description": "A Card that is stored for a Shopper and may be used for recurring payments",
+  "required": [
+    "shopper"
+  ],
+  "properties": {
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)"
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HostedCard>",
+      "writeOnly": true,
+      "description": "HostedCard [Resource URL](#section/Overview/Values)\n\nThe hosted card details to use when initializing this stored card.\n"
+    },
+    "card": {
+      "description": "Card details",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

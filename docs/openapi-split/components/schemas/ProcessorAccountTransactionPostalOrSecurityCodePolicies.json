@@ -1,0 +1,24 @@
+{
+  "title": "ProcessorAccountTransactionPostalOrSecurityCodePolicies",
+  "description": "",
+  "properties": {
+    "whenTypeIsSaleAndAccountEntryModeIsKeyEnteredAndIsCardPresentIsTruePolicy": {
+      "type": "string",
+      "description": "Field policy when type is 'sale' and deviceInteraction.accountEntryMode is 'keyEntered' and deviceInteraction.isCardPresent is 'true'",
+      "allOf": [
+        {
+          "$ref": "./FieldPolicy.json"
+        }
+      ]
+    },
+    "whenTypeIsSaleAndAccountEntryModeIsKeyEnteredAndIsCardPresentIsFalsePolicy": {
+      "type": "string",
+      "description": "Field policy when type is 'sale' and deviceInteraction.accountEntryMode is 'keyEntered' and deviceInteraction.isCardPresent is 'false'",
+      "allOf": [
+        {
+          "$ref": "./FieldPolicy.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "description": "StoredAchPayment [Resource ID](#section/Overview/Values)",
+      "required": true,
+      "example": "fupudr0spiswothosWaf3asw",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve StoredAchPayment",
+    "description": "Retrieve a stored ACH payment by resource ID.",
+    "operationId": "RetrieveStoredAchPayment",
+    "tags": [
+      "Stored ACH Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/StoredAchPayment.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  },
+  "post": {
+    "summary": "Update StoredAchPayment",
+    "description": "Overwrite an existing stored ACH payment resource. Note that only **achPayment**.*accountName* can be updated.",
+    "operationId": "UpdateStoredAchPayment",
+    "tags": [
+      "Stored ACH Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (StoredAchPayment)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/StoredAchPayment.json"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/StoredAchPayment.json"
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  },
+  "delete": {
+    "summary": "Delete StoredAchPayment",
+    "description": "Delete a stored ACH payment resource.",
+    "operationId": "DeleteStoredAchPayment",
+    "tags": [
+      "Stored ACH Payments"
+    ],
+    "responses": {
+      "204": {
+        "description": "No Content",
+        "headers": {
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

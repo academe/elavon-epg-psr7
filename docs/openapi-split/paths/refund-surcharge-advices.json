@@ -1,0 +1,113 @@
+{
+  "post": {
+    "summary": "Create RefundSurchargeAdvice",
+    "description": "Create a refund surcharge advice.",
+    "operationId": "CreateRefundSurchargeAdvice",
+    "tags": [
+      "Refund Surcharge Advices"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (RefundSurchargeAdvice)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/RefundSurchargeAdviceInput.json"
+          },
+          "examples": {
+            "CreateRefundSurchargeAdvice": {
+              "summary": "Create a refund surcharge advice.",
+              "value": {
+                "parentTransaction": "https://uat.api.converge.eu.elavonaws.com/transactions/99qmrqcpjt2h8cm6q67gwd7kxywy",
+                "total": {
+                  "amount": "2.00",
+                  "currencyCode": "USD"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Created",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/RefundSurchargeAdvice.json"
+            },
+            "examples": {
+              "CreateRefundSurchargeAdvice": {
+                "summary": "Create a refund surcharge advice.",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/refund-surcharge-advices/djg8rwkkbb7jbwjv7hjf4bbj26r7",
+                  "id": "djg8rwkkbb7jbwjv7hjf4bbj26r7",
+                  "createdAt": "2024-01-26T18:17:14.168Z",
+                  "expiresAt": "2024-01-26T18:47:14.168Z",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "processorAccount": "https://uat.api.converge.eu.elavonaws.com/processor-accounts/prrgxhfwxw4ptwxvqdp7q9qydbd9",
+                  "parentTransaction": "https://uat.api.converge.eu.elavonaws.com/transactions/gdw9tb67tfbf4ddv6jxc82t8ypyr",
+                  "total": {
+                    "amount": "2.00",
+                    "currencyCode": "USD"
+                  },
+                  "surchargeRate": "0.03",
+                  "surchargeTotal": {
+                    "amount": "0.06",
+                    "currencyCode": "USD"
+                  },
+                  "adjustedTotal": {
+                    "amount": "2.06",
+                    "currencyCode": "USD"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

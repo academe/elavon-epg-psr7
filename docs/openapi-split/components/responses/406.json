@@ -1,0 +1,31 @@
+{
+  "description": "The Accept request header must specify 'application/json;charset=UTF-8'; the Accept-Version request header if present, must reference a valid API version",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 406,
+            "failures": [
+              {
+                "code": "notAcceptable",
+                "description": "The Accept request header must specify 'application/json;charset=UTF-8'; the Accept-Version request header if present, must reference a valid API version"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

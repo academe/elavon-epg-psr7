@@ -1,0 +1,44 @@
+{
+  "title": "ThreeDSecure",
+  "description": "3-D Secure v2",
+  "required": [
+    "directoryServerTransactionId",
+    "transactionStatus",
+    "protocolVersion"
+  ],
+  "properties": {
+    "directoryServerTransactionId": {
+      "type": "string",
+      "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[12345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
+      "description": "A universally unique transaction identifier assigned by the directory server that maps authentications to authorizations, in IETF RFC 4122 format\n",
+      "example": "88093c16-4659-4b23-bc84-b5a790779107"
+    },
+    "transactionStatus": {
+      "type": "string",
+      "pattern": "[YNUA]",
+      "description": "Often shortened to 'transStatus', a code to indicate the outcome of the shopper authentication\n\nMust be 'Y', 'N', 'U', or 'A'\n",
+      "example": "Y"
+    },
+    "electronicCommerceIndicator": {
+      "type": "string",
+      "pattern": "0?[012567]",
+      "description": "Often shortened to 'eci', a code to indicate the security level used to authenticate the shopper\n\nMust be '0', '1', '2', '5', '6', or '7', optionally with a leading zero\n",
+      "example": "05"
+    },
+    "authenticationValue": {
+      "type": "string",
+      "minLength": 28,
+      "maxLength": 28,
+      "description": "Proof of authentication provided by the access control server, 20 bytes Base64 encoded giving a 28 character value\n",
+      "example": "DO+j0b3yB6NR9vJ+BO6O099GvzY="
+    },
+    "protocolVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8,
+      "pattern": "\\d+.\\d+.\\d+",
+      "description": "Version provided by the access control server",
+      "example": "2.1.0"
+    }
+  }
+}

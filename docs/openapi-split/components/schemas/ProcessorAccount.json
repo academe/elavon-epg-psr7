@@ -1,0 +1,186 @@
+{
+  "title": "ProcessorAccount",
+  "description": "A merchant may have multiple processor accounts, although Elavon Payment Gateway currently only supports one. Each processor account tracks and processes transactions separately. For merchants with multiple stores, there might be a separate processor account for each store. As another example, the merchant may need to track ecommerce transactions separately from card-present transactions. Elavon Payment Gateway has plans of supporting more complex use cases where the merchant contracts with multiple payment processors.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "title": "ResourceID<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true
+    },
+    "legalName": {
+      "type": "string",
+      "example": "Sirius Cybernetics Corporation",
+      "description": "Legal name under which the merchant operates using this processor account.",
+      "readOnly": true
+    },
+    "friendlyName": {
+      "type": "string",
+      "example": "Sirius Cybernetics Corporation",
+      "description": "Friendly name assigned to processor account.",
+      "readOnly": true
+    },
+    "tradeName": {
+      "type": "string",
+      "description": "Trading as, operating as, doing business as, fictitious, or assumed name, which may be different than the legal name",
+      "example": "Gringotts",
+      "readOnly": true
+    },
+    "businessAddress": {
+      "description": "Business Address",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Address.json"
+        }
+      ]
+    },
+    "businessPhone": {
+      "type": "string",
+      "description": "Business phone",
+      "example": "+44 020 7946 0123",
+      "readOnly": true
+    },
+    "businessEmail": {
+      "type": "string",
+      "example": "sales@gringotts.com",
+      "description": "Business email",
+      "readOnly": true
+    },
+    "businessWebsite": {
+      "type": "string",
+      "description": "Business website",
+      "example": "www.gringotts.com",
+      "readOnly": true
+    },
+    "merchantCategoryCode": {
+      "type": "string",
+      "description": "Merchant category code (MCC), four-digit number from ISO 18245",
+      "example": "8734",
+      "readOnly": true
+    },
+    "marketSegment": {
+      "description": "Market segment",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./MarketSegment.json"
+        }
+      ]
+    },
+    "region": {
+      "description": "Region, (e.g., NA, EU)",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Region.json"
+        }
+      ]
+    },
+    "settlementCurrencyCode": {
+      "type": "string",
+      "description": "Currency to settle funds in. Uses ISO 4217 three-letter currency code.",
+      "example": "EUR",
+      "readOnly": true
+    },
+    "languageTag": {
+      "type": "string",
+      "description": "Language tag",
+      "readOnly": true
+    },
+    "supportedCardBrands": {
+      "type": "array",
+      "description": "Supported CardBrand(s)",
+      "readOnly": true,
+      "items": {
+        "$ref": "./CardBrand.json"
+      }
+    },
+    "supportedPaymentMethods": {
+      "type": "array",
+      "description": "List of supported payment methods.",
+      "readOnly": true,
+      "items": {
+        "$ref": "./PaymentMethod.json"
+      }
+    },
+    "supportedPaymentMethodOrigins": {
+      "type": "array",
+      "description": "List of supported payment method origins.",
+      "readOnly": true,
+      "items": {
+        "$ref": "./PaymentMethodOrigin.json"
+      }
+    },
+    "isDccEnabled": {
+      "type": "boolean",
+      "description": "Is this processor account DCC-enabled?",
+      "readOnly": true
+    },
+    "isMccEnabled": {
+      "type": "boolean",
+      "description": "Is this processor account MCC-enabled?",
+      "readOnly": true
+    },
+    "isStandaloneRefundEnabled": {
+      "type": "boolean",
+      "description": "Does this processor account support standalone refund?",
+      "readOnly": true
+    },
+    "surcharging": {
+      "description": "Surcharging",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./Surcharging.json"
+        }
+      ]
+    },
+    "pinlessDebit": {
+      "type": "array",
+      "description": "List of pinless debit card schemes.",
+      "readOnly": true,
+      "items": {
+        "$ref": "./PinlessDebitCardScheme.json"
+      }
+    },
+    "debitSteering": {
+      "description": "Debit steering",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./DebitSteering.json"
+        }
+      ]
+    },
+    "fieldPolicies": {
+      "description": "Field policies",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./ProcessorAccountFieldPolicies.json"
+        }
+      ]
+    }
+  }
+}

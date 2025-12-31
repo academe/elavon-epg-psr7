@@ -1,0 +1,171 @@
+{
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "description": "StoredCard [Resource ID](#section/Overview/Values)",
+      "required": true,
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve StoredCard",
+    "description": "Retrieve a stored card by resource ID.",
+    "operationId": "RetrieveStoredCard",
+    "tags": [
+      "Stored Cards"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/StoredCard.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  },
+  "post": {
+    "summary": "Update StoredCard",
+    "description": "Overwrite an existing stored card resource.",
+    "operationId": "UpdateStoredCard",
+    "tags": [
+      "Stored Cards"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (StoredCard)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/StoredCard.json"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/StoredCard.json"
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  },
+  "delete": {
+    "summary": "Delete StoredCard",
+    "description": "Delete a stored card resource.",
+    "operationId": "DeleteStoredCard",
+    "tags": [
+      "Stored Cards"
+    ],
+    "responses": {
+      "204": {
+        "description": "No Content",
+        "headers": {
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

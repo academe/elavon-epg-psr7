@@ -1,0 +1,235 @@
+{
+  "post": {
+    "summary": "Create Order",
+    "description": "Creates an order.",
+    "tags": [
+      "Orders"
+    ],
+    "operationId": "CreateOrder",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (Order)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/OrderInput.json"
+          },
+          "examples": {
+            "CreateOrder": {
+              "summary": "Create Order",
+              "description": "Shows how to create an order, which may subsequently be used with a payment session.",
+              "value": {
+                "total": {
+                  "amount": "3.23",
+                  "currencyCode": "EUR"
+                },
+                "description": "parts",
+                "items": [
+                  {
+                    "total": {
+                      "amount": "1.00",
+                      "currencyCode": "EUR"
+                    },
+                    "description": "widget"
+                  },
+                  {
+                    "total": {
+                      "amount": "2.00",
+                      "currencyCode": "EUR"
+                    },
+                    "unitPrice": {
+                      "amount": "1.00",
+                      "currencyCode": "EUR"
+                    },
+                    "quantity": 2,
+                    "description": "cogs",
+                    "type": "goods"
+                  },
+                  {
+                    "total": {
+                      "amount": ".23",
+                      "currencyCode": "EUR"
+                    },
+                    "description": "tax",
+                    "type": "tax"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Created",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/Order.json"
+            },
+            "examples": {
+              "CreateOrder": {
+                "summary": "Create Order",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/orders/p7hxrvrpgfc68w6gm7q3b47y",
+                  "id": "p7hxrvrpgfc68w6gm7q3b47y",
+                  "createdAt": "2019-04-22T18:52:10.920Z",
+                  "modifiedAt": "2019-04-22T18:52:10.920Z",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "total": {
+                    "amount": "3.23",
+                    "currencyCode": "EUR"
+                  },
+                  "description": "parts",
+                  "shipTo": null,
+                  "shopperEmailAddress": null,
+                  "shopperReference": null,
+                  "customReference": null,
+                  "items": [
+                    {
+                      "total": {
+                        "amount": "1.00",
+                        "currencyCode": "EUR"
+                      },
+                      "description": "widget",
+                      "unitPrice": null,
+                      "quantity": 1,
+                      "customReference": null,
+                      "type": "unknown"
+                    },
+                    {
+                      "total": {
+                        "amount": "2.00",
+                        "currencyCode": "EUR"
+                      },
+                      "description": "cogs",
+                      "unitPrice": {
+                        "amount": "1.00",
+                        "currencyCode": "EUR"
+                      },
+                      "quantity": 2,
+                      "customReference": null,
+                      "type": "goods"
+                    },
+                    {
+                      "total": {
+                        "amount": "0.23",
+                        "currencyCode": "EUR"
+                      },
+                      "description": "tax",
+                      "unitPrice": null,
+                      "quantity": 1,
+                      "customReference": null,
+                      "type": "tax"
+                    }
+                  ],
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  },
+  "get": {
+    "summary": "Retrieve Orders",
+    "description": "Retrieves all Orders. This resource is filterable.",
+    "tags": [
+      "Orders"
+    ],
+    "operationId": "RetrieveOrders",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/pageToken.json"
+      },
+      {
+        "$ref": "../components/parameters/limit.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PagedListOfOrders.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

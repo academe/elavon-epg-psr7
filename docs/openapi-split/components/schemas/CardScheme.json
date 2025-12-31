@@ -1,0 +1,16 @@
+{
+  "type": "string",
+  "example": "MasterCard",
+  "title": "CardScheme",
+  "description": "Scheme / Payment card network",
+  "readOnly": true,
+  "enum": [
+    "American Express",
+    "UnionPay",
+    "Discover",
+    "JCB",
+    "MasterCard",
+    "Visa",
+    "Unknown"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "title": "DebtorAccount",
+  "description": "Account information required for MCC 6012/6050/6051 merchants",
+  "properties": {
+    "dateOfBirth": {
+      "type": "string",
+      "description": "Date Of Birth in `YYYYMMDD` format",
+      "example": "19801231",
+      "writeOnly": true
+    },
+    "accountNumber": {
+      "type": "string",
+      "maxLength": 10,
+      "minLength": 1,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Account number",
+      "example": "1234567890",
+      "writeOnly": true
+    },
+    "postalCode": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Zip/Postal code. Required for UK Merchants.",
+      "example": "NW1 6XE"
+    },
+    "lastName": {
+      "type": "string",
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Last Name",
+      "example": "Smith"
+    }
+  }
+}

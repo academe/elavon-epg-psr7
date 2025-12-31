@@ -1,0 +1,18 @@
+{
+  "type": "string",
+  "title": "PinLengthCapability",
+  "description": "",
+  "enum": [
+    "unknown",
+    "none",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve"
+  ]
+}

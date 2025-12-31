@@ -1,0 +1,146 @@
+{
+  "type": "object",
+  "title": "SurchargeAdvice",
+  "description": "A surcharge advice calculates the amount of available surcharge and provides an adjusted transaction total for specific personal account numbers or stored cards.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "SurchargeAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "h4jtcrxffvdbmvwg79xvkf8fqf6",
+      "description": "SurchargeAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-07-05T19:27:44.570Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-07-05T19:57:44.570Z",
+      "description": "Expiration timestamp.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "hsmCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HsmCard>",
+      "description": "Hsm Card [Resource URL](#section/Overview/Values)"
+    },
+    "googlePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "GooglePayPayment used to create a surcharge advice for a transaction."
+    },
+    "applePayPayment": {
+      "type": "string",
+      "format": "url",
+      "description": "ApplePayPayment used to create a surcharge advice for a transaction."
+    },
+    "pazePayment": {
+      "type": "string",
+      "format": "url",
+      "description": "PazePayment used to create a surcharge advice for a transaction."
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "maskedNumber": {
+      "type": "string",
+      "description": "Masked card number.",
+      "example": "XXXX.XXXX.XXXX.4444",
+      "readOnly": true
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "description": "Last 4 digits of a card number.",
+      "example": "4444",
+      "readOnly": true
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "description": "Issuer/Bank identification number / IIN / BIN.",
+      "example": "425702",
+      "readOnly": true
+    },
+    "panFingerprint": {
+      "type": "string",
+      "description": "Personal account number (PAN) fingerprint.",
+      "readOnly": true
+    },
+    "total": {
+      "description": "The transaction total excluding the surcharge amount.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "surchargeRate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "readOnly": true
+    },
+    "surchargeTotal": {
+      "description": "The calculated surcharge total.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "adjustedTotal": {
+      "description": "The adjusted total including the calculated surcharge.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

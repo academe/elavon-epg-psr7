@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "title": "SignatureVerification",
+  "description": "",
+  "enum": [
+    "disabled",
+    "optional",
+    "magneticStripeOnly",
+    "always"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Failure",
+  "description": "Failure with code, target field and description",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Failure code",
+      "readOnly": true,
+      "example": "unauthorized"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the failure; intended for the developer",
+      "readOnly": true,
+      "example": "A valid API key is required"
+    },
+    "field": {
+      "type": "string",
+      "description": "Field, if failure is linked to a specific field",
+      "readOnly": true
+    }
+  }
+}

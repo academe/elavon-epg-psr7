@@ -1,0 +1,36 @@
+{
+  "description": "Bad Request. The request is invalid; correct all issues before resending",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 400,
+            "failures": [
+              {
+                "code": "badRequest",
+                "description": "The request is invalid; correct all issues before resending"
+              },
+              {
+                "code": "fieldValidationFailure",
+                "description": "field1 must be a number between 2000 and 2099, inclusive",
+                "field": "field1"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

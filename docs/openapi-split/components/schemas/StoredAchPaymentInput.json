@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "title": "StoredAchPaymentInput",
+  "description": "An ACH payment that is stored for a Shopper and may be used for recurring payments.",
+  "properties": {
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)"
+    },
+    "hostedAchPayment": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HostedAchPayment>",
+      "description": "HostedAchPayment from which to initialize this StoredAchPayment",
+      "writeOnly": true
+    },
+    "achPayment": {
+      "description": "ACH payment details.",
+      "allOf": [
+        {
+          "$ref": "./AchPayment.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

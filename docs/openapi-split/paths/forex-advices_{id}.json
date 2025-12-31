@@ -1,0 +1,98 @@
+{
+  "parameters": [
+    {
+      "$ref": "../components/parameters/Accept.json"
+    },
+    {
+      "$ref": "../components/parameters/Accept-Version.json"
+    },
+    {
+      "name": "id",
+      "in": "path",
+      "description": "ForexAdvice [Resource ID](#section/Overview/Values).",
+      "required": true,
+      "example": "8Pmhg2rh8c7wytV9vb27X6VT",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve ForexAdvice",
+    "description": "Retrieve a previously created ForexAdvice by id.",
+    "tags": [
+      "Forex Advices"
+    ],
+    "operationId": "RetrieveForexAdvice",
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/ForexAdvice.json"
+            },
+            "examples": {
+              "RetrieveForexAdvice": {
+                "summary": "Retrieve a forex advice.",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/forex-advices/p2hck3h4g9bcdm2hr9yvycppjm8t",
+                  "id": "p2hck3h4g9bcdm2hr9yvycppjm8t",
+                  "createdAt": "2024-01-29T18:59:07.900Z",
+                  "expiresAt": "2024-01-30T18:59:07.881Z",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "panToken": {
+                    "token": "9580733899373269555",
+                    "provider": "ELAVON_C2_V1",
+                    "type": "pan"
+                  },
+                  "maskedNumber": "XXXXXXXXXXXX0000",
+                  "last4": "0000",
+                  "bin": "512079",
+                  "panFingerprint": "m7bh97bm36tpt6bdhgphfv8vdwdt",
+                  "total": {
+                    "amount": "3.00",
+                    "currencyCode": "USD"
+                  },
+                  "issuerTotal": {
+                    "amount": "405",
+                    "currencyCode": "JPY"
+                  },
+                  "conversionRate": "135.05698",
+                  "markupRate": "0.0325",
+                  "markupRateAnnotation": "none",
+                  "shopperInteraction": "telephoneOrder",
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  }
+}

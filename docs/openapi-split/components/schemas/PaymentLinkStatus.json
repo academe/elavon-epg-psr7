@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "title": "PaymentLinkStatus",
+  "description": "",
+  "enum": [
+    "active",
+    "completed",
+    "cancelled",
+    "expired"
+  ]
+}

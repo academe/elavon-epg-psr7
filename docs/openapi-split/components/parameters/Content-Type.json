@@ -1,0 +1,9 @@
+{
+  "name": "Content-Type",
+  "in": "header",
+  "description": "Media type of the request body.",
+  "schema": {
+    "type": "string",
+    "example": "application/json;charset=UTF-8"
+  }
+}

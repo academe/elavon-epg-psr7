@@ -1,0 +1,24 @@
+{
+  "type": "string",
+  "title": "EventType",
+  "description": "The type of event that triggered this notification",
+  "example": "saleAuthorized",
+  "readOnly": true,
+  "enum": [
+    "saleDeclined",
+    "saleAuthorized",
+    "saleHeldForReview",
+    "saleCaptured",
+    "saleSettled",
+    "voidDeclined",
+    "voidAuthorized",
+    "refundDeclined",
+    "refundAuthorized",
+    "refundCaptured",
+    "refundSettled",
+    "totalAdjustmentAuthorized",
+    "totalAdjustmentDeclined",
+    "transactionTotalAdjustment",
+    "unknown"
+  ]
+}

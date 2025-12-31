@@ -1,0 +1,21 @@
+{
+  "title": "ApplePayPaymentSessionInput",
+  "description": "Contains the elements necessary for initiating a transaction with Apple. The Apple Pay payment session is returned after validation of the supplied fields.",
+  "required": [
+    "initiativeContext"
+  ],
+  "properties": {
+    "account": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/accounts/7btv9vr8cq3nq8r7p4wjmjkk58bt",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)"
+    },
+    "initiativeContext": {
+      "type": "string",
+      "example": "mystore.example.com",
+      "description": "Fully qualified domain name that has been registered with Apple. It does not include the protocol (e.g., http, https)."
+    }
+  }
+}

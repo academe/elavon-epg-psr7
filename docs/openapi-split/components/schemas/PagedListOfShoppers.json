@@ -1,0 +1,22 @@
+{
+  "title": "PagedListOfShoppers",
+  "description": "Paged list of Shoppers",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of Shoppers",
+          "readOnly": true,
+          "items": {
+            "$ref": "./Shopper.json"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "title": "ForexAdvice",
+  "description": "Foreign exchange conversion.",
+  "type": "object",
+  "required": [
+    "shopperInteraction",
+    "total"
+  ],
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "ForexAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "description": "ForexAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Expiration timestamp.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values). Suppressed when using a public API key.",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "account": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/accounts/9IWrotHAPhOx5cuKlsw04IBO",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "writeOnly": true
+    },
+    "storedCard": {
+      "type": "string",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "hostedCard": {
+      "type": "string",
+      "title": "ResourceURL<HostedCard>",
+      "description": "HostedCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "hsmCard": {
+      "type": "string",
+      "title": "ResourceURL<HsmCard>",
+      "description": "HsmCard [Resource URL](#section/Overview/Values).",
+      "writeOnly": true
+    },
+    "cardNumber": {
+      "type": "string",
+      "minLength": 13,
+      "maxLength": 23,
+      "pattern": "\\D*(?:\\d\\D*){13,19}",
+      "writeOnly": true,
+      "description": "Personal account number (PAN), not returned.",
+      "example": "XXXX XXXX XXXX XXXX"
+    },
+    "panToken": {
+      "description": "Cardholder's personal account number (PAN) token.",
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "maskedNumber": {
+      "type": "string",
+      "description": "Masked card number.",
+      "example": "XXXX XXXX XXXX 0536",
+      "readOnly": true
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "description": "Last 4 of a card number.",
+      "example": "4242",
+      "readOnly": true
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "description": "Issuer/Bank identification number / IIN / BIN.",
+      "example": "456789",
+      "readOnly": true
+    },
+    "panFingerprint": {
+      "type": "string",
+      "description": "Personal account number (PAN) fingerprint.",
+      "readOnly": true
+    },
+    "total": {
+      "description": "Total in the source currency.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "issuerTotal": {
+      "description": "Total in the target currency.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "conversionRate": {
+      "type": "string",
+      "description": "The currency exchange rate (1 unit of total currency = 11.89 units of issuer currency).",
+      "example": "11.89",
+      "readOnly": true
+    },
+    "markupRate": {
+      "type": "string",
+      "description": "The markup percent. A value of 0.0399 means 3.99%.",
+      "example": "0.0399",
+      "readOnly": true
+    },
+    "markupRateAnnotation": {
+      "$ref": "./MarkupRateAnnotation.json"
+    },
+    "rateProvideName": {
+      "type": "string",
+      "description": "Rate provider name",
+      "readOnly": true,
+      "example": "US Bank"
+    },
+    "shopperInteraction": {
+      "$ref": "./ShopperInteraction.json"
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant."
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "No Content",
+  "headers": {
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  }
+}

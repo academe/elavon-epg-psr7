@@ -1,0 +1,89 @@
+{
+  "title": "Contact",
+  "description": "Contact details",
+  "properties": {
+    "fullName": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's full name",
+      "example": "John Doe"
+    },
+    "company": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's company",
+      "example": "Acme"
+    },
+    "street1": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Street line 1",
+      "example": "221 Baker St"
+    },
+    "street2": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Street line 2",
+      "example": "Suite B"
+    },
+    "city": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Locality/Town/City",
+      "example": "London"
+    },
+    "region": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "State/Province/Region",
+      "example": "England"
+    },
+    "postalCode": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Zip/Postal code; Required for UK Merchants",
+      "example": "NW1 6XE"
+    },
+    "countryCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "ISO 3166-1 Alpha-3 country code, a three-letter country code that represents countries, dependent territories, and special areas of geographical interest",
+      "example": "GBR"
+    },
+    "primaryPhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's primary phone",
+      "example": "+44 020 7946 0123"
+    },
+    "alternatePhone": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's alternate phone",
+      "example": "+44 020 7946 0124"
+    },
+    "fax": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Cardholder's fax number",
+      "example": "+44 020 7946 0125"
+    },
+    "email": {
+      "type": "string",
+      "description": "Cardholder's email address",
+      "example": "john@email.com",
+      "maxLength": 254
+    }
+  }
+}

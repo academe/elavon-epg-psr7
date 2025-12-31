@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfTotalAdjustments",
+  "description": "Paged list of total adjustments",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of total adjustments",
+          "readOnly": true,
+          "items": {
+            "$ref": "./TotalAdjustment.json"
+          }
+        }
+      }
+    }
+  ]
+}

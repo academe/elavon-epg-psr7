@@ -1,0 +1,88 @@
+{
+  "get": {
+    "summary": "Retrieve SurchargeAdvice",
+    "description": "Retrieve a surcharge advice resource by ID.",
+    "operationId": "RetrieveSurchargeAdvice",
+    "tags": [
+      "Surcharge Advices"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "SurchargeAdvice [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "ph4jtcrxffvdbmvwg79xvkf8fqf6",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/SurchargeAdvice.json"
+            },
+            "examples": {
+              "RetrieveSurchargeAdvice": {
+                "summary": "Retrieve a surcharge advice.",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/surcharge-advices/ph4jtcrxffvdbmvwg79xvkf8fqf6",
+                  "id": "ph4jtcrxffvdbmvwg79xvkf8fqf6",
+                  "createdAt": "2023-07-05T19:27:44.570Z",
+                  "expiresAt": "2023-07-05T19:57:44.570Z",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "processorAccount": "https://uat.api.converge.eu.elavonaws.com/processor-accounts/prrgxhfwxw4ptwxvqdp7q9qydbd9",
+                  "panToken": {
+                    "token": "9467275901658927495",
+                    "provider": "ELAVON_C2_V1",
+                    "type": "pan"
+                  },
+                  "maskedNumber": "XXXXXXXXXXXX4444",
+                  "last4": "4444",
+                  "bin": "425702",
+                  "panFingerprint": "f8gcmwwc7g998tgqqm8pp23pdt9f",
+                  "total": {
+                    "amount": "5.00",
+                    "currencyCode": "USD"
+                  },
+                  "surchargeRate": "0.01",
+                  "surchargeTotal": {
+                    "amount": "0.05",
+                    "currencyCode": "USD"
+                  },
+                  "adjustedTotal": {
+                    "amount": "5.05",
+                    "currencyCode": "USD"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      }
+    }
+  }
+}

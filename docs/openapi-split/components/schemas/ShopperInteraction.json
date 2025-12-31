@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "default": "ecommerce",
+  "title": "ShopperInteraction",
+  "description": "The type of interaction with the shopper that generated this payment session.\n\n  - **ecommerce** : The shopper generated this transaction with an ecommerce interaction.\n  - **mailOrder** : The shopper generated this transaction with a mail order.\n  - **telephoneOrder** : The shopper generated this transaction with a telephone Order.\n  - **merchantInitiated** : A merchant generated this transaction without shopper involvement.\n  - **inPerson** : The shopper generated the transaction in-person with a physical payment method (e.g. POS terminal).\n",
+  "enum": [
+    "ecommerce",
+    "mailOrder",
+    "telephoneOrder",
+    "merchantInitiated",
+    "inPerson"
+  ]
+}

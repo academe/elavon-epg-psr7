@@ -1,0 +1,27 @@
+{
+  "title": "ProvisioningCode",
+  "description": "",
+  "required": [
+    "terminal"
+  ],
+  "properties": {
+    "terminal": {
+      "title": "ResourceURL<Terminal>",
+      "description": "Terminal [Resource URL](#section/Overview/Values)",
+      "example": "2vj87dyvbjmcc4crgjcq9w4wg47k",
+      "readOnly": true
+    },
+    "code": {
+      "type": "string",
+      "example": "f6whp4",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2024-03-07T13:01:23.123Z",
+      "description": "Expires at",
+      "readOnly": true
+    }
+  }
+}

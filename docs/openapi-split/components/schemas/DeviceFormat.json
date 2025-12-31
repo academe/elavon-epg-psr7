@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "DeviceFormat",
+  "description": "",
+  "enum": [
+    "onguardSdeV1",
+    "roamGenericTdes"
+  ]
+}

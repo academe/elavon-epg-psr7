@@ -1,0 +1,137 @@
+{
+  "title": "TotalAdjustment",
+  "description": "An adjustment to the total and/or tip of an existing transaction. Check the 'isAuthorized' field to see whether or not the adjustment was authorized. If not authorized, check the 'failures' array  to determine why.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<TotalAdjustment>",
+      "description": "TotalAdjustment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "teKosOTAwec6blDRlD0iXeWo",
+      "title": "ResourceID<Transaction>",
+      "description": "TotalAdjustment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "transaction": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/transactions/teKosOTAwec6blDRlD0iXeWo",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values), suppressed when a public API key is used",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2025-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "total": {
+      "description": "The cumulative new total amount.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "totalAdjustment": {
+      "description": "The positive or negative adjustment to the prior authorized amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "salesTax": {
+      "description": "The cumulative new sales tax.",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "salesTaxAdjustment": {
+      "description": "The positive or negative adjustment to the prior salesTax amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "tip": {
+      "description": "Tip amount.",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "tipAdjustment": {
+      "description": "The positive or negative adjustment to the prior tip amount.",
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    },
+    "processorReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true
+    },
+    "issuerReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true
+    },
+    "doCapture": {
+      "type": "boolean",
+      "description": "If false, authorize only; if true (default), authorize and capture funds for settlement."
+    },
+    "isAuthorized": {
+      "type": "boolean",
+      "readOnly": true,
+      "description": "Transaction is authorized?"
+    },
+    "authorizationCode": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Authorization code"
+    },
+    "issuerResponseCode": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Issuer response code"
+    },
+    "rawProcessorResponseInfo": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Raw response data from the processor."
+    },
+    "failures": {
+      "type": "array",
+      "description": "Failure details, if the transaction was not authorized",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Failure.json"
+      }
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "string",
+  "example": "Maestro",
+  "title": "CardBrand",
+  "description": "Helps distinguish different brands for the same scheme",
+  "readOnly": true,
+  "enum": [
+    "American Express",
+    "UnionPay Credit",
+    "UnionPay Debit",
+    "Diners Club",
+    "Discover",
+    "JCB",
+    "Maestro",
+    "MasterCard",
+    "MasterCard Credit",
+    "MasterCard Debit",
+    "Visa",
+    "Visa Debit",
+    "Visa Credit",
+    "Visa Electron",
+    "Unknown"
+  ]
+}

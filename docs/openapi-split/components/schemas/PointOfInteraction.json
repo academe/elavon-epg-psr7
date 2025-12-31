@@ -1,0 +1,11 @@
+{
+  "title": "PointOfInteraction",
+  "description": "",
+  "properties": {
+    "laneNumber": {
+      "type": "string",
+      "description": "Lane Number",
+      "pattern": "\\\\d{0,8}"
+    }
+  }
+}

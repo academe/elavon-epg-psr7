@@ -1,0 +1,98 @@
+{
+  "type": "object",
+  "title": "RefundSurchargeAdvice",
+  "description": "A refund surcharge advice calculates the amount of refundable surcharge and provides an adjusted refund transaction amount using the previous surcharge advice and the original parent transaction.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "RefundSurchargeAdvice [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "388jcqbr7mf73xtj77phbpdbcb86",
+      "description": "RefundSurchargeAdvice [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-07-05T19:41:48.886Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2023-07-05T20:11:48.886Z",
+      "description": "Expiration timestamp.",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "parentTransaction": {
+      "type": "string",
+      "example": "https://uat.api.converge.eu.elavonaws.com/transactions/99qmrqcpjt2h8cm6q67gwd7kxywy",
+      "format": "url",
+      "title": "ResourceURL<Transaction>",
+      "description": "Transaction [Resource URL](#section/Overview/Values) of the parent transaction for surcharge."
+    },
+    "total": {
+      "description": "The refund total excluding the surcharge amount. A value for partial refund can be specified.",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "surchargeRate": {
+      "type": "string",
+      "description": "The merchant's surcharge rate. A value of 0.035 means 3.5%.",
+      "readOnly": true
+    },
+    "surchargeTotal": {
+      "description": "The calculated surcharge total. This value is prorated based on the total amount to be refunded.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "adjustedTotal": {
+      "description": "The adjusted total refund including the calculated surcharge. The calculated surcharge is prorated based on the total amount to be refunded.",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

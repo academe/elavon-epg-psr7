@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "title": "SubscriptionSurcharge",
+  "description": "Surcharge information if surchargeAdvice was created for the subscription",
+  "properties": {
+    "total": {
+      "description": "Plan total amount after adding surcharge",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "initialTotal": {
+      "description": "Plan initial amount after adding surcharge",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "rate": {
+      "type": "string",
+      "description": "The surcharge rate. A value of 0.035 means 3.5%",
+      "example": "0.035",
+      "readOnly": true
+    },
+    "surchargeTotal": {
+      "description": "Plan surcharge amount on total",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "surchargeInitialTotal": {
+      "description": "Plan surcharge amount on initial total",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    }
+  }
+}

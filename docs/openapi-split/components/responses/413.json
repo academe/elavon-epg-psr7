@@ -1,0 +1,31 @@
+{
+  "description": "Request entity is too large",
+  "headers": {
+    "Content-Type": {
+      "$ref": "../headers/Content-Type.json"
+    },
+    "Version": {
+      "$ref": "../headers/Version.json"
+    }
+  },
+  "content": {
+    "application/json": {
+      "schema": {
+        "$ref": "../schemas/FailureWrapper.json"
+      },
+      "examples": {
+        "FieldValidationFailure": {
+          "value": {
+            "status": 413,
+            "failures": [
+              {
+                "code": "payloadTooLarge",
+                "description": "Request entity is too large"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

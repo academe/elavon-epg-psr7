@@ -1,0 +1,15 @@
+{
+  "type": "string",
+  "title": "PaymentMethodOrigin",
+  "description": "The origin of the payment method, which may differ from the payment method if, for example, a third party wallet (e.g. Apple Pay) originated a card payment method.",
+  "enum": [
+    "Card",
+    "Apple Pay",
+    "Google Pay",
+    "Paze",
+    "BLIK",
+    "Polish Bank Transfer",
+    "ACH",
+    "Unknown Wallet"
+  ]
+}

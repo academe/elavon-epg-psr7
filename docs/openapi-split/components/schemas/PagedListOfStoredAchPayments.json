@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "PagedListOfStoredAchPayments",
+  "description": "Paged list of Stored ACH Payments",
+  "allOf": [
+    {
+      "$ref": "./PagedList.json"
+    },
+    {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of Stored ACH Payments",
+          "readOnly": true,
+          "items": {
+            "$ref": "./StoredAchPayment.json"
+          }
+        }
+      }
+    }
+  ]
+}

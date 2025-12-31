@@ -1,0 +1,45 @@
+{
+  "description": "Information about a merchant",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "title": "ResourceID<Merchant>",
+      "description": "Merchant [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "legalName": {
+      "type": "string",
+      "example": "Sirius Cybernetics Corporation",
+      "description": "Legal name under which the merchant operates",
+      "readOnly": true
+    },
+    "friendlyName": {
+      "type": "string",
+      "example": "Sirius Cybernetics Corporation",
+      "description": "Friendly name assigned to the merchant",
+      "readOnly": true
+    },
+    "regions": {
+      "type": "array",
+      "description": "Regions in which the merchant operates, NA/EU",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Region.json"
+      }
+    },
+    "isDemo": {
+      "type": "boolean",
+      "example": "true",
+      "description": "Is this a demo merchant for evaluation purposes only? Demo merchants do not interact with processors or issuers. No funds will ever be transferred",
+      "readOnly": true
+    }
+  }
+}

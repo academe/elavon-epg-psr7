@@ -1,0 +1,139 @@
+{
+  "post": {
+    "summary": "Create PaymentSession",
+    "description": "Create a payment session.",
+    "tags": [
+      "Payment Sessions"
+    ],
+    "operationId": "CreatePaymentSession",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (PaymentSession)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/PaymentSessionInput.json"
+          },
+          "examples": {
+            "CreatePaymentSession": {
+              "summary": "Create payment session",
+              "description": "Shows how to create a payment session from an order, which  is required for hosted payment page integration.",
+              "value": {
+                "order": "https://uat.api.converge.eu.elavonaws.com/orders/txdjjwg49k4pdkcyyhbpb9tffmbg",
+                "returnUrl": "https://merchant.com/return",
+                "cancelUrl": "https://merchant.com/cancel",
+                "doCreateTransaction": "true"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Created",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/PaymentSession.json"
+            },
+            "examples": {
+              "CreatePaymentSession": {
+                "summary": "Create payment session",
+                "value": {
+                  "href": "https://uat.api.converge.eu.elavonaws.com/payment-sessions/2jd2thg4bqrtrdrf8rqmykqtmj9v",
+                  "id": "2jd2thg4bqrtrdrf8rqmykqtmj9v",
+                  "createdAt": "2024-02-01T13:59:08.352Z",
+                  "modifiedAt": "2024-02-01T13:59:08.352Z",
+                  "expiresAt": "2024-02-01T14:29:08.352Z",
+                  "merchant": "https://uat.api.converge.eu.elavonaws.com/merchants/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "account": "https://uat.api.converge.eu.elavonaws.com/accounts/28kvwjbm67k36kxcvw6rgwdggkf6",
+                  "order": "https://uat.api.converge.eu.elavonaws.com/orders/txdjjwg49k4pdkcyyhbpb9tffmbg",
+                  "allowedPaymentMethods": [
+                    "Card"
+                  ],
+                  "allowedPaymentMethodOrigins": [
+                    "Google Pay",
+                    "Card",
+                    "Apple Pay"
+                  ],
+                  "paymentLink": null,
+                  "salesTax": null,
+                  "forexAdvice": null,
+                  "surchargeAdvice": null,
+                  "transaction": null,
+                  "hostedCard": null,
+                  "storedCard": null,
+                  "googlePayPayment": null,
+                  "applePayPayment": null,
+                  "blik": null,
+                  "shopper": null,
+                  "debtorAccount": null,
+                  "threeDSecure": null,
+                  "shopperEmailAddress": null,
+                  "billTo": null,
+                  "shipTo": null,
+                  "hppType": "fullPageRedirect",
+                  "returnUrl": "https://merchant.com/return",
+                  "cancelUrl": "https://merchant.com/cancel",
+                  "originUrl": null,
+                  "defaultLanguageTag": null,
+                  "shopperLanguageTag": null,
+                  "doCreateTransaction": true,
+                  "doCapture": null,
+                  "doThreeDSecure": true,
+                  "doReset": false,
+                  "previousTransactions": [],
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

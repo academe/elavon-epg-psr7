@@ -1,0 +1,21 @@
+{
+  "title": "CountAndTotal",
+  "description": "Count and total",
+  "properties": {
+    "count": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Count",
+      "readOnly": true
+    },
+    "total": {
+      "description": "Total",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./AmountAndCurrency.json"
+        }
+      ]
+    }
+  }
+}

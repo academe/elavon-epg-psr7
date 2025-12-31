@@ -1,0 +1,146 @@
+{
+  "post": {
+    "summary": "Create GooglePayPayment",
+    "description": "Create a Google Pay payment.",
+    "operationId": "CreateGooglePayPayment",
+    "tags": [
+      "Google Pay Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (GooglePayPayment)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/GooglePayPaymentInput.json"
+          },
+          "examples": {
+            "CreateGooglePayPayment": {
+              "summary": "Create a Google Pay payment.",
+              "value": {
+                "card": {
+                  "holderName": "John Doe",
+                  "billTo": {
+                    "fullName": "John Doe",
+                    "countryCode": "USA",
+                    "postalCode": "94043",
+                    "street1": "1600 Amphitheatre Parkway",
+                    "city": "Mountain View",
+                    "region": "CA"
+                  }
+                },
+                "token": "{\"signature\":\"MEQCIH0nEUW6uEDnxNAeUlxJw7UgtV53jEtFycJG6QEX34u0AiBVm00R1O8oL22RLQ26MPDd7Sn/24m4+5AxzmD8tEctjA\\u003d\\u003d\",\"intermediateSigningKey\":{\"signedKey\":\"{\\\"keyValue\\\":\\\"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELNIQDI21szog5jsBdgYLhMZEDcvOr59V1XI3vWtDVWgd/dU+yx/y7VZ7UxqKkTgA/o5TikdJn/l4qc8wgR3LYw\\\\u003d\\\\u003d\\\",\\\"keyExpiration\\\":\\\"1673524261966\\\"}\",\"signatures\":[\"MEUCIGe/oQ5E1hg5ONxtGQR+E4IoMgHaazatEOszlMTOwyI5AiEAos7ETQoM46nsGCfNqEBUPE23voAKIIefJ6Sg870trts\\u003d\"]},\"protocolVersion\":\"ECv2\",\"signedMessage\":\"{\\\"encryptedMessage\\\":\\\"K8CTFde4vVSL+1ttpVxIciqQj94+ji/fu7l1tkR9dOElg65FU2lfEcFLDD374BVdZlZwgQLZOt8MOHc8vQLDKt1YYfTaZfrLfLrD+3Rv10YIsvgF0jXHQ9NmgDYGt06XNhg8E5lcmo+Fpk3d9qCSEXaCN3vk6uSmfsn2ZoMHEqhTpnSB+RKmMbkC8QfQn7gEeS12HKWSCRHGb/NsyFVNPrQYEpuhkZOJMKmS+nZVgtNdfg6hRpWFjg7Os4YwQIiYRJYh2st0zD1fUwDPSX4iJJ9BwFOrj8KMEoHNh5SnTcxeoAuXHm5boFxbVXZXJNPSHh5ZsboNdd2mYYnfr1QzF9Jy/TDhU1vkqRPAKypzPpGjNdgMFKpqpk2nwgrzmtP7sZitRC59qeutLkaI8IPXHUmeMCoAHsPTuk+OWBQI2N/mPM6AVo/ahu/V1G++vdhsfEi5W5KPhq6IW7j9gGh840ur489AjpV1W6ihLsZVIC/rgjPyOqrorwx/U1pJ+Sf0Beeyc5jDTRb/pmlCgy4p8F+Qy1eqw4YmKtP/da4IVtKWvXWe+KRTZqd/s17j5qciknMn83R1M70jCFIAWuM0UDvb6iFO7Qgq1bqZ\\\",\\\"ephemeralPublicKey\\\":\\\"BKgFE3NUYmE4kGiIbv/L6LwlXLLWbT1g9QEKdpzI9qRbGJ3xzYNSmJ2DvHrtTg4K2Wn2l08cZROjc2PwWRYhKCA\\\\u003d\\\",\\\"tag\\\":\\\"FDREH5rjJYvSYTSz7hw3jB3Vm+t3HTiS1thPM78eMaw\\\\u003d\\\"}\"}",
+                "customReference": "customReference",
+                "customFields": {
+                  "name1": "value1",
+                  "name2": "value2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Created",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Location": {
+            "$ref": "../components/headers/Location.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/GooglePayPayment.json"
+            },
+            "examples": {
+              "CreateGooglePayPayment": {
+                "summary": "Create a Google Pay payment.",
+                "value": {
+                  "href": "https://api.converge.eu.elavonaws.com/google-pay-payments/q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+                  "id": "q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+                  "createdAt": "2023-01-04T13:44:36.597Z",
+                  "expiresAt": "2023-01-04T14:14:36.597Z",
+                  "merchant": "https://api.converge.eu.elavonaws.com/merchants/yfv23vhdptrgd3c3dpg3khydw22f",
+                  "processorAccount": "https://api.converge.eu.elavonaws.com/processor-accounts/d4xcjxf4282xrtvcdcpv3wrxq77v",
+                  "card": {
+                    "holderName": "John Doe",
+                    "panFingerprint": "vdr9fxwq888xybphtfm2xhxv78vj",
+                    "expirationMonth": 12,
+                    "expirationYear": 2028,
+                    "billTo": {
+                      "fullName": "John Doe",
+                      "company": null,
+                      "street1": "1600 Amphitheatre Parkway",
+                      "street2": null,
+                      "city": "Mountain View",
+                      "region": "CA",
+                      "postalCode": "94043",
+                      "countryCode": "USA",
+                      "primaryPhone": null,
+                      "alternatePhone": null,
+                      "fax": null,
+                      "email": null
+                    },
+                    "maskedNumber": "XXXXXXXXXXXX1111",
+                    "last4": "1111",
+                    "bin": "411111",
+                    "scheme": "Visa",
+                    "brand": "Visa Credit",
+                    "fundingSource": "credit",
+                    "issuingBank": "Google Pay Test",
+                    "issuingCountry": "USA",
+                    "issuingCurrency": "USD",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "customReference": null,
+                  "customFields": null,
+                  "verificationResults": {
+                    "name": "unprovided",
+                    "securityCode": "unprovided",
+                    "addressStreet": "unprovided",
+                    "addressPostalCode": "unprovided",
+                    "threeDSecureV1": "unprovided",
+                    "threeDSecureV2": "unprovided",
+                    "cryptogramSecurity": "unprovided"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

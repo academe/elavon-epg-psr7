@@ -1,0 +1,24 @@
+{
+  "title": "ProcessorAccountTransactionFieldPolicies",
+  "description": "",
+  "properties": {
+    "cardBillToPostalCode": {
+      "type": "string",
+      "description": "Field policies for card.billTo.postalCode",
+      "allOf": [
+        {
+          "$ref": "./ProcessorAccountTransactionPostalOrSecurityCodePolicies.json"
+        }
+      ]
+    },
+    "cardSecurityCode": {
+      "type": "string",
+      "description": "Field policies for card.securityCode",
+      "allOf": [
+        {
+          "$ref": "./ProcessorAccountTransactionPostalOrSecurityCodePolicies.json"
+        }
+      ]
+    }
+  }
+}

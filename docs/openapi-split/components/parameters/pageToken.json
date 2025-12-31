@@ -1,0 +1,8 @@
+{
+  "name": "pageToken",
+  "in": "query",
+  "description": "An opaque continuation token for this page, null for the first page.",
+  "schema": {
+    "type": "string"
+  }
+}

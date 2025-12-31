@@ -1,0 +1,80 @@
+{
+  "title": "ApplePayPayment",
+  "description": "This captures all of the components necessary for processing a payment with the Apple Pay digital wallet. The payment token contains the encrypted payment data needed for transaction processing along with the elements needed for decryption. This cannot be used in conjunction with a Google Pay payment. It may also be used when creating a payment session. The only fields of the request to pass in the Card field is the Contact info, if available.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/apple-pay-payments/8jmkgdx63t77xqtwq6j2f27cykrd",
+      "format": "url",
+      "title": "ResourceURL<ApplePayPayment>",
+      "description": "ApplePayPayment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "8jmkgdx63t77xqtwq6j2f27cykrd",
+      "title": "ResourceID<ApplePayPayment>",
+      "description": "ApplePayPayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "example": "2022-11-22T06:08:49.949Z",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp calculated from the Apple Pay token signing time and not the createdAt value of this resource.",
+      "example": "2022-11-22T06:38:49.000Z",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/7btv9vr8cq3nq8r7p4wjmjkk58bt",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values) (self link), suppressed when a public API key is used",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/processor-accounts/kjgfcr2r9y2r2krhbrb36w28tp77",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "card": {
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Apple Pay payment info.",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "verificationResults": {
+      "description": "Verification results (all fields except cryptogramSecurity will be unprovided always).",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./VerificationResults.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "title": "PagedListOfBatches",
+  "description": "Paged list of batches",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PagedListOfBatches>",
+      "description": "PagedListOfBatches [Resource URL](#section/Overview/Values) (Self link)",
+      "readOnly": true
+    },
+    "first": {
+      "type": "string",
+      "format": "url",
+      "description": "First page link.",
+      "readOnly": true
+    },
+    "next": {
+      "type": "string",
+      "format": "url",
+      "description": "Next page link, null if no more items",
+      "readOnly": true
+    },
+    "pageToken": {
+      "type": "string",
+      "description": "An opaque continuation token for this page, null for the first page",
+      "readOnly": true
+    },
+    "nextPageToken": {
+      "type": "string",
+      "description": "An opaque continuation token for the next page, null if no more items",
+      "readOnly": true
+    },
+    "limit": {
+      "type": "integer",
+      "format": "int32",
+      "example": 10,
+      "description": "Maximum number of items to return on this page, at least 1, and might be adjusted to a smaller value",
+      "readOnly": true
+    },
+    "size": {
+      "type": "integer",
+      "format": "int32",
+      "example": 10,
+      "description": "The size of the items array for this page",
+      "readOnly": true
+    },
+    "items": {
+      "type": "array",
+      "description": "List of Batches",
+      "readOnly": true,
+      "items": {
+        "$ref": "./Batch.json"
+      }
+    }
+  }
+}

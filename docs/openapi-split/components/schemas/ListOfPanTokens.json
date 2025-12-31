@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "title": "ListOfPanTokens",
+  "description": "List of PanTokens",
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "List of PanTokens",
+      "maxItems": 50,
+      "items": {
+        "$ref": "./PanToken.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "title": "GooglePayPayment",
+  "description": "This captures all the card information that is encrypted within a transaction that uses Google Pay as a form of payment. This cannot be used in conjunction with an Apple Pay payment. It may also be used when creating a payment session. Pass in the encrypted Google Pay string in the token variable and get the decrypted value in the form of a card object. The only field to pass in the card field in the request is the Contact info.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/google-pay-payments/q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+      "format": "url",
+      "title": "ResourceURL<GooglePayPayment>",
+      "description": "GooglePayPayment [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+      "title": "ResourceID<GooglePayPayment>",
+      "description": "GooglePayPayment [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "example": "2023-01-04T13:44:36.597Z",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expiration timestamp",
+      "example": "2023-01-04T14:14:36.597Z"
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/yfv23vhdptrgd3c3dpg3khydw22f",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values), suppressed when a public API key is used",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/mprocessor-accounts/d4xcjxf4282xrtvcdcpv3wrxq77v",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "card": {
+      "description": "Only the Contact billTo info can be provided alongside the token. This is optional, but it does provide a more complete response with the decrypted Google Pay payment info.",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "verificationResults": {
+      "description": "Verification results (all fields except cryptogramSecurity will be unprovided always).",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./VerificationResults.json"
+        }
+      ]
+    }
+  }
+}

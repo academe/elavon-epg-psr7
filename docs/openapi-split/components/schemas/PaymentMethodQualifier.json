@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "PaymentMethodQualifier",
+  "description": "",
+  "enum": [
+    "credit",
+    "debit"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "title": "PanToken",
+  "properties": {
+    "reference": {
+      "type": "string",
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Arbitrary reference provided by the caller"
+    },
+    "number": {
+      "type": "string",
+      "maxLength": 23,
+      "minLength": 1,
+      "pattern": "[\\w \\-+:()/]*",
+      "description": "Personal account number (PAN), not returned",
+      "example": "4242 4242 4242 4242",
+      "writeOnly": true
+    },
+    "panToken": {
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "success": {
+      "type": "boolean",
+      "default": true,
+      "description": "true for successful conversion",
+      "readOnly": true
+    },
+    "cardExpirationMonth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "Optional card expiration month. This should be set along with the card expiration year. If only one of the two fields is set, then a token is not created.",
+      "writeOnly": true
+    },
+    "cardExpirationYear": {
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 2099,
+      "description": "Optional card expiration year. This should be set along with the card expiration month. If only one of the two fields is set, then a token is not created. This must be a 4-digit year between 2000 and 2099, inclusive.",
+      "writeOnly": true
+    }
+  }
+}

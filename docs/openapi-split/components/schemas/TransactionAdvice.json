@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": "TransactionAdvice",
+  "description": "Transaction advice",
+  "enum": [
+    "nonReloadablePrepaidCard",
+    "singleUseVirtualCard",
+    "consumerMultiUseVirtualCard"
+  ]
+}

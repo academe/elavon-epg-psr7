@@ -1,0 +1,24 @@
+{
+  "title": "DoAutoCaptureAfter",
+  "description": "",
+  "required": [
+    "timeUnit",
+    "count"
+  ],
+  "properties": {
+    "timeUnit": {
+      "type": "string",
+      "allOf": [
+        {
+          "$ref": "./DoAutoCaptureAfterTimeUnit.json"
+        }
+      ]
+    },
+    "count": {
+      "type": "integer",
+      "description": "Count of time unit.",
+      "minimum": 1,
+      "example": 3
+    }
+  }
+}

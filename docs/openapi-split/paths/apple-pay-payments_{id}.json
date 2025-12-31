@@ -1,0 +1,51 @@
+{
+  "get": {
+    "summary": "Retrieve ApplePayPayment",
+    "description": "Retrieve an Apple Pay payment resource by ID.",
+    "operationId": "RetrieveApplePayPayment",
+    "tags": [
+      "Apple Pay Payments"
+    ],
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "description": "ApplePayPayment [Resource ID](#section/Overview/Values)",
+        "required": true,
+        "example": "8jmkgdx63t77xqtwq6j2f27cykrd",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/ApplePayPayment.json"
+            }
+          }
+        }
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      }
+    }
+  }
+}

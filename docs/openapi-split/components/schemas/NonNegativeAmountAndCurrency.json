@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "title": "NonNegativeAmountAndCurrency",
+  "description": "NonNegativeAmountAndCurrency",
+  "properties": {
+    "amount": {
+      "type": "string",
+      "example": "1.23",
+      "description": "Amount"
+    },
+    "currencyCode": {
+      "type": "string",
+      "example": "EUR",
+      "description": "ISO 4217 three letter currency code"
+    }
+  }
+}

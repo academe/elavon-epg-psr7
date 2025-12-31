@@ -1,0 +1,38 @@
+{
+  "title": "EmvKey",
+  "description": "",
+  "required": [
+    "rid",
+    "index",
+    "modulus",
+    "exponent",
+    "checksum"
+  ],
+  "properties": {
+    "rid": {
+      "type": "string",
+      "description": "Registered Application Provider Identifier",
+      "readOnly": true
+    },
+    "index": {
+      "type": "string",
+      "description": "Index of the key within the RID",
+      "readOnly": true
+    },
+    "modulus": {
+      "type": "string",
+      "description": "Modulus component of the RSA public key",
+      "readOnly": true
+    },
+    "exponent": {
+      "type": "string",
+      "description": "Exponent component of the RSA public key",
+      "readOnly": true
+    },
+    "checksum": {
+      "type": "string",
+      "description": "A check value calculated on all parts of the Public Key",
+      "readOnly": true
+    }
+  }
+}

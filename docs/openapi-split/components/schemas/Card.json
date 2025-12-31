@@ -1,0 +1,176 @@
+{
+  "title": "Card",
+  "description": "Card Details",
+  "required": [
+    "expirationMonth",
+    "expirationYear",
+    "securityCode"
+  ],
+  "properties": {
+    "holderName": {
+      "type": "string",
+      "maxLength": 45,
+      "pattern": "[^%<>/\\[\\]{}\\\\]*",
+      "description": "Cardholder's full name",
+      "example": "John Doe"
+    },
+    "number": {
+      "type": "string",
+      "minLength": 13,
+      "maxLength": 23,
+      "pattern": "\\D*(?:\\d\\D*){13,19}",
+      "writeOnly": true,
+      "description": "Cardholder's personal account number (PAN), not returned",
+      "example": "XXXX XXXX XXXX XXXX"
+    },
+    "panToken": {
+      "writeOnly": true,
+      "description": "Cardholder's personal account number (PAN) token, not returned",
+      "allOf": [
+        {
+          "$ref": "./ValueToken.json"
+        }
+      ]
+    },
+    "paymentAccountReference": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Payment Account Reference (PAR). It is a desensitized, non-financial value. A single PAR exists throughout the life of a card account, and can link transactions across different channels and payment instruments. It allows a merchant to identify all transactions made on one credit or debit card account whether a personal account number (PAN), device PAN (DPAN), or network token was used.\n\nPAR is returned from the card network and issuer during authorization whether the transaction is authorized or declined. However, not all card schemes support PAR. Currently, it is returned for Visa, Mastercard, and Discover transactions. In addition, for a given scheme, some card types do not support PAR and is dependent on the issuing bank.\n"
+    },
+    "panFingerprint": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Cardholder's personal account number (PAN) fingerprint"
+    },
+    "expirationMonth": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "Card's expiration month",
+      "example": 12
+    },
+    "expirationYear": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 2000,
+      "maximum": 2099,
+      "description": "Card's expiration year",
+      "example": 2020
+    },
+    "securityCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 4,
+      "pattern": "\\d{3,4}",
+      "writeOnly": true,
+      "description": "Card's security code / CVC / CVV / CVD / CID, 3 or 4 digits, not returned and ignored if provided with a StoredCard",
+      "example": "123"
+    },
+    "billTo": {
+      "description": "Cardholder's billing contact details",
+      "allOf": [
+        {
+          "$ref": "./Contact.json"
+        }
+      ]
+    },
+    "maskedNumber": {
+      "type": "string",
+      "pattern": "\\D+(\\d\\D*){4}",
+      "description": "Masked card number",
+      "example": "XXXX XXXX XXXX 4242",
+      "readOnly": true
+    },
+    "last4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4,
+      "pattern": "\\d{4}",
+      "description": "Last 4 digits of the card number",
+      "example": "4242",
+      "readOnly": true
+    },
+    "bin": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "pattern": "\\d{6}",
+      "description": "Issuer/Bank identification number (IIN/BIN)",
+      "example": "456789",
+      "readOnly": true
+    },
+    "scheme": {
+      "$ref": "./CardScheme.json"
+    },
+    "brand": {
+      "$ref": "./CardBrand.json"
+    },
+    "fundingSource": {
+      "$ref": "./CardFundingSource.json"
+    },
+    "issuingBank": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Issuing bank",
+      "example": "U.S. Bank"
+    },
+    "issuingCountry": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Issuing country",
+      "example": "USA"
+    },
+    "issuingCurrency": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Issuer currency",
+      "example": "USD"
+    },
+    "isDebit": {
+      "readOnly": true,
+      "description": "Is the card debit ?",
+      "allOf": [
+        {
+          "$ref": "./TrueFalseOrUnknown.json"
+        }
+      ]
+    },
+    "isCorporate": {
+      "readOnly": true,
+      "description": "Is the account corporate ?",
+      "allOf": [
+        {
+          "$ref": "./TrueFalseOrUnknown.json"
+        }
+      ]
+    },
+    "isDccAllowed": {
+      "readOnly": true,
+      "description": "Is DCC supported ?",
+      "allOf": [
+        {
+          "$ref": "./TrueFalseOrUnknown.json"
+        }
+      ]
+    },
+    "encryptedCard": {
+      "type": "string",
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./EncryptedData.json"
+        }
+      ]
+    },
+    "encryptedPin": {
+      "type": "string",
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./PinEncryptedData.json"
+        }
+      ]
+    }
+  }
+}

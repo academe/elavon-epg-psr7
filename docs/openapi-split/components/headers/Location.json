@@ -1,0 +1,8 @@
+{
+  "description": "[Resource URL](#section/Overview/Values).",
+  "required": true,
+  "schema": {
+    "type": "string",
+    "format": "url"
+  }
+}

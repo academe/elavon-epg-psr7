@@ -1,0 +1,154 @@
+{
+  "type": "object",
+  "title": "Plan",
+  "description": "A plan provides a template for paying for something over time with multiple payments. See also subscriptions, which associates shoppers with plans.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "Plan [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "description": "Plan [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deletion timestamp",
+      "example": "2017-02-22T13:01:33.567Z",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "planList": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PlanList>",
+      "description": "PlanList [Resource URL] (#section/Overview/Values)",
+      "readOnly": true
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "Monthly Software License",
+      "description": "Name",
+      "readOnly": true
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 255,
+      "example": "A single user-license software license billed monthly",
+      "description": "Description",
+      "readOnly": true
+    },
+    "billingInterval": {
+      "description": "Time period between bills",
+      "allOf": [
+        {
+          "$ref": "./BillingInterval.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "total": {
+      "description": "Total for each bill, except for any initial ones which might be different",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "salesTax": {
+      "type": "object",
+      "description": "Sales Tax",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "billCount": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The total number of bills, if applicable",
+      "readOnly": true
+    },
+    "initialTotal": {
+      "description": "Optional total override for initial bills to allow for trials, one-time initiation fees, etc.",
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "initialSalesTax": {
+      "type": "object",
+      "description": "Optional sales tax override for initial bills",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./NonNegativeAmountAndCurrency.json"
+        }
+      ]
+    },
+    "initialTotalBillCount": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The number of initial bills where initialTotal will be applied",
+      "readOnly": true
+    },
+    "shopperStatement": {
+      "description": "Dynamic overrides of what might appear on a shopper's statement",
+      "allOf": [
+        {
+          "$ref": "./ShopperStatement.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "isSubscribable": {
+      "type": "boolean",
+      "example": false,
+      "description": "Can shoppers be subscribed to this plan? Defaults to true"
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

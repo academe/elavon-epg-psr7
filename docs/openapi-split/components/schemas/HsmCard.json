@@ -1,0 +1,94 @@
+{
+  "title": "HsmCard",
+  "description": "A single-use card. This captures all payment details so they may be subsequently referenced in a transaction. This resource is recommended for a card present integration.",
+  "required": [
+    "terminal",
+    "accountEntryMode"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier assigned by server.",
+      "readOnly": true,
+      "example": "r8gxbhpbyfy6m6y7cdrrf9k3xpy2"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "example": "2017-02-22T13:01:23.123Z"
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Modification timestamp",
+      "readOnly": true,
+      "example": "2017-02-22T13:01:23.123Z"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "readOnly": true,
+      "example": "2017-02-22T13:01:23.123Z"
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/6xxFwvM8BqmM6T6DcF3DyTB3",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "terminal": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Terminal>",
+      "description": "Terminal [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "card": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ]
+    },
+    "accountEntryMode": {
+      "description": "",
+      "allOf": [
+        {
+          "$ref": "./AccountEntryMode.json"
+        }
+      ]
+    },
+    "deviceInteraction": {
+      "allOf": [
+        {
+          "$ref": "./DeviceInteraction.json"
+        }
+      ]
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values. Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

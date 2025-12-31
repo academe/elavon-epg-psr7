@@ -1,0 +1,19 @@
+{
+  "title": "PinlessDebit",
+  "description": "Enable in-person debit payments without requesting a PIN when the transaction amount is less than the threshold.",
+  "properties": {
+    "isEnabled": {
+      "type": "boolean",
+      "description": "Enable pinless debit.",
+      "example": true
+    },
+    "threshold": {
+      "description": "Pinless debit threshold",
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    }
+  }
+}

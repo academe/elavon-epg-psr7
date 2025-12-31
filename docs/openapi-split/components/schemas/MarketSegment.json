@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": "MarketSegment",
+  "description": "",
+  "enum": [
+    "retail",
+    "restaurant"
+  ]
+}

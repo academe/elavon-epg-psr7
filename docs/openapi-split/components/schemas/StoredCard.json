@@ -1,0 +1,126 @@
+{
+  "type": "object",
+  "title": "StoredCard",
+  "description": "A Card that is stored for a Shopper and may be used for recurring payments.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL",
+      "description": "StoredCard [Resource URL](#section/Overview/Values) (self link).",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "description": "StoredCard [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp.",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp.",
+      "readOnly": true
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deletion timestamp.",
+      "example": "2017-02-22T13:01:33.567Z",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "shopper": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "shopperInteraction": {
+      "description": "Shopper interaction, defaults to 'ecommerce'",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./ShopperInteraction.json"
+        }
+      ]
+    },
+    "hostedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<HostedCard>",
+      "writeOnly": true,
+      "description": "HostedCard [Resource URL](#section/Overview/Values)\n\nThe hosted card details to use when initializing this stored card.\n"
+    },
+    "card": {
+      "description": "Card details",
+      "allOf": [
+        {
+          "$ref": "./Card.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "credentialOnFileType": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<CredentialOnFileType>",
+      "description": "Credential on file type, used with cards in a wallet, defaults to 'unScheduled'",
+      "allOf": [
+        {
+          "$ref": "./CredentialOnFileType.json"
+        }
+      ],
+      "readOnly": true,
+      "default": "unscheduled"
+    },
+    "verificationResults": {
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./VerificationResults.json"
+        }
+      ]
+    },
+    "paymentMethodLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentMethodLink>",
+      "description": "Payment Method Link [Resource URL](#section/Overview/Values).",
+      "example": "https://uat.api.converge.eu.elavonaws.com/payment-method-links/jOZEpu7IkEPlsWo4PafrlHEm94Ls"
+    },
+    "paymentMethodSession": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentMethodSession>",
+      "description": "Payment Method Session [Resource URL](#section/Overview/Values)."
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values.  Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

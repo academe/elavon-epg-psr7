@@ -1,0 +1,20 @@
+{
+  "type": "string",
+  "title": "TransactionState",
+  "example": "authorized",
+  "description": "Current state",
+  "readOnly": true,
+  "enum": [
+    "declined",
+    "authorized",
+    "captured",
+    "voided",
+    "settled",
+    "expired",
+    "settlementDelayed",
+    "rejected",
+    "heldForReview",
+    "unknown",
+    "authorizationPending"
+  ]
+}

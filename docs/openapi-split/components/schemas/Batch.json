@@ -1,0 +1,98 @@
+{
+  "title": "Batch",
+  "description": "A settlement batch. Transactions are captured into a batch and submitted together for settlement and subsequent funding. Cannot be updated.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Batch>",
+      "description": "Batch [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "6xxFwvM8BqmM6T6DcF3DyTB3",
+      "title": "ResourceID<Batch>",
+      "description": "Batch [Resource ID](#section/Overview/Values) assigned by server.",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "merchant": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorAccount": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<ProcessorAccount>",
+      "description": "ProcessorAccount [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "terminal": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Terminal>",
+      "description": "Terminal [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "description": "Account [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "processorReference": {
+      "type": "string",
+      "description": "Reference assigned by the processor",
+      "readOnly": true
+    },
+    "state": {
+      "readOnly": true,
+      "$ref": "./BatchState.json"
+    },
+    "credits": {
+      "description": "Credits",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./CountAndTotal.json"
+        }
+      ]
+    },
+    "debits": {
+      "description": "Debits",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./CountAndTotal.json"
+        }
+      ]
+    },
+    "net": {
+      "description": "Net, credits minus debits",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./CountAndTotal.json"
+        }
+      ]
+    }
+  }
+}

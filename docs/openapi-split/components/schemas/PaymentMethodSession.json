@@ -1,0 +1,164 @@
+{
+  "type": "object",
+  "description": "A payment session securely collects payment details from the shopper using our hosted payment page and sends them directly to our platform, allowing the merchant to minimize PCI DSS scope.",
+  "properties": {
+    "href": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/payment-method-session/q3rdjp2kfx4rwbgdcvr66wwhcfjw",
+      "format": "url",
+      "title": "ResourceURL<PaymentMethodLink>",
+      "description": "PaymentMethodLink [Resource URL](#section/Overview/Values) (self link)",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "example": "93yx3m43dk7qchrb93b2m3mv7j64",
+      "title": "ResourceURL<PaymentMethodSession>",
+      "description": "Unique identifier assigned by server",
+      "readOnly": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:23.123Z",
+      "description": "Creation timestamp",
+      "readOnly": true
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:01:33.567Z",
+      "description": "Modification timestamp",
+      "readOnly": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2017-02-22T13:11:23.123Z",
+      "description": "An expiration timestamp."
+    },
+    "merchant": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/merchants/yfv23vhdptrgd3c3dpg3khydw22f",
+      "format": "url",
+      "title": "ResourceURL<Merchant>",
+      "description": "Merchant [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "account": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<Account>",
+      "example": "https://uat.api.converge.eu.elavonaws.com/accounts/XrDXRBh9XHxwqQTj2Cmq7j49",
+      "description": "Account [Resource URL](#section/Overview/Values). Defaults to merchant.",
+      "readOnly": true
+    },
+    "url": {
+      "type": "string",
+      "description": "URL to that shoppers wil use.",
+      "readOnly": true
+    },
+    "paymentMethodLink": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<PaymentMethodLink>",
+      "description": "Payment Method Link [Resource URL](#section/Overview/Values).",
+      "example": "https://uat.api.converge.eu.elavonaws.com/payment-method-links/jOZEpu7IkEPlsWo4PafrlHEm94Ls"
+    },
+    "storedCard": {
+      "type": "string",
+      "format": "url",
+      "title": "ResourceURL<StoredCard>",
+      "description": "StoredCard [Resource URL](#section/Overview/Values)"
+    },
+    "shopper": {
+      "type": "string",
+      "example": "https://api.eu.convergepay.com/shoppers/XrDXRBh9YHxwqQTj2Cmq7j49",
+      "format": "url",
+      "title": "ResourceURL<Shopper>",
+      "description": "Shopper [Resource URL](#section/Overview/Values)",
+      "readOnly": true
+    },
+    "threeDSecure": {
+      "description": "Additional data only needed for 3-D Secure version 2 processing.",
+      "allOf": [
+        {
+          "$ref": "./ThreeDSecure.json"
+        }
+      ]
+    },
+    "billTo": {
+      "description": "Billing contact details to be used by default for the hosted card",
+      "allOf": [
+        {
+          "$ref": "./Contact.json"
+        }
+      ]
+    },
+    "hppType": {
+      "description": "Indicates the type of hosted payments page for the payment session, defaults to fullPageRedirect.",
+      "allOf": [
+        {
+          "$ref": "./HppType.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "returnUrl": {
+      "type": "string",
+      "description": "URL to redirect to after payment details are collected",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "readOnly": true,
+      "example": "https://merchant.com/return"
+    },
+    "cancelUrl": {
+      "type": "string",
+      "description": "URL to redirect to if shopper cancels",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "readOnly": true,
+      "example": "https://merchant.com/cancel"
+    },
+    "originUrl": {
+      "type": "string",
+      "description": "Origin where the HPP will be embedded. Required if using the lightbox.",
+      "format": "url",
+      "maxLength": 2048,
+      "pattern": "https?://[^/]{2,}.*",
+      "readOnly": true
+    },
+    "defaultLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Default IETF language tag, a tag that represents language names and countries, to be used in the Hosted Payment Page, such as en-GB meaning 'English (Great Britain)'.",
+      "example": "en-GB",
+      "readOnly": true
+    },
+    "shopperLanguageTag": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "The IETF language tag optionally chosen by the shopper in the Hosted Payment Page, which may vary from the defaultLanguageTag.",
+      "example": "en-GB"
+    },
+    "doThreeDSecure": {
+      "type": "boolean",
+      "description": "Determines whether or not the HPP will perform 3-D secure validation",
+      "readOnly": true
+    },
+    "customReference": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Optional reference provided by the merchant"
+    },
+    "customFields": {
+      "description": "Custom fields, an object containing arbitrary string values. Field names and values must not exceed 64 and 1024 characters, respectively.",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    }
+  }
+}

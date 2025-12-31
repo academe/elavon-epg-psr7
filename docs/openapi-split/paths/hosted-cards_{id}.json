@@ -1,0 +1,278 @@
+{
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "HostedCard [Resource ID](#section/Overview/Values).",
+      "example": "8Pmhg2rh8c7wytV9vb27X6VT",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "get": {
+    "summary": "Retrieve HostedCard",
+    "description": "Retrieve a hosted card resource by its resource ID.",
+    "tags": [
+      "Hosted Cards"
+    ],
+    "operationId": "RetrieveHostedCard",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/HostedCard.json"
+            },
+            "examples": {
+              "HostedCard": {
+                "value": {
+                  "href": "https://api.converge.eu.elavon.net/hosted-cards/8Pmhg2rh8c7wytV9vb27X6VT",
+                  "id": "8Pmhg2rh8c7wytV9vb27X6VT",
+                  "createdAt": "2018-08-09T17:16:47.272Z",
+                  "modifiedAt": "2018-08-09T17:16:47.272Z",
+                  "expiresAt": "2018-08-09T18:16:47.272Z",
+                  "merchant": "https://api.converge.eu.elavon.net/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "card": {
+                    "holderName": "Erlich Bachman",
+                    "expirationMonth": 1,
+                    "expirationYear": 2020,
+                    "billTo": {
+                      "fullName": "Full Name",
+                      "company": "Company",
+                      "street1": "2 Concourse Parkway",
+                      "street2": "Suite A",
+                      "city": "Atlanta",
+                      "region": "GA",
+                      "postalCode": "30328",
+                      "countryCode": "USA",
+                      "primaryPhone": "+1 678-731-5000",
+                      "alternatePhone": "+1 678-731-5001",
+                      "fax": "+1 678-731-5002",
+                      "email": "noreply@elavon.com"
+                    },
+                    "maskedNumber": "XXXXXXXXXXXX0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      }
+    }
+  },
+  "post": {
+    "summary": "Update HostedCard",
+    "description": "Overwrite the details of an existing hosted card resource.",
+    "tags": [
+      "Hosted Cards"
+    ],
+    "operationId": "UpdateHostedCard",
+    "parameters": [
+      {
+        "$ref": "../components/parameters/Accept.json"
+      },
+      {
+        "$ref": "../components/parameters/Accept-Version.json"
+      },
+      {
+        "$ref": "../components/parameters/Content-Type.json"
+      }
+    ],
+    "requestBody": {
+      "description": "object (HostedCard)",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../components/schemas/HostedCard.json"
+          },
+          "examples": {
+            "UpdatedHostedCard": {
+              "summary": "Update HostedCard Address",
+              "value": {
+                "card": {
+                  "holderName": "Erlich Bachman",
+                  "billTo": {
+                    "fullName": "Erlich Bachman",
+                    "company": "Company",
+                    "street1": "123 Main Street",
+                    "street2": null,
+                    "city": "Marietta",
+                    "region": "GA",
+                    "postalCode": "30066"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "OK",
+        "headers": {
+          "Content-Type": {
+            "$ref": "../components/headers/Content-Type.json"
+          },
+          "Version": {
+            "$ref": "../components/headers/Version.json"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../components/schemas/HostedCard.json"
+            },
+            "examples": {
+              "UpdatedHostedCard": {
+                "summary": "Updated HostedCard",
+                "value": {
+                  "card": {
+                    "holderName": "Erlich Bachman",
+                    "number": "XXXXXXXXXXXX0007",
+                    "expirationMonth": 1,
+                    "expirationYear": 2020,
+                    "securityCode": "321",
+                    "billTo": {
+                      "fullName": "Erlich Bachman",
+                      "company": "Company",
+                      "street1": "123 Main Street",
+                      "street2": null,
+                      "city": "Marietta",
+                      "region": "GA",
+                      "postalCode": "30066",
+                      "countryCode": "USA",
+                      "primaryPhone": "+1 678-731-5000",
+                      "alternatePhone": "+1 678-731-5001",
+                      "fax": "+1 678-731-5002",
+                      "email": "noreply@elavon.com"
+                    }
+                  }
+                }
+              },
+              "Updated3DSecureHostedCard": {
+                "summary": "Update 3-D secure hosted card",
+                "value": {
+                  "href": "https://api.eu.convergepay.com/hosted-cards/jqm7yjf83bydgytbpcmxbm49",
+                  "id": "jqm7yjf83bydgytbpcmxbm49",
+                  "createdAt": "2019-04-22T18:52:13.339Z",
+                  "modifiedAt": "2019-04-22T18:52:17.244Z",
+                  "expiresAt": "2019-04-22T19:22:13.339Z",
+                  "merchant": "https://api.eu.convergepay.com/merchants/XrDXRBh9YHxwqQTj2Cmq7j49",
+                  "card": {
+                    "holderName": "Ela Von",
+                    "panFingerprint": "gdytrqm8gfrb2m8p44fyc79b",
+                    "expirationMonth": 1,
+                    "expirationYear": 2020,
+                    "billTo": {
+                      "fullName": "Ela Von",
+                      "company": "Company",
+                      "street1": "2 Concourse Parkway",
+                      "street2": "Suite A",
+                      "city": "Atlanta",
+                      "region": "GA",
+                      "postalCode": "30328",
+                      "countryCode": "USA",
+                      "primaryPhone": "+1 678-731-5000",
+                      "alternatePhone": "+1 678-731-5001",
+                      "fax": "+1 678-731-5002",
+                      "email": "noreply@elavon.com"
+                    },
+                    "maskedNumber": "XXXXXXXXXXXX0007",
+                    "last4": "0007",
+                    "bin": "400880",
+                    "scheme": "Visa",
+                    "brand": "Visa",
+                    "fundingSource": "credit",
+                    "issuingBank": "THE ROYAL BANK OF SCOTLAND PLC",
+                    "issuingCountry": "GBR",
+                    "issuingCurrency": "GBP",
+                    "isDebit": "false",
+                    "isCorporate": "false",
+                    "isDccAllowed": "true"
+                  },
+                  "customReference": null,
+                  "customFields": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "$ref": "../components/responses/400.json"
+      },
+      "401": {
+        "$ref": "../components/responses/401.json"
+      },
+      "403": {
+        "$ref": "../components/responses/403.json"
+      },
+      "404": {
+        "$ref": "../components/responses/404.json"
+      },
+      "405": {
+        "$ref": "../components/responses/405.json"
+      },
+      "406": {
+        "$ref": "../components/responses/406.json"
+      },
+      "411": {
+        "$ref": "../components/responses/411.json"
+      },
+      "413": {
+        "$ref": "../components/responses/413.json"
+      },
+      "415": {
+        "$ref": "../components/responses/415.json"
+      }
+    }
+  }
+}

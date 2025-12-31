@@ -1,0 +1,11 @@
+{
+  "name": "queryParams",
+  "in": "query",
+  "description": "Query parameters used to filter the returned results.",
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    }
+  }
+}

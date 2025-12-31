@@ -1,0 +1,39 @@
+{
+  "title": "PartialAuthorization",
+  "description": "",
+  "required": [
+    "isPartiallyAuthorizable"
+  ],
+  "properties": {
+    "isPartiallyAuthorizable": {
+      "type": "boolean",
+      "description": "Caller will allow a partial amount of the transaction total to be authorized",
+      "readOnly": true
+    },
+    "isPartiallyAuthorized": {
+      "type": "boolean",
+      "description": "Processor only authorized a portion of the requested total",
+      "readOnly": true
+    },
+    "totalRequested": {
+      "type": "string",
+      "description": "Amount processor authorized",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    },
+    "totalRemaining": {
+      "type": "string",
+      "description": "The total requested minus the total authorized",
+      "readOnly": true,
+      "allOf": [
+        {
+          "$ref": "./PositiveAmountAndCurrency.json"
+        }
+      ]
+    }
+  }
+}
