@@ -1,5 +1,4 @@
-![Packagist Downloads](https://img.shields.io/packagist/dm/judgej/academe%2Felavon-epg-psr7)
-![Packagist Version](https://img.shields.io/packagist/v/judgej/academe%2Felavon-epg-psr7)
+[![Latest Stable Version](http://poser.pugx.org/academe/elavon-epg-psr7/v)](https://packagist.org/packages/academe/elavon-epg-psr7) [![Total Downloads](http://poser.pugx.org/academe/elavon-epg-psr7/downloads)](https://packagist.org/packages/academe/elavon-epg-psr7) [![Latest Unstable Version](http://poser.pugx.org/academe/elavon-epg-psr7/v/unstable)](https://packagist.org/packages/academe/elavon-epg-psr7) [![License](http://poser.pugx.org/academe/elavon-epg-psr7/license)](https://packagist.org/packages/academe/elavon-epg-psr7) [![PHP Version Require](http://poser.pugx.org/academe/elavon-epg-psr7/require/php)](https://packagist.org/packages/academe/elavon-epg-psr7)
 
 
 <!-- vscode-markdown-toc -->
