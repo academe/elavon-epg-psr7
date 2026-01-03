@@ -44,20 +44,20 @@ class ElavonApiFactory
     public const REGION_US = 'us';
 
     // Environment constants
-    public const ENV_PRODUCTION = 'production';
-    public const ENV_UAT = 'uat';
+    public const ENV_LIVE = 'live';
+    public const ENV_TEST = 'test';
 
     /**
      * Base URLs indexed by region and environment.
      */
     private const BASE_URLS = [
         self::REGION_EU => [
-            self::ENV_PRODUCTION => 'https://api.eu.convergepay.com',
-            self::ENV_UAT => 'https://uat.api.converge.eu.elavonaws.com',
+            self::ENV_LIVE => 'https://api.eu.convergepay.com',
+            self::ENV_TEST => 'https://uat.api.converge.eu.elavonaws.com',
         ],
         self::REGION_US => [
-            self::ENV_PRODUCTION => 'https://api.convergepay.com',
-            self::ENV_UAT => 'https://uat.api.convergepay.com',
+            self::ENV_LIVE => 'https://api.convergepay.com',
+            self::ENV_TEST => 'https://uat.api.convergepay.com',
         ],
     ];
 
@@ -65,18 +65,30 @@ class ElavonApiFactory
      * Environment aliases for normalization.
      */
     private const ENVIRONMENT_ALIASES = [
-        'live' => self::ENV_PRODUCTION,
-        'sandbox' => self::ENV_UAT,
-        'test' => self::ENV_UAT,
+        'live' => self::ENV_LIVE,
+        'prod' => self::ENV_LIVE,
+        'production' => self::ENV_LIVE,
+        'test' => self::ENV_TEST,
+        'sandbox' => self::ENV_TEST,
+        'uat' => self::ENV_TEST,
     ];
 
     private const DEFAULT_API_VERSION = '1';
     private const DEFAULT_ACCEPT = 'application/json;charset=UTF-8';
 
     private string $apiVersion;
+
+    // URL region and environment.
     private ?string $region = null;
     private ?string $environment = null;
+
+    // Custom base URI (overrides region/environment if set).
     private ?string $baseUri = null;
+
+    // Complete custom URL (overrides region/environment and any path and query already set).
+    private ?string $uri = null;
+
+    // Authentication credentials.
     private ?string $username = null;
     private ?string $password = null;
 
@@ -122,8 +134,21 @@ class ElavonApiFactory
             );
         }
 
-        // Set the host in the URI if configured
+        // Set the host in the URI if configured.
+        // No base URIs have a path component at this time,
+        // so that will be ignored. If it does in the future,
+        // then the path would need to be prefixed to the existing path
+        // in the request URI.
         $baseUri = $this->getBaseUri();
+        $uri = $this->getUri();
+
+        if ($uri !== null) {
+            $newUri = new Uri($uri);
+            $request = $request->withUri($newUri);
+
+            return $request;
+        }
+        
         if ($baseUri !== null) {
             $newUri = $request->getUri()
                 ->withHost(parse_url($baseUri, PHP_URL_HOST))
@@ -141,7 +166,7 @@ class ElavonApiFactory
      * @param string $region Region code: 'eu' or 'us'
      * @throws InvalidArgumentException When region is unknown
      */
-    public function withRegion(string $region): static
+    public function withRegion(?string $region): static
     {
         $region = strtolower($region);
 
@@ -159,7 +184,7 @@ class ElavonApiFactory
     }
 
     /**
-     * Sets the API environment (live, sandbox, test).
+     * Sets the API environment (live, test).
      *
      * Aliases:
      * - 'live' → production
@@ -168,7 +193,7 @@ class ElavonApiFactory
      * @param string $environment Environment name
      * @throws InvalidArgumentException When environment is unknown
      */
-    public function withEnvironment(string $environment): static
+    public function withEnvironment(?string $environment): static
     {
         $environment = strtolower($environment);
         $normalized = self::ENVIRONMENT_ALIASES[$environment] ?? null;
@@ -191,10 +216,17 @@ class ElavonApiFactory
      *
      * @param string $baseUri Full base URL
      */
-    public function withBaseUri(string $baseUri): static
+    public function withBaseUri(?string $baseUri): static
     {
         $new = clone $this;
         $new->baseUri = $baseUri;
+        return $new;
+    }
+
+    public function withUri(?string $uri): static
+    {
+        $new = clone $this;
+        $new->uri = $uri;
         return $new;
     }
 
@@ -241,6 +273,11 @@ class ElavonApiFactory
         }
 
         return null;
+    }
+
+    public function getUri(): ?string
+    {
+        return $this->uri;
     }
 
     public function getRegion(): ?string

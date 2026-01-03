@@ -140,7 +140,7 @@ class ElavonApiFactoryTest extends TestCase
             ->withEnvironment('sandbox');
 
         // Assert
-        $this->assertSame('uat', $factory->getEnvironment());
+        $this->assertSame('test', $factory->getEnvironment());
     }
 
     public function test_withEnvironment_throwsOnInvalidEnvironment(): void
@@ -159,7 +159,7 @@ class ElavonApiFactoryTest extends TestCase
         $factory = ElavonApiFactory::configure()->withEnvironment('sandbox');
 
         // Assert
-        $this->assertSame('uat', $factory->getEnvironment());
+        $this->assertSame('test', $factory->getEnvironment());
     }
 
     public function test_withEnvironment_normalizesLiveToProduction(): void
@@ -168,7 +168,7 @@ class ElavonApiFactoryTest extends TestCase
         $factory = ElavonApiFactory::configure()->withEnvironment('live');
 
         // Assert
-        $this->assertSame('production', $factory->getEnvironment());
+        $this->assertSame('live', $factory->getEnvironment());
     }
 
     public function test_withEnvironment_normalizesTestToUat(): void
@@ -177,7 +177,7 @@ class ElavonApiFactoryTest extends TestCase
         $factory = ElavonApiFactory::configure()->withEnvironment('test');
 
         // Assert
-        $this->assertSame('uat', $factory->getEnvironment());
+        $this->assertSame('test', $factory->getEnvironment());
     }
 
     public function test_getBaseUri_returnsEuSandboxUrl(): void
@@ -481,7 +481,7 @@ class ElavonApiFactoryTest extends TestCase
         // Assert
         $this->assertNotSame($factory1, $factory2);
         $this->assertNull($factory1->getEnvironment());
-        $this->assertSame('uat', $factory2->getEnvironment());
+        $this->assertSame('test', $factory2->getEnvironment());
     }
 
     public function test_immutability_withAuthentication(): void
@@ -506,7 +506,7 @@ class ElavonApiFactoryTest extends TestCase
 
     public function test_environmentConstants_areCorrect(): void
     {
-        $this->assertSame('production', ElavonApiFactory::ENV_PRODUCTION);
-        $this->assertSame('uat', ElavonApiFactory::ENV_UAT);
+        $this->assertSame('live', ElavonApiFactory::ENV_LIVE);
+        $this->assertSame('test', ElavonApiFactory::ENV_TEST);
     }
 }
