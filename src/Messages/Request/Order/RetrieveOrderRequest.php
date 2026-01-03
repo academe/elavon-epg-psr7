@@ -41,6 +41,11 @@ use Psr\Http\Message\RequestInterface;
  * - Environment configuration (sandbox, production, custom base URI)
  * - Authentication headers (Authorization)
  * Use the ElavonApiFactory to add these.
+ * 
+ * The orderId can be blank if we are going to override the full URL
+ * to fatch the order. This may sometimes be necessary since the gateway
+ * does not always provide the order reference with the transaction,
+ * but does provide the full URL to fetch the order.
  */
 class RetrieveOrderRequest implements RequestMessage
 {
@@ -52,11 +57,11 @@ class RetrieveOrderRequest implements RequestMessage
      * @throws InvalidArgumentException When order ID is empty
      */
     public function __construct(
-        public readonly string $orderId,
+        public readonly ?string $orderId,
     ) {
-        if (empty($this->orderId)) {
-            throw new InvalidArgumentException('Order ID cannot be empty');
-        }
+        // if (empty($this->orderId)) {
+        //     throw new InvalidArgumentException('Order ID cannot be empty');
+        // }
     }
 
     /**
@@ -68,11 +73,11 @@ class RetrieveOrderRequest implements RequestMessage
      */
     public static function fromData(array $data): static
     {
-        if (! array_key_exists('orderId', $data)) {
-            throw new InvalidArgumentException("Missing required key 'orderId' in data");
-        }
+        // if (! array_key_exists('orderId', $data)) {
+        //     throw new InvalidArgumentException("Missing required key 'orderId' in data");
+        // }
 
-        return new static($data['orderId']);
+        return new static($data['orderId'] ?? null);
     }
 
     /**
