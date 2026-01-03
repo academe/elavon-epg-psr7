@@ -1,34 +1,44 @@
 # Documentation
 
-This directory contains comprehensive documentation for the Elavon EPT PSR-7 package.
+This directory contains comprehensive documentation for the Elavon EPG PSR-7 package.
 
 ## Contents
 
 ### API Reference
-- [openapi.json](openapi.json) - Official Elavon Payment Gateway OpenAPI specification (version 2025-10-01)
 
-### Architecture & Design
-- [architecture.md](architecture.md) - Package architecture and design decisions
+- [openapi.json](openapi.json) - Official Elavon Payment Gateway OpenAPI specification
+- [openapi-split/](openapi-split/) - Split OpenAPI files for easier parsing
+
+### Standards & Patterns
+
 - [coding-standards.md](coding-standards.md) - Coding standards and best practices
+- [creating-response-classes.md](creating-response-classes.md) - How to create response classes
 
 ### Guides
+
 - [guides/getting-started.md](guides/getting-started.md) - Getting started guide
-- [guides/value-objects.md](guides/value-objects.md) - Using value objects
-- [guides/dto-classes.md](guides/dto-classes.md) - Working with DTOs
-- [guides/psr7-messages.md](guides/psr7-messages.md) - Creating PSR-7 messages
+
+### Implementation Stacks
+
+- [credit-card-vertical-stack.md](credit-card-vertical-stack.md) - Credit card payment implementation
 
 ### Examples
-- [examples/](examples/) - Code examples and usage patterns
+
+- [examples/credit-card-payment.md](examples/credit-card-payment.md) - Credit card payment examples
 
 ## Resources
 
 ### External Documentation
-- [Elavon Payment Gateway API Sandbox](https://uat.api.converge.eu.elavonaws.com)
-- [Elavon Payment Gateway API Production](https://api.eu.convergepay.com)
+
+- [Elavon Payment Gateway API Sandbox (EU)](https://uat.api.converge.eu.elavonaws.com)
+- [Elavon Payment Gateway API Production (EU)](https://api.eu.convergepay.com)
+- [Elavon Payment Gateway API Sandbox (US)](https://uat.api.convergepay.com)
+- [Elavon Payment Gateway API Production (US)](https://api.convergepay.com)
 
 ### Related Packages
+
 - This package: Message construction and DTOs
-- Separate package (TBD): HTTP client for sending requests
+- Use any PSR-18 HTTP client (Guzzle, etc.) for sending requests
 
 ## Contributing
 

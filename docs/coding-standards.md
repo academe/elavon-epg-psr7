@@ -9,6 +9,7 @@ This document defines the coding standards for the Elavon EPT PSR-7 package. All
 ### PSR Compliance
 
 This project follows:
+
 - **PSR-1**: Basic Coding Standard
 - **PSR-12**: Extended Coding Style Guide
 - **PSR-4**: Autoloading Standard
@@ -38,8 +39,10 @@ use Money\Money;
  * Represents a transaction in the EPG API.
  *
  * Uses the moneyphp/money package for monetary values.
+ * The SerializesData trait uses reflection to automatically handle
+ * type conversion for Money, enums, and nested DTOs.
  */
-final class Transaction
+class Transaction implements DataTransferObject
 {
     use SerializesData;
 
@@ -48,14 +51,6 @@ final class Transaction
         public readonly ?Money $total = null,
         public readonly ?TransactionType $type = null,
     ) {}
-
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total'],
-            'enum' => ['type' => TransactionType::class],
-        ];
-    }
 }
 ```
 
@@ -78,6 +73,7 @@ final class Transaction
 ### Naming Conventions
 
 #### Classes
+
 ```php
 // Value Objects - Singular, descriptive nouns
 class CardNumber {}
@@ -107,6 +103,7 @@ interface MessageInterface {}
 ```
 
 #### Methods
+
 ```php
 // Factory methods - Static, prefixed with "create" or "from"
 public static function createFromArray(array $data): self {}
@@ -131,6 +128,7 @@ public function canCapture(): bool {}
 ```
 
 #### Properties
+
 ```php
 // Camel case
 public string $firstName;
@@ -144,6 +142,7 @@ public bool $canRefund;
 ```
 
 #### Constants
+
 ```php
 // Upper case with underscores
 public const MAX_RETRIES = 3;
@@ -335,35 +334,35 @@ $code = $total->getCurrency()->getCode();  // "USD"
 
 ### Money Serialization in DTOs
 
-The `SerializesData` trait handles Money serialization automatically:
+The `SerializesData` trait handles Money serialization automatically using reflection:
 
 ```php
-final class Order
+use Academe\Elavon\Epg\Psr7\Concerns\SerializesData;
+use Academe\Elavon\Epg\Psr7\Contracts\DataTransferObject;
+use Money\Money;
+
+class Order implements DataTransferObject
 {
     use SerializesData;
 
     public function __construct(
         public readonly ?Money $total = null,
-    ) {
-        // Use normalizeMoney() for constructor normalization
-        $this->total = $this->normalizeMoney($total);
-    }
-
-    public static function getPropertyTypes(): array
-    {
-        return [
-            'money' => ['total'],  // Mark as money type
-        ];
-    }
+    ) {}
 }
 
-// fromData() parses API format to Money\Money
+// fromData() parses API format to Money\Money automatically
+// The trait detects Money type via reflection and converts
 $order = Order::fromData([
     'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
 ]);
 // $order->total is Money\Money with amount "9999" (minor units)
 
-// toData() serializes Money\Money to API format
+// You can also use minor units directly:
+$order = Order::fromData([
+    'total' => ['amountMinor' => 9999, 'currencyCode' => 'USD'],
+]);
+
+// toData() serializes Money\Money to API format (major units)
 $data = $order->toData();
 // $data['total'] = ['amount' => '99.99', 'currencyCode' => 'USD']
 ```
@@ -476,6 +475,7 @@ Before submitting a PR, verify:
 ### VS Code
 
 Install extensions:
+
 - PHP Intelephense
 - PHPStan
 - PHP CS Fixer

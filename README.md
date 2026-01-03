@@ -17,7 +17,8 @@ This package handles message construction and serialization. A separate HTTP cli
 
 ## Get an Elavon Merchant Account
 
-Don't have an Elavon merchant account yet? [**Sign up here**](https://www.elavon.eu/partner-form.html?partner_id=0014H00004E0iYw) to get started. Elavon's team will contact you within 24-48 hours to discuss your payment processing needs.
+> [!TIP]
+> Don't have an Elavon merchant account yet? [**Sign up here**](https://www.elavon.eu/partner-form.html?partner_id=0014H00004E0iYw) to get started. Elavon's team will contact you within 24-48 hours to discuss your payment processing needs.
 
 ## Requirements
 

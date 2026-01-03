@@ -2,15 +2,22 @@
 
 This example shows how to create a PSR-7 request for a credit card payment transaction.
 
-## Basic Usage (No Dependencies Required!)
+## Basic Usage
 
 ```php
 <?php
 
 use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 
-// Option 1: Using fromData() with arrays (simplest - uses built-in PSR-7 factory)
+// 1. Configure the API factory
+$factory = ElavonApiFactory::configure()
+    ->withRegion('eu')
+    ->withEnvironment('sandbox')
+    ->withAuthentication($merchantAlias, $apiSecret);
+
+// 2. Create the request using fromData() with arrays (simplest approach)
 $request = CreateTransactionRequest::fromData([
     'transaction' => [
         'total' => [
@@ -28,23 +35,27 @@ $request = CreateTransactionRequest::fromData([
     ],
 ]);
 
-// Build the PSR-7 request (uses built-in factory)
-$psr7Request = $request->build();
+// 3. Build and apply API configuration
+$psr7Request = $factory->apply($request->build());
 
-// Send with any PSR-18 HTTP client
-$httpClient = new \YourChoice\HttpClient();
+// 4. Send with any PSR-18 HTTP client
+$httpClient = new \GuzzleHttp\Client();
 $psr7Response = $httpClient->sendRequest($psr7Request);
 
-// Parse the response
+// 5. Parse the response
 $response = TransactionResponse::fromPsr7Response($psr7Response);
 
 if ($response->isSuccessful()) {
-    $transaction = $response->getTransaction();
+    $transaction = $response->transaction;
     echo "Transaction ID: " . $transaction->id . "\n";
     echo "State: " . $transaction->state->value . "\n";
-    echo "Amount: " . $transaction->total->amount . " " . $transaction->total->currency->value . "\n";
+    echo "Amount: " . $transaction->total->getAmount() . " (minor units)\n";
+    echo "Currency: " . $transaction->total->getCurrency()->getCode() . "\n";
 } else {
-    echo "Transaction failed with status: " . $response->getStatusCode() . "\n";
+    echo "Transaction failed with status: " . $response->statusCode . "\n";
+    if ($response->error) {
+        echo "Error: " . $response->error->getMessage() . "\n";
+    }
 }
 ```
 
@@ -55,11 +66,11 @@ if ($response->isSuccessful()) {
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
 use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 use Money\Money;
-use Money\Currency;
 
 // Create Money value object (using moneyphp/money)
-$total = Money::USD(9999); // Amount in cents
+$total = Money::USD(9999); // Amount in minor units (cents)
 
 // Create Card DTO
 $card = new Card(
@@ -89,6 +100,7 @@ $psr7Request = $request->build();
 <?php
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 
 // Create Transaction from array data
 $transaction = Transaction::fromData([
@@ -114,9 +126,12 @@ All validation happens automatically in constructors:
 ```php
 <?php
 
+use Academe\Elavon\Epg\Psr7\Dtos\Card;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+
 // Invalid card number - throws InvalidArgumentException
 $card = new Card(
-    number: '123',  // Too short
+    number: '123',  // Too short - must be 13-19 digits
     securityCode: '123',
     expirationMonth: 12,
     expirationYear: 2025,
@@ -131,10 +146,10 @@ $card = new Card(
 );
 
 // Invalid transaction total - throws InvalidArgumentException
-$transaction = new Transaction(
-    total: ['amount' => '-10.00', 'currencyCode' => 'USD'],  // Must be positive
-    card: $card,
-);
+$transaction = Transaction::fromData([
+    'total' => ['amount' => '-10.00', 'currencyCode' => 'USD'],  // Must be positive
+    'card' => [...],
+]);
 ```
 
 ## Working with Responses
@@ -142,15 +157,22 @@ $transaction = new Transaction(
 ```php
 <?php
 
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
+use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
+
 $response = TransactionResponse::fromPsr7Response($psr7Response);
 
-// Access transaction data
-$transaction = $response->getTransaction();
+// Access transaction data via public readonly property
+$transaction = $response->transaction;
 
-// Response fields (read-only from API)
+// Response fields
 echo "Transaction ID: " . $transaction->id . "\n";
 echo "State: " . $transaction->state->value . "\n";
-echo "Created: " . $transaction->createdAt . "\n";
+echo "Created: " . $transaction->createdAt->format('Y-m-d H:i:s') . "\n";
+
+// Money values (using moneyphp/money)
+echo "Amount: " . $transaction->total->getAmount() . " (minor units)\n";
+echo "Currency: " . $transaction->total->getCurrency()->getCode() . "\n";
 
 // Card details from response
 if ($transaction->card !== null) {
@@ -160,8 +182,6 @@ if ($transaction->card !== null) {
 }
 
 // Check transaction state
-use Academe\Elavon\Epg\Psr7\Enums\TransactionState;
-
 match ($transaction->state) {
     TransactionState::AUTHORIZED => handleAuthorized($transaction),
     TransactionState::DECLINED => handleDeclined($transaction),
@@ -170,20 +190,28 @@ match ($transaction->state) {
 };
 ```
 
-## Authentication
+## Using ElavonApiFactory
 
-The request does not include authentication headers. You should add these when sending:
+The `ElavonApiFactory` handles authentication and environment configuration:
 
 ```php
 <?php
 
-$psr7Request = $request->build()
-    ->withHeader('Authorization', 'Basic ' . base64_encode($merchantAlias . ':' . $apiKey));
+use Academe\Elavon\Epg\Psr7\Support\ElavonApiFactory;
 
-// Or using your HTTP client's authentication
-$httpClient = new Client([
-    'auth' => [$merchantAlias, $apiKey],
-]);
+$factory = ElavonApiFactory::configure()
+    ->withRegion('eu')           // 'eu' or 'us'
+    ->withEnvironment('sandbox') // 'sandbox', 'test', 'live', 'production'
+    ->withAuthentication($merchantAlias, $apiSecret);
+
+// Apply to any request
+$psr7Request = $factory->apply($request->build());
+
+// The factory adds:
+// - Base URL for the region/environment
+// - Authorization header (Basic auth)
+// - Accept and Content-Type headers
+// - API version header
 ```
 
 ## Test Cards
@@ -202,31 +230,47 @@ See the [Elavon EPG documentation](https://developer.elavon.com/) for more test 
 <?php
 
 use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Transaction\TransactionResponse;
 
+// Validation errors (thrown during construction)
 try {
-    $transaction = new Transaction(
-        total: ['amount' => '99.99', 'currencyCode' => 'USD'],
-        card: ['number' => 'invalid'],
-    );
+    $transaction = Transaction::fromData([
+        'total' => ['amount' => '99.99', 'currencyCode' => 'USD'],
+        'card' => ['number' => 'invalid'],
+    ]);
 } catch (InvalidArgumentException $e) {
     echo "Validation error: " . $e->getMessage() . "\n";
 }
 
+// Response parsing errors
 try {
     $response = TransactionResponse::fromPsr7Response($psr7Response);
 } catch (InvalidArgumentException $e) {
     echo "Response parse error: " . $e->getMessage() . "\n";
 }
+
+// API errors (non-2xx responses)
+$response = TransactionResponse::fromPsr7Response($psr7Response);
+if ($response->hasError()) {
+    $error = $response->error;
+    echo "API Error: " . $error->getMessage() . "\n";
+    echo "Error Code: " . $error->getCode() . "\n";
+
+    foreach ($error->getFailures() as $failure) {
+        echo "- " . $failure->description . "\n";
+    }
+}
 ```
 
 ## Using Custom PSR-17 Factories (Optional)
 
-The package includes a built-in PSR-7/PSR-17 implementation, but you can use your own if you prefer by calling the `setRequestFactory()` and `setStreamFactory()` methods on the request object:
+The package includes a built-in PSR-7/PSR-17 implementation, but you can use your own:
 
 ```php
 <?php
 
 use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Messages\Request\Transaction\CreateTransactionRequest;
 
 // Using nyholm/psr7
 $factory = new \Nyholm\Psr7\Factory\Psr17Factory();
@@ -236,14 +280,6 @@ $request = new CreateTransactionRequest($transaction);
 $request->setRequestFactory($factory);
 $request->setStreamFactory($factory);
 
-// Using guzzlehttp/psr7
-$requestFactory = new \GuzzleHttp\Psr7\HttpFactory();
-$streamFactory = new \GuzzleHttp\Psr7\HttpFactory();
-
-$request = new CreateTransactionRequest($transaction);
-$request->setRequestFactory($requestFactory);
-$request->setStreamFactory($streamFactory);
-
 $psr7Request = $request->build();
 ```
 
@@ -252,11 +288,9 @@ $psr7Request = $request->build();
 - Your framework/app already has PSR-17 factories configured
 - You need specific features from a particular implementation
 - Testing with mocked factories
-- Performance optimization with a specific library
 
 **When to use built-in (default):**
 
 - Simple use cases
 - Minimal dependencies
 - Quick prototyping
-- No special requirements

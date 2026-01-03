@@ -2,150 +2,103 @@
 
 This guide explains how to create new response classes for the Elavon Payment Gateway API.
 
-## Using the HandlesErrors Trait
+## Using the ParsesPsr7Response Trait
 
-All response classes should use the `HandlesErrors` trait to provide consistent error handling:
+All response classes should use the `ParsesPsr7Response` trait to provide consistent error handling:
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Academe\Elavon\Epg\Psr7\Messages\Response;
+namespace Academe\Elavon\Epg\Psr7\Messages\Response\YourResource;
 
-use Academe\Elavon\Epg\Psr7\DataObjects\YourDataObject;
-use Academe\Elavon\Epg\Psr7\Exceptions\InvalidArgumentException;
-use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\HandlesErrors;
-use Psr\Http\Message\ResponseInterface;
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
+use Academe\Elavon\Epg\Psr7\Dtos\YourDataObject;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
 
-class YourResponse
+class YourResponse implements ResponseMessage
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?YourDataObject $data;
+    public readonly ?YourDataObject $data;
 
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    /**
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
+     */
+    public function __construct(array $data, int $statusCode)
+    {
+        $this->statusCode = $statusCode;
+
         // Parse based on status code
         if ($this->isSuccessful()) {
-            $this->data = $this->parseSuccessResponse();
+            $this->data = YourDataObject::fromData($data);
             $this->error = null;
         } else {
             $this->data = null;
-            $this->error = $this->parseErrorResponse();
+            $this->error = self::parseErrorData($data);
         }
-    }
-
-    public function getData(): ?YourDataObject
-    {
-        return $this->data;
-    }
-
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    private function parseSuccessResponse(): YourDataObject
-    {
-        $data = $this->parseJsonBody();
-        return YourDataObject::fromArray($data);
-    }
-
-    private function parseJsonBody(): array
-    {
-        $body = (string) $this->response->getBody();
-
-        if ($body === '') {
-            throw new InvalidArgumentException('Response body is empty');
-        }
-
-        try {
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new InvalidArgumentException(
-                'Failed to decode JSON response: ' . $e->getMessage(),
-                previous: $e
-            );
-        }
-
-        if (!is_array($data)) {
-            throw new InvalidArgumentException('Response body is not a JSON object');
-        }
-
-        return $data;
     }
 }
 ```
 
 ## What the Trait Provides
 
-The `HandlesErrors` trait provides:
+The `ParsesPsr7Response` trait provides:
 
 ### Properties
 
-- `private readonly ?ErrorResponse $error` - Stores error details
+- `public readonly int $statusCode` - HTTP status code
+- `public readonly ?ErrorResponse $error` - Stores error details
 
 ### Methods
 
-- `hasError(): bool` - Check if response has an error
-- `getError(): ?ErrorResponse` - Get error details
+- `fromPsr7Response(ResponseInterface): static` - Factory to create from PSR-7 response
 - `isSuccessful(): bool` - Check if response is 2xx
+- `hasError(): bool` - Check if response has an error
 
-### Requirements
+### Protected Methods
 
-Your class must implement:
-
-- `getStatusCode(): int` - Return the HTTP status code
-- `parseJsonBody(): array` - Parse and return the response body as an array
-
-The trait provides `parseErrorResponse()` which calls `parseJsonBody()`.
+- `parseErrorData(array): ErrorResponse` - Parse error data into ErrorResponse
 
 ## Example: TransactionResponse
 
 Here's how `TransactionResponse` uses the trait:
 
 ```php
-class TransactionResponse
+<?php
+
+declare(strict_types=1);
+
+namespace Academe\Elavon\Epg\Psr7\Messages\Response\Transaction;
+
+use Academe\Elavon\Epg\Psr7\Contracts\ResponseMessage;
+use Academe\Elavon\Epg\Psr7\Dtos\Transaction;
+use Academe\Elavon\Epg\Psr7\Messages\Response\Concerns\ParsesPsr7Response;
+
+class TransactionResponse implements ResponseMessage
 {
-    use HandlesErrors;
+    use ParsesPsr7Response;
 
-    private readonly ?Transaction $transaction;
+    public readonly ?Transaction $transaction;
 
-    public function __construct(
-        private readonly ResponseInterface $response,
-    ) {
+    /**
+     * @param array<string, mixed> $data Parsed response body data
+     * @param int $statusCode HTTP status code
+     */
+    public function __construct(array $data, int $statusCode)
+    {
+        $this->statusCode = $statusCode;
+
         // Parse response based on status code
         if ($this->isSuccessful()) {
-            $this->transaction = $this->parseSuccessResponse();
+            $this->transaction = Transaction::fromData($data);
             $this->error = null;
         } else {
             $this->transaction = null;
-            $this->error = $this->parseErrorResponse(); // From trait
+            $this->error = self::parseErrorData($data);
         }
-    }
-
-    public function getTransaction(): ?Transaction
-    {
-        return $this->transaction;
-    }
-
-    public function getStatusCode(): int
-    {
-        return $this->response->getStatusCode();
-    }
-
-    private function parseSuccessResponse(): Transaction
-    {
-        $data = $this->parseJsonBody();
-        return Transaction::fromArray($data);
-    }
-
-    private function parseJsonBody(): array
-    {
-        // Parse JSON response
-        // ...
     }
 }
 ```
@@ -166,10 +119,10 @@ Using the trait provides:
 $response = YourResponse::fromPsr7Response($psr7Response);
 
 if ($response->hasError()) {
-    $error = $response->getError();
+    $error = $response->error;
     echo "Error: {$error->getMessage()}\n";
 } else {
-    $data = $response->getData();
+    $data = $response->data;
     // Process successful response
 }
 ```
@@ -181,17 +134,14 @@ All error responses are parsed into `ErrorResponse` objects:
 ```php
 class ErrorResponse
 {
-    public int $status;
-    public array $failures; // ErrorDetail[]
+    public readonly ?int $status;
+    public readonly ?array $failures; // ErrorDetail[]
 
     public function getMessage(): string;
-    public function getCode(): string;
+    public function getCode(): ?string;
     public function getFailures(): array;
-    public function hasErrorCode(string $code): bool;
 }
 ```
-
-See [Error Handling](error-handling.md) for complete error handling documentation.
 
 ## Testing Response Classes
 
@@ -215,14 +165,14 @@ public function test_construct_withError_parsesError(): void
     $psr7Response = $this->createMockResponse($responseBody, 401);
 
     // Act
-    $response = new YourResponse($psr7Response);
+    $response = YourResponse::fromPsr7Response($psr7Response);
 
     // Assert
     $this->assertTrue($response->hasError());
     $this->assertFalse($response->isSuccessful());
-    $this->assertNull($response->getData());
+    $this->assertNull($response->data);
 
-    $error = $response->getError();
+    $error = $response->error;
     $this->assertNotNull($error);
     $this->assertSame('unauthorized', $error->getCode());
 }
@@ -230,6 +180,5 @@ public function test_construct_withError_parsesError(): void
 
 ## See Also
 
-- [Error Handling Guide](error-handling.md) - Complete error handling documentation
-- [HandlesErrors Trait](../src/Messages/Response/Concerns/HandlesErrors.php) - Trait source code
-- [TransactionResponse](../src/Messages/Response/TransactionResponse.php) - Example implementation
+- [ParsesPsr7Response Trait](../src/Messages/Response/Concerns/ParsesPsr7Response.php) - Trait source code
+- [TransactionResponse](../src/Messages/Response/Transaction/TransactionResponse.php) - Example implementation
