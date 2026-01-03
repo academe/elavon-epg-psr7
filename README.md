@@ -1,42 +1,29 @@
 [![Latest Stable Version](http://poser.pugx.org/academe/elavon-epg-psr7/v)](https://packagist.org/packages/academe/elavon-epg-psr7) [![Total Downloads](http://poser.pugx.org/academe/elavon-epg-psr7/downloads)](https://packagist.org/packages/academe/elavon-epg-psr7) [![Latest Unstable Version](http://poser.pugx.org/academe/elavon-epg-psr7/v/unstable)](https://packagist.org/packages/academe/elavon-epg-psr7) [![License](http://poser.pugx.org/academe/elavon-epg-psr7/license)](https://packagist.org/packages/academe/elavon-epg-psr7) [![PHP Version Require](http://poser.pugx.org/academe/elavon-epg-psr7/require/php)](https://packagist.org/packages/academe/elavon-epg-psr7)
 
-
-<!-- vscode-markdown-toc -->
-* 1. [Overview](#Overview)
-* 2. [Get an Elavon Merchant Account](#GetanElavonMerchantAccount)
-* 3. [Requirements](#Requirements)
-* 4. [Installation](#Installation)
-* 5. [Quick Start](#QuickStart)
-	* 5.1. [Using DTOs (fromData)](#UsingDTOsfromData)
-	* 5.2. [Using Value Objects (Type-Safe)](#UsingValueObjectsType-Safe)
-	* 5.3. [Paginated Lists with QueryParams](#PaginatedListswithQueryParams)
-		* 5.3.1. [QueryParams Methods](#QueryParamsMethods)
-		* 5.3.2. [Filtering](#Filtering)
-		* 5.3.3. [Response Pagination Properties](#ResponsePaginationProperties)
-		* 5.3.4. [List Requests Supporting QueryParams](#ListRequestsSupportingQueryParams)
-* 6. [Features](#Features)
-	* 6.1. [Resources](#Resources)
-* 7. [API Endpoints](#APIEndpoints)
-* 8. [Development](#Development)
-	* 8.1. [Testing](#Testing)
-	* 8.2. [Code Quality](#CodeQuality)
-* 9. [License](#License)
-* 10. [Contributing](#Contributing)
-* 11. [Namespace](#Namespace)
-
-<!-- vscode-markdown-toc-config
-	numbering=true
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc -->
-
 # Elavon EPG PSR-7
 
 PSR-7 HTTP messages and Data Transfer Object (DTO) classes for the Elavon Payment Gateway (EPG) API.
 
 The [API is described here](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference) and the [OpenAPI description is here](./docs/openapi.json)
 
-##  1. <a name='Overview'></a>Overview
+## Table of Contents
+
+- [Overview](#overview)
+- [Get an Elavon Merchant Account](#get-an-elavon-merchant-account)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Using DTOs (fromData)](#using-dtos-fromdata)
+  - [Using Value Objects (Type-Safe)](#using-value-objects-type-safe)
+  - [Paginated Lists with QueryParams](#paginated-lists-with-queryparams)
+- [Features](#features)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
+- [License](#license)
+- [Contributing](#contributing)
+- [Namespace](#namespace)
+
+## Overview
 
 This package provides strongly-typed PHP classes for interacting with the Elavon Payment Gateway API. It includes:
 
@@ -47,25 +34,25 @@ This package provides strongly-typed PHP classes for interacting with the Elavon
 
 This package handles message construction and serialization. A separate HTTP client package will handle the actual sending of requests.
 
-##  2. <a name='GetanElavonMerchantAccount'></a>Get an Elavon Merchant Account
+## Get an Elavon Merchant Account
 
 > [!TIP]
 > Don't have an Elavon merchant account yet? [**Sign up here**](https://www.elavon.eu/partner-form.html?partner_id=0014H00004E0iYw) to get started. Elavon's team will contact you within 24-48 hours to discuss your payment processing needs.
 
-##  3. <a name='Requirements'></a>Requirements
+## Requirements
 
 - PHP 8.1 or higher
 - An [Elavon merchant account](https://www.elavon.eu/partner-form.html?partner_id=0014H00004E0iYw) with API credentials
 - PSR-7 HTTP Message implementation (or use built-in message factory)
 - PSR-17 HTTP Factory implementation (or user built-in factory)
 
-##  4. <a name='Installation'></a>Installation
+## Installation
 
 ```bash
 composer require academe/elavon-epg-psr7
 ```
 
-##  5. <a name='QuickStart'></a>Quick Start
+## Quick Start
 
 Here's a complete example creating a credit card payment using Guzzle:
 
@@ -119,7 +106,7 @@ if ($response->isSuccessful()) {
 }
 ```
 
-###  5.1. <a name='UsingDTOsfromData'></a>Using DTOs (fromData)
+### Using DTOs (fromData)
 
 You can create DTOs explicitly from array data using `fromData()`:
 
@@ -142,7 +129,7 @@ $transaction = Transaction::fromData([
 $request = new CreateTransactionRequest($transaction);
 ```
 
-###  5.2. <a name='UsingValueObjectsType-Safe'></a>Using Value Objects (Type-Safe)
+### Using Value Objects (Type-Safe)
 
 For full type safety, construct DTOs with typed value objects:
 
@@ -167,7 +154,7 @@ $transaction = new Transaction(
 $request = new CreateTransactionRequest($transaction);
 ```
 
-###  5.3. <a name='PaginatedListswithQueryParams'></a>Paginated Lists with QueryParams
+### Paginated Lists with QueryParams
 
 Many API endpoints return paginated lists of resources. The `QueryParams` class provides a fluent interface for pagination and filtering:
 
@@ -199,7 +186,7 @@ if ($response->isSuccessful()) {
 }
 ```
 
-####  5.3.1. <a name='QueryParamsMethods'></a>QueryParams Methods
+#### QueryParams Methods
 
 | Method | Description |
 | ------ | ----------- |
@@ -210,7 +197,7 @@ if ($response->isSuccessful()) {
 | `isEmpty()` | Check if any parameters are set |
 | `apply(UriInterface $uri)` | Apply parameters to a PSR-7 URI |
 
-####  5.3.2. <a name='Filtering'></a>Filtering
+#### Filtering
 
 The Elavon API supports filtering on list endpoints. Use `withFilter()` with the `QueryFilterOperator` enum to add filter conditions:
 
@@ -242,7 +229,7 @@ $queryParams = QueryParams::create()
 
 **Note:** Available filters vary by endpoint. See the [Elavon API documentation](https://developer.elavon.com/products/en-uk/elavon-payment-gateway/v1/api-reference) for endpoint-specific filters.
 
-####  5.3.3. <a name='ResponsePaginationProperties'></a>Response Pagination Properties
+#### Response Pagination Properties
 
 | Property | Description |
 | -------- | ----------- |
@@ -251,7 +238,7 @@ $queryParams = QueryParams::create()
 | `$response->firstPage` | Full URL to return to the first page |
 | `$response->hasMorePages()` | Returns `true` if more pages are available |
 
-####  5.3.4. <a name='ListRequestsSupportingQueryParams'></a>List Requests Supporting QueryParams
+#### List Requests Supporting QueryParams
 
 The following request classes accept a `QueryParams` parameter:
 
@@ -285,11 +272,12 @@ The following request classes accept a `QueryParams` parameter:
 
 See [docs/examples/](docs/examples/) for more examples.
 
-##  6. <a name='Features'></a>Features
+## Features
 
 Based on the Elavon Payment Gateway API version 2025-10-01, this package supports:
 
-###  6.1. <a name='Resources'></a>Resources
+### Resources
+
 - Merchants
 - Processor Accounts
 - Terminals
@@ -312,23 +300,24 @@ Based on the Elavon Payment Gateway API version 2025-10-01, this package support
 - Notifications
 - Total Adjustments
 
-##  7. <a name='APIEndpoints'></a>API Endpoints
+## API Endpoints
 
 The Elavon Payment Gateway API base URLs:
+
 - EU Sandbox: `https://uat.api.converge.eu.elavonaws.com`
 - EU Production: `https://api.eu.convergepay.com`
 - US Sandbox: `https://uat.api.convergepay.com`
 - US Production: `https://api.convergepay.com`
 
-##  8. <a name='Development'></a>Development
+## Development
 
-###  8.1. <a name='Testing'></a>Testing
+### Testing
 
 ```bash
 composer test
 ```
 
-###  8.2. <a name='CodeQuality'></a>Code Quality
+### Code Quality
 
 ```bash
 composer phpstan
@@ -336,14 +325,14 @@ composer cs-check
 composer cs-fix
 ```
 
-##  9. <a name='License'></a>License
+## License
 
 MIT License. See [LICENSE](LICENSE) file for details.
 
-##  10. <a name='Contributing'></a>Contributing
+## Contributing
 
 Contributions are welcome. Please ensure all tests pass and code follows PSR-12 coding standards.
 
-##  11. <a name='Namespace'></a>Namespace
+## Namespace
 
 All classes are under the `Academe\Elavon\Epg\Psr7\` namespace.
